@@ -1,0 +1,168 @@
+<main class="site-main">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-container">
+      <div class="hero-content">
+        <div class="hero-text" [@fadeInLeft]>
+          <h2 class="hero-title">Vrei să înveți și să lucrezi la proiecte pentru îmbunătățirea experienței studențești?</h2>
+          <p class="hero-subtitle">Transilvania Star Group caută Voluntari</p>
+          <p class="hero-description">Completează formularul de mai jos!</p>
+          <div class="hero-buttons">
+            <a routerLink="/tsg-application" class="btn btn-primary" (click)="onApplyClick()">
+              Completează Formularul
+            </a>
+            <a href="#despre" class="btn btn-secondary" (click)="onLearnMoreClick()">
+              Află Mai Multe
+            </a>
+          </div>
+        </div>
+        <div class="hero-image" [@fadeInRight]>
+          <img src="assets/images/cropped-tsg-small-logo-2.0.png" alt="TSG Recruitment Banner" class="hero-img">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Volunteer Positions Section -->
+  <section class="volunteer-section">
+    <div class="section-container">
+      <div class="section-header">
+        <h2 class="section-title">🚀 Descoperă Oportunitatea de Voluntariat! 🌈</h2>
+      </div>
+
+      <div class="volunteer-grid">
+        <div
+          *ngFor="let position of volunteerPositions; trackBy: trackByVolunteerId; let i = index"
+          class="volunteer-card"
+          [@fadeInUp]
+          [style.animation-delay.s]="i * 0.1">
+
+          <div class="card-header">
+            <h3 class="card-title">{{ position.title }}</h3>
+          </div>
+
+          <div class="card-content">
+            <div class="tech-requirements" *ngIf="position.technologies && position.technologies.length > 0">
+              <h4>
+                <ng-container [ngSwitch]="position.category">
+                  <span *ngSwitchCase="'development'">🌐 Tehnologii necesare:</span>
+                  <span *ngSwitchCase="'design'">🎨 Tehnologii necesare:</span>
+                  <span *ngSwitchCase="'network'">🔌 Tehnologii necesare:</span>
+                  <span *ngSwitchDefault>🛠️ Tehnologii necesare:</span>
+                </ng-container>
+              </h4>
+              <div class="tech-stack">
+                <span *ngFor="let tech of position.technologies" class="tech-tag">{{ tech }}</span>
+              </div>
+            </div>
+
+            <div class="knowledge-requirements">
+              <h4>
+                <ng-container [ngSwitch]="position.category">
+                  <span *ngSwitchCase="'testing'">⚙️ Cunoștințe minime:</span>
+                  <span *ngSwitchCase="'hr'">🤝 Cunoștințe minime:</span>
+                  <span *ngSwitchDefault>Cunoștințe minime:</span>
+                </ng-container>
+              </h4>
+              <ul class="requirements-list">
+                <li *ngFor="let requirement of position.requirements">{{ requirement }}</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="volunteer-cta" [@fadeInUp]>
+        <h3>Alătură-te echipei noastre! 🚀</h3>
+        <div class="benefits">
+          <h4>Ce îți oferim:</h4>
+          <ul class="benefits-list">
+            <li *ngFor="let benefit of benefits">{{ benefit }}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section class="about-section" id="despre">
+    <div class="section-container">
+      <div class="about-content">
+        <div class="about-text" [@fadeInLeft]>
+          <h2 class="section-title">Cine suntem?</h2>
+          <div class="about-description">
+            <p>
+              <strong>Transilvania Star Group (TSG)</strong> reprezintă un grup de studenți care și-a propus
+              modernizarea universității prin crearea de aplicații software pentru îmbunătățirea sistemului IT
+              al Universității Transilvania din Brașov și prin facilitarea relațiilor cu mediul economic.
+            </p>
+            <p>
+              De asemenea, echipa promovează oportunități de dezvoltare personală și profesională pentru
+              studenții Universității Transilvania pe canalele interne de comunicare și prin oportunitatea
+              de practică în cadrul echipei.
+            </p>
+            <p>
+              <strong>Studenția devine inedită atunci când studenții se implică și își implementează ideile lor.</strong>
+            </p>
+          </div>
+        </div>
+
+        <div class="about-image" [@fadeInRight]>
+          <img src="assets/images/cine_suntem.jpg" alt="Echipa TSG" class="about-img">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects Preview Section -->
+  <section class="projects-preview">
+    <div class="section-container">
+      <div class="projects-grid">
+        <div
+          *ngFor="let project of projects; trackBy: trackByProjectId; let i = index"
+          class="project-preview-card"
+          [class.code-quote]="project.type === 'quote'"
+          [@fadeInUp]
+          [style.animation-delay.s]="i * 0.1">
+
+          <ng-container *ngIf="project.type === 'project'">
+            <h3 class="project-title">{{ project.title }}</h3>
+            <p class="project-description">{{ project.description }}</p>
+          </ng-container>
+
+          <ng-container *ngIf="project.type === 'quote'">
+            <h3 class="quote-text">{{ project.quoteText }}</h3>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section class="contact-section">
+    <div class="section-container">
+      <div class="contact-content">
+        <div class="contact-info" [@fadeInLeft]>
+          <h2 class="section-title">Ai întrebări pentru noi sau vrei să faci parte din echipă?</h2>
+          <div class="contact-methods">
+            <div
+              *ngFor="let contact of contactMethods; trackBy: trackByContactId"
+              class="contact-method">
+              <h4>{{ contact.title }}</h4>
+              <a
+                [href]="'mailto:' + contact.email"
+                class="contact-email"
+                (click)="onContactEmailClick(contact.email)">
+                {{ contact.email }}
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-image" [@fadeInRight]>
+          <img src="assets/images/imagine.jpg" alt="Contact TSG" class="contact-img">
+        </div>
+      </div>
+    </div>
+  </section>
+</main>

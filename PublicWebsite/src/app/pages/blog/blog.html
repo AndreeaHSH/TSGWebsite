@@ -1,0 +1,142 @@
+<main class="site-main">
+  <section class="blog-section">
+    <div class="section-container">
+
+      <!-- Blog Header -->
+      <div class="blog-header" [@fadeInUp]>
+        <h2 class="section-title">Blog Transilvania Star Group</h2>
+        <p class="blog-description">
+          Descoperă ultimele noutăți, articole tehnice și povești din spatele proiectelor noastre.
+          Urmărește evoluția TSG și învață din experiențele echipei noastre.
+        </p>
+      </div>
+
+      <!-- Featured Post -->
+      <article class="featured-post" [@fadeInUp]>
+        <div class="post-image" *ngIf="featuredPost.imageUrl">
+          <img
+            [src]="featuredPost.imageUrl"
+            [alt]="featuredPost.title"
+            class="post-img"
+            (error)="onImageError($event)"
+            loading="lazy">
+        </div>
+        <div class="post-content">
+          <div class="post-meta">
+            <time
+              class="post-date"
+              [dateTime]="featuredPost.date.toISOString()">
+              {{ formatDate(featuredPost.date) }}
+            </time>
+          </div>
+          <h3 class="post-title">{{ featuredPost.title }}</h3>
+          <div class="post-excerpt">
+            <p>{{ featuredPost.excerpt }}</p>
+          </div>
+          <div class="post-tags">
+            <span
+              *ngFor="let tag of featuredPost.tags"
+              class="tag">
+              {{ tag }}
+            </span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Blog Posts Grid -->
+      <div class="blog-posts-grid" [@staggerCards]>
+        <article
+          *ngFor="let post of blogPosts; trackBy: trackByPostId; let i = index"
+          class="blog-post-card"
+          [style.animation-delay.s]="i * 0.1">
+
+          <div class="card-content">
+            <div class="post-meta">
+              <time
+                class="post-date"
+                [dateTime]="post.date.toISOString()">
+                {{ formatDate(post.date) }}
+              </time>
+            </div>
+            <h3 class="post-title">{{ post.title }}</h3>
+            <p class="post-excerpt">{{ post.excerpt }}</p>
+            <div class="post-tags">
+              <span
+                *ngFor="let tag of post.tags"
+                class="tag">
+                {{ tag }}
+              </span>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Blog Categories -->
+      <div class="blog-categories" [@fadeInUp]>
+        <h3 class="categories-title">Categorii</h3>
+        <div class="categories-grid">
+          <a
+            *ngFor="let category of categories; trackBy: trackByCategoryId"
+            href="#"
+            class="category-link"
+            (click)="onCategoryClick(category); $event.preventDefault()">
+            <span class="category-icon">{{ category.icon }}</span>
+            <span class="category-name">{{ category.name }}</span>
+            <span class="category-count">{{ category.count }} articole</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Newsletter Signup -->
+      <div class="newsletter-signup" [@fadeInUp]>
+        <div class="newsletter-content">
+          <h3 class="newsletter-title">Rămâi la curent cu TSG</h3>
+          <p class="newsletter-description">
+            Abonează-te la newsletter-ul nostru pentru a primi ultimele noutăți despre proiectele TSG,
+            oportunități de voluntariat și articole tehnice.
+          </p>
+          <form
+            [formGroup]="newsletterForm"
+            (ngSubmit)="onNewsletterSubmit()"
+            class="newsletter-form">
+
+            <div class="form-group">
+              <input
+                type="email"
+                formControlName="email"
+                class="newsletter-input"
+                [class.invalid]="isNewsletterFieldInvalid('email')"
+                placeholder="Adresa ta de email">
+
+              <button
+                type="submit"
+                class="newsletter-btn"
+                [disabled]="isSubscribing || newsletterForm.invalid">
+                <span *ngIf="!isSubscribing">Abonează-te</span>
+                <span *ngIf="isSubscribing">Se abonează...</span>
+              </button>
+            </div>
+
+            <div *ngIf="isNewsletterFieldInvalid('email')" class="error-message">
+              {{ getNewsletterFieldError('email') }}
+            </div>
+
+            <label class="newsletter-checkbox">
+              <input
+                type="checkbox"
+                formControlName="agreeToPrivacy"
+                [class.invalid]="isNewsletterFieldInvalid('agreeToPrivacy')">
+              <span class="checkmark"></span>
+              Sunt de acord cu <a href="#" class="privacy-link">politica de confidențialitate</a>
+            </label>
+
+            <div *ngIf="isNewsletterFieldInvalid('agreeToPrivacy')" class="error-message">
+              {{ getNewsletterFieldError('agreeToPrivacy') }}
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>

@@ -1,0 +1,111 @@
+<main class="site-main">
+  <section class="team-section">
+    <div class="section-container">
+
+      <div class="team-intro" [@fadeInUp]>
+        <p class="team-description">
+          Grupul TSG oferă studenților pasionați de domeniul IT spațiul în care aceștia își pot pune în aplicare
+          abilitățile și ideile. Totodată, scopul lor este de a crea cât mai multe oportunități de dezvoltare
+          pentru studenții de la cât mai multe facultăți și specializări.
+        </p>
+      </div>
+
+      <div class="team-members">
+        <h2 class="section-title">Echipa Activă</h2>
+
+        <div class="members-grid" [@staggerCards]>
+          <div
+            *ngFor="let member of activeMembers; trackBy: trackByMemberId; let i = index"
+            [class]="getMemberCardClass(member)"
+            [attr.data-role]="getMemberDataRole(member)"
+            [style.animation-delay.s]="i * 0.1">
+
+            <div class="member-image">
+              <img
+                [src]="member.imageUrl"
+                [alt]="member.name"
+                class="profile-img"
+                (error)="onMemberImageError($event)"
+                loading="lazy">
+            </div>
+
+            <div class="member-info">
+              <h3 class="member-name">
+                <a
+                  *ngIf="member.linkedinUrl && member.linkedinUrl !== '#'; else nameOnly"
+                  [href]="member.linkedinUrl"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  (click)="openLinkedInProfile(member.linkedinUrl!); $event.preventDefault()">
+                  {{ member.name }}
+                </a>
+                <ng-template #nameOnly>
+                  <span>{{ member.name }}</span>
+                </ng-template>
+              </h3>
+              <p class="member-role">{{ member.role }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="alumni-section" [@fadeInUp]>
+        <h2 class="section-title">Alumni Transilvania Star Group</h2>
+        <p class="alumni-description">
+          Recunoaștem și apreciem contribuția foștilor membri ai echipei TSG care au ajutat la construirea
+          și dezvoltarea organizației noastre de-a lungul anilor.
+        </p>
+
+        <!-- Toggle Button for Alumni -->
+        <button
+          class="btn btn-secondary"
+          (click)="toggleAlumniVisibility()"
+          style="margin-top: 1.5rem;">
+          {{ showAlumni ? 'Ascunde Alumni' : 'Vezi Alumni' }}
+        </button>
+
+        <!-- Alumni List -->
+        <div
+          class="alumni-list"
+          [style.display]="showAlumni ? 'block' : 'none'"
+          [@staggerCards]>
+          <div class="members-grid" style="margin-top: 2rem;">
+            <div
+              *ngFor="let member of alumniMembers; trackBy: trackByMemberId; let i = index"
+              [class]="getMemberCardClass(member)"
+              [attr.data-role]="getMemberDataRole(member)"
+              [style.animation-delay.s]="i * 0.05">
+
+              <div class="member-info">
+                <h3 class="member-name">
+                  <a
+                    *ngIf="member.linkedinUrl && member.linkedinUrl !== '#'; else nameOnly"
+                    [href]="member.linkedinUrl"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    (click)="openLinkedInProfile(member.linkedinUrl!); $event.preventDefault()">
+                    {{ member.name }}
+                  </a>
+                  <ng-template #nameOnly>
+                    <span>{{ member.name }}</span>
+                  </ng-template>
+                </h3>
+                <p class="member-role">{{ member.role }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="team-cta" [@fadeInUp]>
+        <h3>Vrei să faci parte din echipa TSG?</h3>
+        <p>
+          Căutăm permanent studenți motivați și pasionați de tehnologie care doresc să contribuie
+          la modernizarea universității și să își dezvolte abilitățile într-un mediu colaborativ.
+        </p>
+        <a routerLink="/tsg-application" class="btn btn-primary">Aplică Acum</a>
+      </div>
+
+    </div>
+  </section>
+</main>

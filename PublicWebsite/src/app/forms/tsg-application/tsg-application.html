@@ -1,0 +1,357 @@
+<main class="site-main">
+  <section class="application-section">
+    <div class="section-container">
+      <div class="form-header">
+        <h2 class="section-title">Aplicare Voluntariat TSG</h2>
+        <p class="form-description">
+          Completează formularul de mai jos pentru a aplica ca voluntar în echipa Transilvania Star Group.
+          Te vom contacta în cel mai scurt timp cu detalii despre următorii pași.
+        </p>
+      </div>
+
+      <div class="application-form-container">
+        <form [formGroup]="applicationForm" (ngSubmit)="onSubmit()" class="application-form">
+
+          <!-- Personal Information -->
+          <fieldset class="form-section">
+            <legend class="section-legend">Informații Personale</legend>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="firstName" class="form-label">
+                  Prenume<span class="required-asterisk">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="firstName"
+                  formControlName="firstName"
+                  class="form-input"
+                  [class.invalid]="isFieldInvalid('firstName')"
+                  placeholder="Introduceți prenumele">
+                <div *ngIf="isFieldInvalid('firstName')" class="error-message">
+                  {{ getFieldError('firstName') }}
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="lastName" class="form-label">
+                  Nume<span class="required-asterisk">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="lastName"
+                  formControlName="lastName"
+                  class="form-input"
+                  [class.invalid]="isFieldInvalid('lastName')"
+                  placeholder="Introduceți numele">
+                <div *ngIf="isFieldInvalid('lastName')" class="error-message">
+                  {{ getFieldError('lastName') }}
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="email" class="form-label">
+                  Adresa de email<span class="required-asterisk">*</span>
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  formControlName="email"
+                  class="form-input"
+                  [class.invalid]="isFieldInvalid('email')"
+                  placeholder="exemplu@email.com">
+                <div *ngIf="isFieldInvalid('email')" class="error-message">
+                  {{ getFieldError('email') }}
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="phone" class="form-label">
+                  Telefon<span class="required-asterisk">*</span>
+                </label>
+                <input
+                  type="tel"
+                  id="phone"
+                  formControlName="phone"
+                  class="form-input"
+                  [class.invalid]="isFieldInvalid('phone')"
+                  placeholder="+40 xxx xxx xxx">
+                <div *ngIf="isFieldInvalid('phone')" class="error-message">
+                  {{ getFieldError('phone') }}
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="university" class="form-label">
+                Universitatea<span class="required-asterisk">*</span>
+              </label>
+              <input
+                type="text"
+                id="university"
+                formControlName="university"
+                class="form-input"
+                [class.invalid]="isFieldInvalid('university')"
+                readonly>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="faculty" class="form-label">
+                  Facultatea<span class="required-asterisk">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="faculty"
+                  formControlName="faculty"
+                  class="form-input"
+                  [class.invalid]="isFieldInvalid('faculty')"
+                  placeholder="ex: Matematică și Informatică">
+                <div *ngIf="isFieldInvalid('faculty')" class="error-message">
+                  {{ getFieldError('faculty') }}
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="year" class="form-label">
+                  Anul de studiu<span class="required-asterisk">*</span>
+                </label>
+                <select
+                  id="year"
+                  formControlName="year"
+                  class="form-select"
+                  [class.invalid]="isFieldInvalid('year')">
+                  <option value="">Selectează anul</option>
+                  <option *ngFor="let year of universityYears" [value]="year.value">
+                    {{ year.label }}
+                  </option>
+                </select>
+                <div *ngIf="isFieldInvalid('year')" class="error-message">
+                  {{ getFieldError('year') }}
+                </div>
+              </div>
+            </div>
+          </fieldset>
+
+          <!-- Role Preferences -->
+          <fieldset class="form-section">
+            <legend class="section-legend">Preferințe de Rol</legend>
+
+            <div class="form-group">
+              <label for="selectedRole" class="form-label">
+                Rolul preferat<span class="required-asterisk">*</span>
+              </label>
+              <select
+                id="selectedRole"
+                formControlName="selectedRole"
+                class="form-select"
+                [class.invalid]="isFieldInvalid('selectedRole')">
+                <option value="">Selectează rolul preferat</option>
+                <option *ngFor="let role of availableRoles" [value]="role.value">
+                  {{ role.label }}
+                </option>
+              </select>
+              <div *ngIf="isFieldInvalid('selectedRole')" class="error-message">
+                {{ getFieldError('selectedRole') }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="motivation" class="form-label">
+                Motivația pentru a te alătura TSG<span class="required-asterisk">*</span>
+              </label>
+              <textarea
+                id="motivation"
+                formControlName="motivation"
+                class="form-textarea"
+                rows="5"
+                [class.invalid]="isFieldInvalid('motivation')"
+                placeholder="Explică motivația ta pentru a deveni voluntar în TSG (minimum 100 caractere)"></textarea>
+              <div *ngIf="isFieldInvalid('motivation')" class="error-message">
+                {{ getFieldError('motivation') }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="experience" class="form-label">
+                Experiența anterioară<span class="required-asterisk">*</span>
+              </label>
+              <textarea
+                id="experience"
+                formControlName="experience"
+                class="form-textarea"
+                rows="4"
+                [class.invalid]="isFieldInvalid('experience')"
+                placeholder="Descrie experiența ta anterioară (proiecte, internship-uri, etc.)"></textarea>
+              <div *ngIf="isFieldInvalid('experience')" class="error-message">
+                {{ getFieldError('experience') }}
+              </div>
+            </div>
+          </fieldset>
+
+          <!-- Technical Skills -->
+          <fieldset class="form-section">
+            <legend class="section-legend">Competențe Tehnice</legend>
+
+            <div class="form-group">
+              <label class="form-label">
+                Tehnologii cunoscute<span class="required-asterisk">*</span>
+              </label>
+              <div class="checkbox-grid">
+                <div
+                  *ngFor="let tech of availableTechnologies"
+                  class="checkbox-item">
+                  <input
+                    type="checkbox"
+                    [id]="'tech-' + tech"
+                    [checked]="isTechnologySelected(tech)"
+                    (change)="onTechnologyChange(tech, $event)">
+                  <label [for]="'tech-' + tech" class="checkbox-label">{{ tech }}</label>
+                </div>
+              </div>
+              <div *ngIf="isFieldInvalid('technologies')" class="error-message">
+                {{ getFieldError('technologies') }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="previousProjects" class="form-label">Proiecte anterioare</label>
+              <textarea
+                id="previousProjects"
+                formControlName="previousProjects"
+                class="form-textarea"
+                rows="4"
+                placeholder="Descrie proiectele pe care le-ai realizat"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="portfolio" class="form-label">Link către portfolio/GitHub</label>
+              <input
+                type="url"
+                id="portfolio"
+                formControlName="portfolio"
+                class="form-input"
+                placeholder="https://github.com/username sau https://portfolio.com">
+            </div>
+          </fieldset>
+
+          <!-- Availability -->
+          <fieldset class="form-section">
+            <legend class="section-legend">Disponibilitate</legend>
+
+            <div class="form-group">
+              <label for="hoursPerWeek" class="form-label">
+                Timpul pe care îl poți dedica<span class="required-asterisk">*</span>
+              </label>
+              <select
+                id="hoursPerWeek"
+                formControlName="hoursPerWeek"
+                class="form-select"
+                [class.invalid]="isFieldInvalid('hoursPerWeek')">
+                <option value="">Selectează timpul disponibil</option>
+                <option value="1-3">1-3 ore pe săptămână</option>
+                <option value="4-6">4-6 ore pe săptămână</option>
+                <option value="7-10">7-10 ore pe săptămână</option>
+                <option value="10+">Peste 10 ore pe săptămână</option>
+                <option value="flexible">Flexibil</option>
+              </select>
+              <div *ngIf="isFieldInvalid('hoursPerWeek')" class="error-message">
+                {{ getFieldError('hoursPerWeek') }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="startDate" class="form-label">
+                Data la care poți începe<span class="required-asterisk">*</span>
+              </label>
+              <input
+                type="date"
+                id="startDate"
+                formControlName="startDate"
+                class="form-input"
+                [class.invalid]="isFieldInvalid('startDate')">
+              <div *ngIf="isFieldInvalid('startDate')" class="error-message">
+                {{ getFieldError('startDate') }}
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="duration" class="form-label">
+                Durata dorită de participare<span class="required-asterisk">*</span>
+              </label>
+              <select
+                id="duration"
+                formControlName="duration"
+                class="form-select"
+                [class.invalid]="isFieldInvalid('duration')">
+                <option value="">Selectează durata</option>
+                <option value="6months">6 luni</option>
+                <option value="1year">1 an</option>
+                <option value="2years">2 ani</option>
+                <option value="until-graduation">Până la absolvire</option>
+                <option value="indefinite">Nedeterminat</option>
+              </select>
+              <div *ngIf="isFieldInvalid('duration')" class="error-message">
+                {{ getFieldError('duration') }}
+              </div>
+            </div>
+          </fieldset>
+
+          <!-- Agreements -->
+          <fieldset class="form-section">
+            <legend class="section-legend">Acorduri și Consimțăminte</legend>
+
+            <div class="checkbox-group">
+              <div class="checkbox-item">
+                <input
+                  type="checkbox"
+                  id="dataProcessing"
+                  name="dataProcessing"
+                  required>
+                <label for="dataProcessing">
+                  <strong>Acord prelucrare date personale</strong><span class="required-asterisk">*</span><br>
+                  Sunt de acord cu prelucrarea datelor mele personale în conformitate cu GDPR pentru procesul de recrutare și activitățile TSG.
+                </label>
+              </div>
+
+              <div class="checkbox-item">
+                <input
+                  type="checkbox"
+                  id="terms"
+                  name="terms"
+                  required>
+                <label for="terms">
+                  <strong>Acord termeni și condiții</strong><span class="required-asterisk">*</span><br>
+                  Sunt de acord cu termenii și condițiile de participare ca voluntar în TSG și mă angajez să respect regulamentul intern.
+                </label>
+              </div>
+            </div>
+          </fieldset>
+
+          <!-- Submit Section -->
+          <div class="form-submit-container" style="text-align: center; margin-top: 2rem;">
+            <button
+              type="submit"
+              class="form-submit"
+              [disabled]="isSubmitting || applicationForm.invalid">
+              <i class="fas fa-paper-plane" style="margin-right: 0.5rem;"></i>
+              <span *ngIf="!isSubmitting">Trimite Aplicația</span>
+              <span *ngIf="isSubmitting">Se trimite...</span>
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="onReset()"
+              style="margin-left: 1rem;"
+              [disabled]="isSubmitting">
+              Resetează
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>

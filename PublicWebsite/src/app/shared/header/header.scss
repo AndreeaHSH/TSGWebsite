@@ -1,0 +1,236 @@
+/* Header Styles */
+.site-header {
+  background: var(--white);
+  box-shadow: var(--shadow-light);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  animation: slideDown 0.6s ease-out;
+}
+
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logo-img {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+}
+
+.brand-text .site-title {
+  font-size: 1.5rem;
+  color: var(--primary-blue);
+  margin-bottom: 0.25rem;
+}
+
+.university-affiliation {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0;
+}
+
+.university-name {
+  font-size: 0.75rem;
+  color: #999;
+  margin: 0;
+}
+
+.mobile-menu-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.menu-icon,
+.close-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.mobile-menu-checkbox {
+  display: none;
+}
+
+.nav-menu {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.nav-link {
+  color: var(--dark-gray);
+  font-weight: 500;
+  padding: 0.5rem 0;
+  position: relative;
+  transition: var(--transition);
+  text-decoration: none;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--primary-blue);
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: var(--primary-blue);
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 100%;
+}
+
+/* Contact Button Styles */
+.contact-btn {
+  background: linear-gradient(45deg, #FACF26 0%, #FF6D48 100%) !important;
+  color: white !important;
+  padding: 0.75rem 1.5rem !important;
+  border-radius: 25px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  font-size: 0.9rem !important;
+  box-shadow: 0 4px 15px rgba(255, 140, 0, 0.3) !important;
+  text-decoration: none !important;
+  margin-left: 1rem !important;
+  transition: all 0.3s ease;
+}
+
+.contact-btn::after {
+  display: none !important;
+}
+
+.contact-btn:hover {
+  transform: translateY(-3px) scale(1.08);
+  background: linear-gradient(45deg, #FF6D48 0%, #FACF26 100%) !important;
+  box-shadow: 0 8px 25px rgba(255, 109, 72, 0.4) !important;
+}
+
+.close-icon {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-toggle {
+    display: flex;
+    z-index: 1002;
+    position: relative;
+    cursor: pointer;
+  }
+
+  /* When checkbox is checked, show close icon and hide menu icon */
+  .mobile-menu-checkbox:checked + .mobile-menu-toggle .menu-icon {
+    display: none;
+  }
+
+  .mobile-menu-checkbox:checked + .mobile-menu-toggle .close-icon {
+    display: block;
+  }
+
+  /* Show mobile menu when checkbox is checked */
+  .mobile-menu-checkbox:checked ~ .nav-menu,
+  .nav-menu.mobile-open {
+    right: 0;
+    visibility: visible;
+  }
+
+  /* Mobile menu styling */
+  .nav-menu {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 280px;
+    height: 100vh;
+    background: var(--white);
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 5rem 2rem 2rem;
+    gap: 1rem;
+    box-shadow: -5px 0 20px rgba(0, 0, 0, 0.15);
+    transition: right 0.3s ease;
+    z-index: 1001;
+    overflow-y: auto;
+    visibility: hidden;
+    border-left: 1px solid #eee;
+  }
+
+  /* Clean navigation links */
+  .nav-link {
+    width: 100%;
+    padding: 1rem 0;
+    border-bottom: 1px solid #f0f0f0;
+    display: block;
+    color: var(--dark-gray);
+    text-decoration: none;
+    transition: var(--transition);
+    font-weight: 500;
+    margin-left: 0;
+  }
+
+  /* HIDE CONTACT BUTTON IN MOBILE MENU */
+  .contact-btn {
+    display: none !important;
+  }
+
+  /* Regular links hover effect */
+  .nav-link:hover,
+  .nav-link.active {
+    color: var(--primary-blue);
+  }
+
+  /* Keep the desktop underline effect for active state */
+  .nav-link.active::after {
+    width: 100%;
+  }
+
+  .nav-item {
+    width: 100%;
+  }
+}
+
+@media (max-width: 576px) {
+  .header-container {
+    padding: 0.75rem 1rem;
+  }
+
+  .brand-text .site-title {
+    font-size: 1.25rem;
+  }
+
+  .university-affiliation {
+    font-size: 0.8rem;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

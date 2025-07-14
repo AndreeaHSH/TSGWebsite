@@ -1,0 +1,75 @@
+<main class="site-main">
+  <section class="projects-section">
+    <div class="section-container">
+
+      <!-- Featured Project -->
+      <div class="featured-project" [@fadeInUp]>
+        <div class="project-content">
+          <div class="project-text">
+            <h2 class="project-title">{{ featuredProject.title }}</h2>
+            <p class="project-description">{{ featuredProject.description }}</p>
+            <p class="project-details" *ngIf="featuredProject.additionalInfo">
+              {{ featuredProject.additionalInfo }}
+            </p>
+          </div>
+          <div class="project-image" *ngIf="featuredProject.imageUrl">
+            <img
+              [src]="featuredProject.imageUrl"
+              [alt]="featuredProject.title"
+              class="featured-img"
+              (error)="onImageError($event)"
+              loading="lazy">
+          </div>
+        </div>
+      </div>
+
+      <!-- Projects Grid -->
+      <div class="projects-grid" [@staggerCards]>
+        <div
+          *ngFor="let project of projects; trackBy: trackByProjectId; let i = index"
+          class="project-card"
+          [class]="getProjectTypeClass(project.type)"
+          [style.animation-delay.s]="i * 0.1">
+
+          <div class="project-card-content">
+            <h3 class="card-title">{{ project.title }}</h3>
+            <p class="card-description">{{ project.description }}</p>
+            <p class="card-additional" *ngIf="project.additionalInfo">
+              {{ project.additionalInfo }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- External Sites Section -->
+      <div class="external-sites-section" [@fadeInUp]>
+        <h2 class="section-title">Site-uri Web Dezvoltate</h2>
+
+        <div class="external-sites-grid" [@staggerCards]>
+          <div
+            *ngFor="let site of externalSites; trackBy: trackBySiteId; let i = index"
+            class="site-card"
+            [style.animation-delay.s]="i * 0.1">
+
+            <div class="site-content">
+              <h3 class="site-title">{{ site.title }}</h3>
+              <p class="site-description">{{ site.description }}</p>
+              <div class="site-link">
+                <span>Poți vizita site-ul aici: </span>
+                <a
+                  [href]="site.url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="external-link"
+                  (click)="openExternalSite(site.url); $event.preventDefault()">
+                  {{ site.url.replace('https://', '') }}
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>

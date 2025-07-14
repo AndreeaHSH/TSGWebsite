@@ -1,0 +1,71 @@
+<header class="site-header">
+  <div class="header-container">
+    <div class="header-logo">
+      <img src="assets/images/cropped-tsg-small-logo-2.0.png" alt="TSG Logo" class="logo-img">
+      <div class="brand-text">
+        <h1 class="site-title">Transilvania Star Group</h1>
+        <p class="university-name">Universitatea Transilvania din Brașov</p>
+      </div>
+    </div>
+
+    <nav class="main-navigation">
+      <input
+        type="checkbox"
+        class="mobile-menu-checkbox"
+        id="mobile-menu-toggle"
+        [checked]="isMobileMenuOpen"
+        (change)="toggleMobileMenu()">
+
+      <label for="mobile-menu-toggle" class="mobile-menu-toggle">
+        <img src="assets/icons/menu_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg"
+             alt="Menu"
+             class="menu-icon">
+        <img src="assets/icons/close_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.svg"
+             alt="Close"
+             class="close-icon">
+      </label>
+
+      <ul class="nav-menu" [class.mobile-open]="isMobileMenuOpen">
+        <li class="nav-item">
+          <a routerLink="/"
+             class="nav-link"
+             [class.active]="isActiveRoute('/')"
+             (click)="closeMobileMenu()">
+            Acasă
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/team"
+             class="nav-link"
+             [class.active]="isActiveRoute('/team')"
+             (click)="closeMobileMenu()">
+            Echipa TSG
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/projects"
+             class="nav-link"
+             [class.active]="isActiveRoute('/projects')"
+             (click)="closeMobileMenu()">
+            Proiecte
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/blog"
+             class="nav-link"
+             [class.active]="isActiveRoute('/blog')"
+             (click)="closeMobileMenu()">
+            Blog
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#contact"
+             class="nav-link contact-btn"
+             (click)="scrollToContact()">
+            Contact
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
