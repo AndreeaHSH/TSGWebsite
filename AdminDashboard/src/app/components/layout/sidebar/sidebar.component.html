@@ -1,0 +1,38 @@
+<aside class="sidebar">
+  <!-- TSG Logo Section -->
+  <div class="logo-section">
+    <div class="logo-container">
+      <img src="assets/images/tsg-logo-white.png" alt="TSG Logo" class="tsg-logo">
+      <div class="logo-text">
+        <span class="tsg-text">TSG</span>
+        <span class="subtitle">Transilvania Star Group</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation Menu -->
+  <nav class="navigation">
+    <ul class="nav-list">
+      <li
+        *ngFor="let item of navigationItems"
+        class="nav-item"
+        [class.active]="isActiveRoute(item.route)">
+        <button
+          class="nav-button"
+          (click)="onNavigate(item.route)"
+          [class.active]="isActiveRoute(item.route)">
+          <span class="nav-icon">{{ item.icon }}</span>
+          <span class="nav-label">{{ item.label }}</span>
+        </button>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Login Button -->
+  <div class="login-section">
+    <button class="login-button" (click)="onLogin()">
+      <span class="login-icon">🔐</span>
+      <span class="login-text">LOG IN</span>
+    </button>
+  </div>
+</aside>

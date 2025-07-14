@@ -1,0 +1,220 @@
+<div class="volunteer-detail-container">
+
+  <!-- Header -->
+  <div class="detail-header">
+    <button class="back-btn" (click)="goBack()">
+      ← Înapoi la listă
+    </button>
+
+    <div *ngIf="volunteer" class="header-info">
+      <h1 class="volunteer-name">{{ volunteer.firstName }} {{ volunteer.lastName }}</h1>
+      <div class="header-meta">
+        <span class="status-badge" [class]="getStatusClass(volunteer.status)">
+          {{ getStatusText(volunteer.status) }}
+        </span>
+        <button
+          class="favorite-btn"
+          [class.active]="volunteer.isFavorite"
+          (click)="toggleFavorite()">
+          <span class="heart-icon" [class.filled]="volunteer.isFavorite">❤️</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p class="loading-text">Se încarcă detaliile aplicației...</p>
+  </div>
+
+  <!-- Volunteer Details -->
+  <div *ngIf="!isLoading && volunteer" class="details-content">
+
+    <!-- Personal Information Section -->
+    <div class="info-section personal-info">
+      <h2 class="section-title">Informații personale</h2>
+      <div class="section-content">
+        <div class="info-grid">
+          <div class="info-field">
+            <label class="field-label">Nume</label>
+            <span class="field-value">{{ volunteer.lastName }}</span>
+          </div>
+          <div class="info-field">
+            <label class="field-label">Prenume</label>
+            <span class="field-value">{{ volunteer.firstName }}</span>
+          </div>
+          <div class="info-field">
+            <label class="field-label">Adresa email</label>
+            <span class="field-value">{{ volunteer.email }}</span>
+          </div>
+          <div class="info-field">
+            <label class="field-label">Telefon</label>
+            <span class="field-value">{{ volunteer.phone }}</span>
+          </div>
+          <div class="info-field full-width">
+            <label class="field-label">Data de naștere</label>
+            <span class="field-value">{{ formatDate(volunteer.birthDate) }} ({{ volunteer.age }} ani)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Academic Information Section -->
+    <div class="info-section academic-info">
+      <h2 class="section-title">Informații academice</h2>
+      <div class="section-content">
+        <div class="info-grid">
+          <div class="info-field">
+            <label class="field-label">Facultate</label>
+            <span class="field-value">{{ volunteer.faculty }}</span>
+          </div>
+          <div class="info-field">
+            <label class="field-label">Specializarea</label>
+            <span class="field-value">{{ volunteer.specialization }}</span>
+          </div>
+          <div class="info-field">
+            <label class="field-label">An studiu</label>
+            <span class="field-value">{{ volunteer.studyYear }}</span>
+          </div>
+          <div class="info-field">
+            <label class="field-label">Număr matricol</label>
+            <span class="field-value">{{ volunteer.studentId || 'Nu a fost specificat' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Role Preferences Section -->
+    <div class="info-section role-preferences">
+      <h2 class="section-title">Preferințe de rol</h2>
+      <div class="section-content">
+        <div class="info-grid">
+          <div class="info-field full-width">
+            <label class="field-label">Rolul preferat</label>
+            <span class="field-value">{{ volunteer.preferredRole }}</span>
+          </div>
+          <div class="info-field full-width">
+            <label class="field-label">Rolul alternativ</label>
+            <span class="field-value">{{ volunteer.alternativeRole || 'Nu a fost specificat' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Technical Skills Section -->
+    <div class="info-section technical-skills">
+      <h2 class="section-title">Competențe tehnice</h2>
+      <div class="section-content">
+        <div class="info-grid">
+          <div class="info-field full-width">
+            <label class="field-label">Limbaje de programare</label>
+            <span class="field-value">{{ volunteer.programmingLanguages || 'Nu a fost specificat' }}</span>
+          </div>
+          <div class="info-field full-width">
+            <label class="field-label">Framework-uri</label>
+            <span class="field-value">{{ volunteer.frameworks || 'Nu a fost specificat' }}</span>
+          </div>
+          <div class="info-field full-width">
+            <label class="field-label">Tools</label>
+            <span class="field-value">{{ volunteer.tools || 'Nu a fost specificat' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Experience and Motivation Section -->
+    <div class="info-section experience-motivation">
+      <h2 class="section-title">Experiență și motivație</h2>
+      <div class="section-content">
+        <div class="info-grid">
+          <div class="info-field full-width">
+            <label class="field-label">Experiența anterioară</label>
+            <span class="field-value text-area">{{ volunteer.experience || 'Nu a fost specificată' }}</span>
+          </div>
+          <div class="info-field full-width">
+            <label class="field-label">Motivație</label>
+            <span class="field-value text-area">{{ volunteer.motivation }}</span>
+          </div>
+          <div class="info-field full-width">
+            <label class="field-label">Contribuție</label>
+            <span class="field-value text-area">{{ volunteer.contribution }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Availability Section -->
+    <div class="info-section availability">
+      <h2 class="section-title">Disponibilitate</h2>
+      <div class="section-content">
+        <div class="info-grid">
+          <div class="info-field">
+            <label class="field-label">Timpul pe care îl poți dedica</label>
+            <span class="field-value">{{ volunteer.timeCommitment }}</span>
+          </div>
+          <div class="info-field">
+            <label class="field-label">Programul preferat</label>
+            <span class="field-value">{{ volunteer.schedule || 'Nu a fost specificat' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Documents and Portfolio Section -->
+    <div class="info-section documents-portfolio">
+      <h2 class="section-title">Documente și portofoliu</h2>
+      <div class="section-content">
+        <div class="info-grid">
+          <div class="info-field full-width">
+            <label class="field-label">LINK</label>
+            <span class="field-value">
+              <a *ngIf="volunteer.portfolioUrl"
+                 [href]="volunteer.portfolioUrl"
+                 target="_blank"
+                 class="portfolio-link">
+                {{ volunteer.portfolioUrl }}
+              </a>
+              <span *ngIf="!volunteer.portfolioUrl" class="no-data">Nu a fost specificat</span>
+            </span>
+          </div>
+          <div class="info-field full-width">
+            <label class="field-label">CV</label>
+            <div class="cv-download-section">
+              <span *ngIf="volunteer.cvFileName" class="cv-info">
+                <span class="cv-name">{{ volunteer.cvFileName }}</span>
+                <span class="cv-size">({{ formatFileSize(volunteer.cvFileSize) }})</span>
+                <button class="download-btn cv-btn" (click)="downloadCV()">
+                  📥 Descarcă CV
+                </button>
+              </span>
+              <span *ngIf="!volunteer.cvFileName" class="no-data">Nu a fost încărcat CV</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Actions -->
+    <div class="admin-actions">
+      <button class="download-btn full-app-btn" (click)="downloadFullApplication()">
+        📄 Descarcă tot formularul
+      </button>
+    </div>
+
+    <!-- Application Info -->
+    <div class="application-info">
+      <p class="submit-date">
+        <strong>Data aplicației:</strong> {{ formatDate(volunteer.submittedAt) }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!isLoading && !volunteer" class="error-container">
+    <div class="error-icon">❌</div>
+    <h3 class="error-title">Aplicația nu a fost găsită</h3>
+    <p class="error-text">Nu s-au găsit detalii pentru aplicația cu ID-ul {{ volunteerId }}.</p>
+    <button class="back-btn" (click)="goBack()">Înapoi la listă</button>
+  </div>
+</div>

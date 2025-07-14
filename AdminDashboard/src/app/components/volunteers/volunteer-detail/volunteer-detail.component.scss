@@ -1,0 +1,435 @@
+.volunteer-detail-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: #ffffff;
+}
+
+// Header
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.back-btn {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+  }
+}
+
+.header-info {
+  flex: 1;
+  text-align: center;
+}
+
+.volunteer-name {
+  font-size: 2rem;
+  color: #FF6D48;
+  margin: 0 0 0.5rem 0;
+  font-weight: bold;
+}
+
+.header-meta {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+// Status Badge
+.status-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-pending {
+  background: rgba(255, 193, 7, 0.9);
+  color: #333;
+}
+
+.status-reviewed {
+  background: rgba(33, 150, 243, 0.9);
+  color: white;
+}
+
+.status-approved {
+  background: rgba(76, 175, 80, 0.9);
+  color: white;
+}
+
+.status-rejected {
+  background: rgba(244, 67, 54, 0.9);
+  color: white;
+}
+
+.status-contacted {
+  background: rgba(156, 39, 176, 0.9);
+  color: white;
+}
+
+.status-active {
+  background: rgba(46, 125, 50, 0.9);
+  color: white;
+}
+
+.status-inactive {
+  background: rgba(97, 97, 97, 0.9);
+  color: white;
+}
+
+// Favorite Button
+.favorite-btn {
+  background: none;
+  border: 2px solid #ddd;
+  padding: 0.5rem;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    border-color: #FF6D48;
+    transform: scale(1.1);
+  }
+
+  &.active {
+    border-color: #FF6D48;
+    background: rgba(255, 109, 72, 0.1);
+  }
+}
+
+.heart-icon {
+  font-size: 1.5rem;
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+
+  &.filled {
+    transform: scale(1.2);
+    animation: heartPulse 0.6s ease-in-out;
+  }
+}
+
+@keyframes heartPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.4); }
+  100% { transform: scale(1.2); }
+}
+
+// Loading
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f0f0f0;
+  border-top: 4px solid #FF6D48;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  margin-top: 1rem;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+// Details Content
+.details-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+// Info Sections
+.info-section {
+  background: linear-gradient(135deg, #FF6D48 0%, #E55A3A 100%);
+  border-radius: 15px;
+  padding: 0;
+  box-shadow: 0 4px 15px rgba(255, 109, 72, 0.3);
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.section-title {
+  background: rgba(0, 0, 0, 0.1);
+  color: white;
+  padding: 1rem 1.5rem;
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.section-content {
+  background: white;
+  padding: 1.5rem;
+  margin: 0;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.info-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  &.full-width {
+    grid-column: 1 / -1;
+  }
+}
+
+.field-label {
+  font-weight: 600;
+  color: #FF6D48;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.field-value {
+  color: #333;
+  font-size: 1rem;
+  line-height: 1.5;
+
+  &.text-area {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid #FF6D48;
+    line-height: 1.6;
+  }
+}
+
+.no-data {
+  color: #999;
+  font-style: italic;
+}
+
+// Portfolio Link
+.portfolio-link {
+  color: #FF6D48;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+
+  &:hover {
+    color: #E55A3A;
+    text-decoration: underline;
+  }
+}
+
+// CV Download Section
+.cv-download-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cv-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cv-name {
+  font-weight: 600;
+  color: #333;
+}
+
+.cv-size {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+// Download Buttons
+.download-btn {
+  background: linear-gradient(135deg, #FF6D48 0%, #E55A3A 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 10px rgba(255, 109, 72, 0.3);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 109, 72, 0.4);
+  }
+
+  &.cv-btn {
+    align-self: flex-start;
+    margin-top: 0.5rem;
+  }
+}
+
+// Admin Actions
+.admin-actions {
+  grid-column: 1 / -1;
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.full-app-btn {
+  font-size: 1.1rem;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+
+  &:hover {
+    background: linear-gradient(135deg, #218838 0%, #1ea080 100%);
+  }
+}
+
+// Application Info
+.application-info {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 10px;
+  margin-top: 1rem;
+}
+
+.submit-date {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+// Error State
+.error-container {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #666;
+}
+
+.error-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.error-title {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.error-text {
+  font-size: 1rem;
+  margin-bottom: 2rem;
+}
+
+// Special Sections
+.experience-motivation,
+.documents-portfolio {
+  grid-column: 1 / -1;
+}
+
+// Responsive Design
+@media (max-width: 992px) {
+  .details-content {
+    grid-template-columns: 1fr;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .info-field.full-width {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .volunteer-detail-container {
+    padding: 1rem;
+  }
+
+  .detail-header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .volunteer-name {
+    font-size: 1.5rem;
+  }
+
+  .section-content {
+    padding: 1rem;
+  }
+
+  .info-field {
+    gap: 0.25rem;
+  }
+
+  .field-value.text-area {
+    padding: 0.75rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .header-meta {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .cv-info {
+    text-align: center;
+  }
+
+  .download-btn.cv-btn {
+    align-self: center;
+  }
+
+  .back-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+}

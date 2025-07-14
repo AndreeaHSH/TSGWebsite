@@ -1,0 +1,123 @@
+<div class="volunteer-list-container">
+
+  <!-- Search Section -->
+  <div class="search-section">
+    <div class="search-bar">
+      <div class="search-input-container">
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Caută după nume, email, facultate..."
+          [(ngModel)]="searchTerm"
+          (input)="onSearch()">
+        <button
+          *ngIf="searchTerm"
+          class="clear-search-btn"
+          (click)="clearSearch()"
+          aria-label="Șterge căutarea">
+          ✕
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p class="loading-text">Se încarcă aplicațiile...</p>
+  </div>
+
+  <!-- Volunteers List -->
+  <div *ngIf="!isLoading" class="volunteers-grid">
+
+    <!-- No Results -->
+    <div *ngIf="filteredVolunteers.length === 0" class="no-results">
+      <div class="no-results-icon">🔍</div>
+      <h3 class="no-results-title">Nu au fost găsite rezultate</h3>
+      <p class="no-results-text">
+        <span *ngIf="searchTerm">Încearcă să modifici termenii de căutare.</span>
+        <span *ngIf="!searchTerm">Nu există aplicații înregistrate încă.</span>
+      </p>
+    </div>
+
+    <!-- Volunteer Cards -->
+    <div
+      *ngFor="let volunteer of filteredVolunteers; trackBy: trackByVolunteer"
+      class="volunteer-card"
+      (click)="viewVolunteerDetails(volunteer.id)">
+
+      <!-- Card Header -->
+      <div class="card-header">
+        <div class="volunteer-info">
+          <h3 class="volunteer-name">
+            {{ volunteer.firstName }} {{ volunteer.lastName }}
+          </h3>
+          <div class="volunteer-meta">
+            <span class="volunteer-role">{{ volunteer.preferredRole }}</span>
+            <span class="volunteer-date">{{ formatDate(volunteer.submittedAt) }}</span>
+          </div>
+        </div>
+
+        <!-- Favorite Heart -->
+        <button
+          class="favorite-btn"
+          [class.active]="volunteer.isFavorite"
+          (click)="toggleFavorite(volunteer); $event.stopPropagation()"
+          aria-label="Marchează ca favorit">
+          <div class="heart-icon" [class.filled]="volunteer.isFavorite">
+            ❤️
+          </div>
+        </button>
+      </div>
+
+      <!-- Card Body -->
+      <div class="card-body">
+        <div class="volunteer-details">
+          <div class="detail-row">
+            <span class="detail-label">Email:</span>
+            <span class="detail-value">{{ volunteer.email }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Telefon:</span>
+            <span class="detail-value">{{ volunteer.phone }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Facultate:</span>
+            <span class="detail-value">{{ volunteer.faculty }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Specializare:</span>
+            <span class="detail-value">{{ volunteer.specialization }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Footer -->
+      <div class="card-footer">
+        <div class="status-section">
+          <span
+            class="status-badge"
+            [class]="getStatusClass(volunteer.status)">
+            {{ getStatusText(volunteer.status) }}
+          </span>
+        </div>
+
+        <div class="cv-section">
+          <span class="cv-indicator" [class.has-cv]="volunteer.hasCv">
+            <span class="cv-icon">📄</span>
+            <span class="cv-text">{{ volunteer.hasCv ? 'CV disponibil' : 'Fără CV' }}</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results Count -->
+  <div *ngIf="!isLoading && filteredVolunteers.length > 0" class="results-count">
+    <p>
+      <strong>{{ filteredVolunteers.length }}</strong>
+      {{ filteredVolunteers.length === 1 ? 'aplicație găsită' : 'aplicații găsite' }}
+      <span *ngIf="searchTerm"> pentru "{{ searchTerm }}"</span>
+    </p>
+  </div>
+</div>
