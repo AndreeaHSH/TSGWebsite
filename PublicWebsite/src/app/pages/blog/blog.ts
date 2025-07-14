@@ -1,3 +1,4 @@
+// src/app/pages/blog/blog.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -50,7 +51,7 @@ interface BlogCategory {
   ]
 })
 export class BlogComponent implements OnInit {
-  newsletterForm: FormGroup;
+  newsletterForm!: FormGroup;
   isSubscribing: boolean = false;
 
   featuredPost: BlogPost = {

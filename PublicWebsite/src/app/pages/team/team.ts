@@ -48,7 +48,7 @@ export class TeamComponent implements OnInit {
       name: 'Rareș Smeu',
       role: 'Coordonator TSG',
       linkedinUrl: 'https://www.linkedin.com/in/rares-smeu-21683216b/',
-      imageUrl: 'assets/images/team/rares.jpg',
+      imageUrl: 'PublicWebsite/src/assets/images/team/rares.jpg',
       isCoordinator: true,
       department: 'management'
     },
@@ -57,7 +57,7 @@ export class TeamComponent implements OnInit {
       name: 'Mihnea Huțuțui',
       role: 'Design Lead',
       linkedinUrl: 'https://www.linkedin.com/in/mihneahututui/',
-      imageUrl: 'assets/images/team/mihnea.jpg',
+      imageUrl: '../../../assets/images/team/mihnea.jpg',
       department: 'design'
     },
     {

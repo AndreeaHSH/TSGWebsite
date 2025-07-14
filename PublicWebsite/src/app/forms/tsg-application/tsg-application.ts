@@ -1,176 +1,170 @@
-import { Component, OnInit } from '@angular/core';
+// src/app/forms/tsg-application/tsg-application.ts
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-
-interface FormData {
-  personalInfo: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone: string;
-    university: string;
-    faculty: string;
-    year: string;
-  };
-  position: {
-    selectedRole: string;
-    motivation: string;
-    experience: string;
-  };
-  skills: {
-    technologies: string[];
-    previousProjects: string;
-    portfolio: string;
-  };
-  availability: {
-    hoursPerWeek: string;
-    startDate: string;
-    duration: string;
-  };
-}
+import { trigger, state, style, transition, animate } from '@angular/animations';
+import { Subject, takeUntil } from 'rxjs';
+import { VolunteerService } from '../../services/volunteer';
 
 @Component({
   selector: 'app-tsg-application',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule],
   templateUrl: './tsg-application.html',
-  styleUrls: ['./tsg-application.scss']
+  styleUrls: ['./tsg-application.scss'],
+  animations: [
+    trigger('slideInUp', [
+      state('in', style({ opacity: 1, transform: 'translateY(0)' })),
+      transition('void => *', [
+        style({ opacity: 0, transform: 'translateY(30px)' }),
+        animate('0.6s ease-out')
+      ])
+    ])
+  ]
 })
-export class TsgApplicationComponent implements OnInit {
-  applicationForm: FormGroup;
-  currentStep: number = 1;
-  totalSteps: number = 4;
-  isSubmitting: boolean = false;
+export class TsgApplicationComponent implements OnInit, OnDestroy {
+  private fb = inject(FormBuilder);
+  private volunteerService = inject(VolunteerService);
+  private destroy$ = new Subject<void>();
 
-  availableRoles = [
-    { value: 'frontend', label: 'Front End Developer' },
-    { value: 'backend', label: 'Back End Developer' },
-    { value: 'mobile', label: 'Mobile Developer (Flutter)' },
-    { value: 'uiux', label: 'UI/UX & Web Designer' },
-    { value: 'tester', label: 'Tester Automat/Manual' },
-    { value: 'network', label: 'Network Engineer' },
-    { value: 'hr', label: 'HR Specialist' }
+  applicationForm!: FormGroup;
+  isSubmitting = false;
+  submitMessage = '';
+  selectedFile: File | null = null;
+
+  facultyOptions = [
+    { value: 'design-produs-mediu', label: 'Design de produs și mediu' },
+    { value: 'inginerie-electrica-calculatoare', label: 'Inginerie electrică și știința calculatoarelor' },
+    { value: 'design-mobilier-lemn', label: 'Design de mobilier și ingineria lemnului' },
+    { value: 'inginerie-mecanica', label: 'Inginerie mecanică' },
+    { value: 'inginerie-tehnologica-management', label: 'Inginerie tehnologică și management industrial' },
+    { value: 'silvicultura-exploatari', label: 'Silvicultură și exploatări forestiere' },
+    { value: 'stiinta-ingineria-materialelor', label: 'Știința și ingineria materialelor' },
+    { value: 'drept', label: 'Drept' },
+    { value: 'educatie-fizica-sporturi', label: 'Educație fizică și sporturi montane' },
+    { value: 'litere', label: 'Litere' },
+    { value: 'matematica-informatica', label: 'Matematică și informatică' },
+    { value: 'medicina', label: 'Medicină' },
+    { value: 'muzica', label: 'Muzică' },
+    { value: 'psihologie-stiinte-educatie', label: 'Psihologie și științele educației' },
+    { value: 'sociologie-comunicare', label: 'Sociologie și comunicare' },
+    { value: 'stiinte-economice-afaceri', label: 'Științe economice și administrarea afacerilor' },
+    { value: 'alimentatie-turism', label: 'Alimentație și turism' },
+    { value: 'constructii', label: 'Construcții' }
   ];
 
-  availableTechnologies = [
-    'React', 'Vue', 'Angular', 'JavaScript', 'TypeScript', 'HTML/CSS',
-    'Node.js', '.NET', 'C#', 'SQL Server', 'Flutter', 'Dart',
-    'Figma', 'Adobe XD', 'WordPress', 'Photoshop',
-    'Selenium', 'JUnit', 'TestNG', 'Postman',
-    'Networking', 'Linux', 'Windows Server', 'Azure', 'AWS'
-  ];
-
-  universityYears = [
+  yearOptions = [
     { value: '1', label: 'Anul I' },
     { value: '2', label: 'Anul II' },
     { value: '3', label: 'Anul III' },
     { value: '4', label: 'Anul IV' },
-    { value: 'master1', label: 'Master Anul I' },
-    { value: 'master2', label: 'Master Anul II' },
-    { value: 'phd', label: 'Doctorand' }
+    { value: 'master1', label: 'Master I' },
+    { value: 'master2', label: 'Master II' },
+    { value: 'doctorat', label: 'Doctorat' }
   ];
 
-  constructor(
-    private formBuilder: FormBuilder,
-    private router: Router
-  ) {
-    this.applicationForm = this.initializeForm();
-  }
+  roleOptions = [
+    { value: 'Frontend Developer', label: 'Frontend Developer' },
+    { value: 'Backend Developer', label: 'Backend Developer' },
+    { value: 'Fullstack Developer', label: 'Fullstack Developer' },
+    { value: 'Mobile Developer', label: 'Mobile Developer' },
+    { value: 'UI/UX Designer', label: 'UI/UX Designer' },
+    { value: 'DevOps Engineer', label: 'DevOps Engineer' },
+    { value: 'QA Tester', label: 'QA Tester' },
+    { value: 'Project Manager', label: 'Project Manager' },
+    { value: 'Business Analyst', label: 'Business Analyst' },
+    { value: 'Marketing Specialist', label: 'Marketing Specialist' },
+    { value: 'Content Creator', label: 'Content Creator' },
+    { value: 'HR Specialist', label: 'HR Specialist' }
+  ];
+
+  timeCommitmentOptions = [
+    { value: '1-3 ore pe săptămână', label: '1-3 ore pe săptămână' },
+    { value: '4-6 ore pe săptămână', label: '4-6 ore pe săptămână' },
+    { value: '7-10 ore pe săptămână', label: '7-10 ore pe săptămână' },
+    { value: 'Peste 10 ore pe săptămână', label: 'Peste 10 ore pe săptămână' },
+    { value: 'Flexibil', label: 'Flexibil' }
+  ];
 
   ngOnInit(): void {
-    // Initialize component
+    this.initializeForm();
   }
 
-  private initializeForm(): FormGroup {
-    return this.formBuilder.group({
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private initializeForm(): void {
+    this.applicationForm = this.fb.group({
       // Personal Information
       firstName: ['', [Validators.required, Validators.minLength(2)]],
       lastName: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', [Validators.required, Validators.pattern(/^[0-9+\-\s()]+$/)]],
-      university: ['Universitatea Transilvania din Brașov', Validators.required],
+      phone: ['', [Validators.required, Validators.pattern(/^[0-9+\-\s\(\)]+$/)]],
+      birthDate: ['', Validators.required],
+
+      // Academic Information
       faculty: ['', Validators.required],
-      year: ['', Validators.required],
+      specialization: ['', [Validators.required, Validators.minLength(2)]],
+      studyYear: ['', Validators.required],
+      studentId: [''],
 
-      // Position Information
-      selectedRole: ['', Validators.required],
+      // Role Preferences
+      preferredRole: ['', Validators.required],
+      alternativeRole: [''],
+
+      // Technical Skills
+      programmingLanguages: [''],
+      frameworks: [''],
+      tools: [''],
+
+      // Experience and Motivation
+      experience: [''],
       motivation: ['', [Validators.required, Validators.minLength(100)]],
-      experience: ['', [Validators.required, Validators.minLength(50)]],
+      contribution: ['', [Validators.required, Validators.minLength(50)]],
 
-      // Skills Information
-      technologies: [[], Validators.required],
-      previousProjects: [''],
-      portfolio: [''],
+      // Availability
+      timeCommitment: ['', Validators.required],
+      schedule: [''],
 
-      // Availability Information
-      hoursPerWeek: ['', Validators.required],
-      startDate: ['', Validators.required],
-      duration: ['', Validators.required]
+      // Documents
+      portfolioUrl: ['', Validators.pattern(/^https?:\/\/.+/)],
+
+      // Agreements
+      dataProcessingAgreement: [false, Validators.requiredTrue],
+      termsAgreement: [false, Validators.requiredTrue]
     });
   }
 
-  nextStep(): void {
-    if (this.isCurrentStepValid()) {
-      this.currentStep++;
-    } else {
-      this.markCurrentStepAsTouched();
-    }
-  }
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
 
-  previousStep(): void {
-    if (this.currentStep > 1) {
-      this.currentStep--;
-    }
-  }
-
-  private isCurrentStepValid(): boolean {
-    const currentStepFields = this.getCurrentStepFields();
-    return currentStepFields.every(field =>
-      this.applicationForm.get(field)?.valid || false
-    );
-  }
-
-  private getCurrentStepFields(): string[] {
-    switch (this.currentStep) {
-      case 1:
-        return ['firstName', 'lastName', 'email', 'phone', 'university', 'faculty', 'year'];
-      case 2:
-        return ['selectedRole', 'motivation', 'experience'];
-      case 3:
-        return ['technologies'];
-      case 4:
-        return ['hoursPerWeek', 'startDate', 'duration'];
-      default:
-        return [];
-    }
-  }
-
-  private markCurrentStepAsTouched(): void {
-    const currentStepFields = this.getCurrentStepFields();
-    currentStepFields.forEach(field => {
-      this.applicationForm.get(field)?.markAsTouched();
-    });
-  }
-
-  onTechnologyChange(technology: string, event: any): void {
-    const technologies = this.applicationForm.get('technologies')?.value || [];
-
-    if (event.target.checked) {
-      technologies.push(technology);
-    } else {
-      const index = technologies.indexOf(technology);
-      if (index > -1) {
-        technologies.splice(index, 1);
+      // Validate file type
+      const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      if (!allowedTypes.includes(file.type)) {
+        alert('Tip de fișier neacceptat. Vă rugăm să încărcați un fișier PDF, DOC sau DOCX.');
+        input.value = '';
+        return;
       }
-    }
 
-    this.applicationForm.patchValue({ technologies });
+      // Validate file size (5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Fișierul este prea mare. Dimensiunea maximă permisă este 5MB.');
+        input.value = '';
+        return;
+      }
+
+      this.selectedFile = file;
+    }
   }
 
-  isTechnologySelected(technology: string): boolean {
-    const technologies = this.applicationForm.get('technologies')?.value || [];
-    return technologies.includes(technology);
+  isFieldInvalid(fieldName: string): boolean {
+    const field = this.applicationForm.get(fieldName);
+    return !!(field?.invalid && field?.touched);
   }
 
   getFieldError(fieldName: string): string {
@@ -185,102 +179,73 @@ export class TsgApplicationComponent implements OnInit {
       }
       if (field.errors['minlength']) {
         const requiredLength = field.errors['minlength'].requiredLength;
-        return `Minimum ${requiredLength} caractere necesare`;
+        return `Minim ${requiredLength} caractere necesare`;
       }
       if (field.errors['pattern']) {
-        return 'Format invalid';
+        if (fieldName === 'phone') {
+          return 'Numărul de telefon nu este valid';
+        }
+        if (fieldName === 'portfolioUrl') {
+          return 'URL-ul nu este valid (trebuie să înceapă cu http:// sau https://)';
+        }
       }
     }
     return '';
   }
 
-  isFieldInvalid(fieldName: string): boolean {
-    const field = this.applicationForm.get(fieldName);
-    return !!(field?.invalid && field?.touched);
-  }
-
   async onSubmit(): Promise<void> {
     if (this.applicationForm.valid && !this.isSubmitting) {
       this.isSubmitting = true;
+      this.submitMessage = '';
 
       try {
-        const formData = this.prepareFormData();
-        // Simulate API call
-        await this.submitApplication(formData);
+        const formData = new FormData();
 
-        // Show success message and redirect
-        alert('Aplicația a fost trimisă cu succes! Vă vom contacta în curând.');
-        this.router.navigate(['/']);
+        // Add form fields
+        Object.keys(this.applicationForm.value).forEach(key => {
+          const value = this.applicationForm.value[key];
+          if (value !== null && value !== undefined && value !== '') {
+            formData.append(key, value.toString());
+          }
+        });
+
+        // Add CV file if selected
+        if (this.selectedFile) {
+          formData.append('cvFile', this.selectedFile);
+        }
+
+        await this.volunteerService.submitApplication(formData).pipe(
+          takeUntil(this.destroy$)
+        ).toPromise();
+
+        this.submitMessage = 'Aplicația a fost trimisă cu succes! Te vom contacta în cel mai scurt timp.';
+        this.applicationForm.reset();
+        this.selectedFile = null;
+
+        // Reset file input
+        const fileInput = document.getElementById('cv-file') as HTMLInputElement;
+        if (fileInput) {
+          fileInput.value = '';
+        }
 
       } catch (error) {
-        console.error('Submission error:', error);
-        alert('A apărut o eroare la trimiterea aplicației. Vă rugăm să încercați din nou.');
+        console.error('Error submitting application:', error);
+        this.submitMessage = 'A apărut o eroare la trimiterea aplicației. Te rugăm să încerci din nou.';
       } finally {
         this.isSubmitting = false;
       }
     } else {
-      this.markAllFieldsAsTouched();
+      this.markFormGroupTouched();
     }
   }
 
-  private prepareFormData(): FormData {
-    const formValue = this.applicationForm.value;
-
-    const formData: FormData = {
-      personalInfo: {
-        firstName: formValue.firstName,
-        lastName: formValue.lastName,
-        email: formValue.email,
-        phone: formValue.phone,
-        university: formValue.university,
-        faculty: formValue.faculty,
-        year: formValue.year
-      },
-      position: {
-        selectedRole: formValue.selectedRole,
-        motivation: formValue.motivation,
-        experience: formValue.experience
-      },
-      skills: {
-        technologies: formValue.technologies,
-        previousProjects: formValue.previousProjects,
-        portfolio: formValue.portfolio
-      },
-      availability: {
-        hoursPerWeek: formValue.hoursPerWeek,
-        startDate: formValue.startDate,
-        duration: formValue.duration
-      }
-    };
-
-    return formData;
-  }
-
-  private async submitApplication(formData: FormData): Promise<void> {
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    // Here you would typically make an HTTP request to your backend
-    console.log('Submitting application:', formData);
-
-    // For now, just log the data and simulate success
-    return Promise.resolve();
-  }
-
-  private markAllFieldsAsTouched(): void {
+  private markFormGroupTouched(): void {
     Object.keys(this.applicationForm.controls).forEach(key => {
       this.applicationForm.get(key)?.markAsTouched();
     });
   }
 
-  onReset(): void {
-    if (confirm('Sigur doriți să resetați formularul? Toate datele introduse vor fi pierdute.')) {
-      this.applicationForm.reset();
-      this.currentStep = 1;
-    }
-  }
-
-  getProgressPercentage(): number {
-    return (this.currentStep / this.totalSteps) * 100;
+  trackByValue(index: number, item: any): any {
+    return item.value;
   }
 }
