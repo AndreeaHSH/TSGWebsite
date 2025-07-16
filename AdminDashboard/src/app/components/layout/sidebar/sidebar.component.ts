@@ -39,10 +39,17 @@ export class SidebarComponent {
   }
 
   onNavigate(route: string): void {
-    this.router.navigate([route]);
+    // Only navigate to existing routes
+    if (route === '/aplicari') {
+      this.router.navigate([route]);
+    } else {
+      // Temporarily show alert for non-implemented routes
+      alert(`Secțiunea "${route}" va fi implementată în curând!`);
+    }
   }
 
   onLogin(): void {
-    this.router.navigate(['/login']);
+    // Temporarily show alert for login
+    alert('Funcționalitatea de login va fi implementată în curând!');
   }
 }

@@ -12,10 +12,10 @@ export const routes: Routes = [
     title: 'Aplicări - TSG Admin'
   },
   {
-       path: 'aplicari/:id',
-       loadComponent: () => import('./components/volunteers/volunteer-detail/volunteer-detail.component').then(m => m.VolunteerDetailComponent),
-       title: 'Detalii Aplicant - TSG Admin'
-   },
+    path: 'aplicari/:id',
+    loadComponent: () => import('./components/volunteers/volunteer-detail/volunteer-detail.component').then(m => m.VolunteerDetailComponent),
+    title: 'Detalii Aplicant - TSG Admin'
+  },
   // {
   //   path: 'blog',
   //   loadComponent: () => import('./components/blog/blog-management/blog-management.component').then(m => m.BlogManagementComponent),

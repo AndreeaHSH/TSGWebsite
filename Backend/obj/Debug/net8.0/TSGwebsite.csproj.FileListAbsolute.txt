@@ -179,3 +179,4 @@ C:\Repo\TSGwebsite\Backend\obj\Debug\net8.0\refint\TSGwebsite.dll
 C:\Repo\TSGwebsite\Backend\obj\Debug\net8.0\TSGwebsite.pdb
 C:\Repo\TSGwebsite\Backend\obj\Debug\net8.0\TSGwebsite.genruntimeconfig.cache
 C:\Repo\TSGwebsite\Backend\obj\Debug\net8.0\ref\TSGwebsite.dll
+C:\Repo\TSGwebsite\Backend\obj\Debug\net8.0\TSGwebsite.sourcelink.json
