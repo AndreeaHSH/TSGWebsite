@@ -1,5 +1,25 @@
 <div class="volunteer-detail-container">
 
+  <!-- Beautiful Notification Toast -->
+  <div *ngIf="notification.show"
+       class="notification-toast"
+       [class]="'notification-' + notification.type"
+       [@slideIn]>
+    <div class="notification-content">
+      <div class="notification-icon">
+        <span *ngIf="notification.type === 'success'"></span>
+        <span *ngIf="notification.type === 'error'"></span>
+        <span *ngIf="notification.type === 'warning'"></span>
+        <span *ngIf="notification.type === 'info'">ℹ</span>
+      </div>
+      <div class="notification-text">
+        <div class="notification-title">{{ notification.title }}</div>
+        <div class="notification-message">{{ notification.message }}</div>
+      </div>
+      <button class="notification-close" (click)="hideNotification()">×</button>
+    </div>
+  </div>
+
   <!-- Header -->
   <div class="detail-header">
     <button class="back-btn" (click)="goBack()">
@@ -9,13 +29,50 @@
     <div *ngIf="volunteer" class="header-info">
       <h1 class="volunteer-name">{{ volunteer.firstName }} {{ volunteer.lastName }}</h1>
       <div class="header-meta">
-        <span class="status-badge" [class]="getStatusClass(volunteer.status)">
-          {{ getStatusText(volunteer.status) }}
-        </span>
+        <!-- Status Badge/Editor -->
+        <div class="status-section">
+          <div *ngIf="!isEditingStatus" class="status-display">
+            <span class="status-badge" [class]="getStatusClass(volunteer.status)">
+              {{ getStatusText(volunteer.status) }}
+            </span>
+            <button class="edit-status-btn" (click)="startEditingStatus()" title="Modifică status">
+              ✏️
+            </button>
+          </div>
+
+          <div *ngIf="isEditingStatus" class="status-editor">
+            <select
+              [(ngModel)]="selectedStatus"
+              class="status-select"
+              [disabled]="isUpdatingStatus">
+              <option *ngFor="let option of statusOptions" [value]="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+
+            <div class="status-actions">
+              <button
+                class="save-status-btn"
+                (click)="updateVolunteerStatus()"
+                [disabled]="isUpdatingStatus">
+                {{ isUpdatingStatus ? 'Se salvează...' : 'Salvează' }}
+              </button>
+              <button
+                class="cancel-status-btn"
+                (click)="cancelEditingStatus()"
+                [disabled]="isUpdatingStatus">
+                Anulează
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Favorite Button -->
         <button
           class="favorite-btn"
           [class.active]="volunteer.isFavorite"
-          (click)="toggleFavorite()">
+          (click)="toggleFavorite()"
+          title="{{ volunteer.isFavorite ? 'Elimină din favorite' : 'Adaugă la favorite' }}">
           <span class="heart-icon" [class.filled]="volunteer.isFavorite">❤️</span>
         </button>
       </div>
@@ -30,6 +87,55 @@
 
   <!-- Volunteer Details -->
   <div *ngIf="!isLoading && volunteer" class="details-content">
+
+    <!-- Admin Management Section (Only show if editing status) -->
+    <div *ngIf="isEditingStatus" class="info-section admin-section">
+      <h2 class="section-title">Management administrativ</h2>
+      <div class="section-content">
+        <div class="admin-grid">
+          <div class="admin-field">
+            <label class="field-label">Note de review</label>
+            <textarea
+              [(ngModel)]="reviewNotes"
+              class="field-textarea"
+              placeholder="Adaugă note despre candidat..."
+              rows="3"
+              [disabled]="isUpdatingStatus"></textarea>
+          </div>
+
+          <div class="admin-field" *ngIf="selectedStatus === 'Active' || selectedStatus === 'Contacted'">
+            <label class="field-label">Rol curent</label>
+            <input
+              type="text"
+              [(ngModel)]="currentRole"
+              class="field-input"
+              placeholder="Ex: Frontend Developer, Designer"
+              [disabled]="isUpdatingStatus">
+          </div>
+
+          <div class="admin-field" *ngIf="selectedStatus === 'Active'">
+            <label class="field-label">Realizări</label>
+            <textarea
+              [(ngModel)]="achievements"
+              class="field-textarea"
+              placeholder="Realizări și contribuții..."
+              rows="2"
+              [disabled]="isUpdatingStatus"></textarea>
+          </div>
+
+          <div class="admin-field" *ngIf="selectedStatus === 'Active'">
+            <label class="field-label">Ore de voluntariat</label>
+            <input
+              type="number"
+              [(ngModel)]="volunteerHours"
+              class="field-input"
+              min="0"
+              placeholder="0"
+              [disabled]="isUpdatingStatus">
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Personal Information Section -->
     <div class="info-section personal-info">
@@ -66,7 +172,7 @@
       <div class="section-content">
         <div class="info-grid">
           <div class="info-field">
-            <label class="field-label">Facultate</label>
+            <label class="field-label">Facultatea</label>
             <span class="field-value">{{ volunteer.faculty }}</span>
           </div>
           <div class="info-field">
@@ -74,12 +180,12 @@
             <span class="field-value">{{ volunteer.specialization }}</span>
           </div>
           <div class="info-field">
-            <label class="field-label">An studiu</label>
+            <label class="field-label">Anul de studiu</label>
             <span class="field-value">{{ volunteer.studyYear }}</span>
           </div>
-          <div class="info-field">
-            <label class="field-label">Număr matricol</label>
-            <span class="field-value">{{ volunteer.studentId || 'Nu a fost specificat' }}</span>
+          <div class="info-field" *ngIf="volunteer.studentId">
+            <label class="field-label">ID Student</label>
+            <span class="field-value">{{ volunteer.studentId }}</span>
           </div>
         </div>
       </div>
@@ -87,16 +193,16 @@
 
     <!-- Role Preferences Section -->
     <div class="info-section role-preferences">
-      <h2 class="section-title">Preferințe de rol</h2>
+      <h2 class="section-title">Preferințe rol</h2>
       <div class="section-content">
         <div class="info-grid">
-          <div class="info-field full-width">
-            <label class="field-label">Rolul preferat</label>
+          <div class="info-field">
+            <label class="field-label">Rol preferat</label>
             <span class="field-value">{{ volunteer.preferredRole }}</span>
           </div>
-          <div class="info-field full-width">
-            <label class="field-label">Rolul alternativ</label>
-            <span class="field-value">{{ volunteer.alternativeRole || 'Nu a fost specificat' }}</span>
+          <div class="info-field" *ngIf="volunteer.alternativeRole">
+            <label class="field-label">Rol alternativ</label>
+            <span class="field-value">{{ volunteer.alternativeRole }}</span>
           </div>
         </div>
       </div>
@@ -107,17 +213,17 @@
       <h2 class="section-title">Competențe tehnice</h2>
       <div class="section-content">
         <div class="info-grid">
-          <div class="info-field full-width">
+          <div class="info-field" *ngIf="volunteer.programmingLanguages">
             <label class="field-label">Limbaje de programare</label>
-            <span class="field-value">{{ volunteer.programmingLanguages || 'Nu a fost specificat' }}</span>
+            <span class="field-value">{{ volunteer.programmingLanguages }}</span>
           </div>
-          <div class="info-field full-width">
+          <div class="info-field" *ngIf="volunteer.frameworks">
             <label class="field-label">Framework-uri</label>
-            <span class="field-value">{{ volunteer.frameworks || 'Nu a fost specificat' }}</span>
+            <span class="field-value">{{ volunteer.frameworks }}</span>
           </div>
-          <div class="info-field full-width">
-            <label class="field-label">Tools</label>
-            <span class="field-value">{{ volunteer.tools || 'Nu a fost specificat' }}</span>
+          <div class="info-field" *ngIf="volunteer.tools">
+            <label class="field-label">Instrumente</label>
+            <span class="field-value">{{ volunteer.tools }}</span>
           </div>
         </div>
       </div>
@@ -128,17 +234,17 @@
       <h2 class="section-title">Experiență și motivație</h2>
       <div class="section-content">
         <div class="info-grid">
-          <div class="info-field full-width">
-            <label class="field-label">Experiența anterioară</label>
-            <span class="field-value text-area">{{ volunteer.experience || 'Nu a fost specificată' }}</span>
+          <div class="info-field full-width" *ngIf="volunteer.experience">
+            <label class="field-label">Experiență anterioară</label>
+            <p class="field-text">{{ volunteer.experience }}</p>
           </div>
           <div class="info-field full-width">
             <label class="field-label">Motivație</label>
-            <span class="field-value text-area">{{ volunteer.motivation }}</span>
+            <p class="field-text">{{ volunteer.motivation }}</p>
           </div>
           <div class="info-field full-width">
             <label class="field-label">Contribuție</label>
-            <span class="field-value text-area">{{ volunteer.contribution }}</span>
+            <p class="field-text">{{ volunteer.contribution }}</p>
           </div>
         </div>
       </div>
@@ -150,71 +256,114 @@
       <div class="section-content">
         <div class="info-grid">
           <div class="info-field">
-            <label class="field-label">Timpul pe care îl poți dedica</label>
+            <label class="field-label">Timp disponibil</label>
             <span class="field-value">{{ volunteer.timeCommitment }}</span>
           </div>
-          <div class="info-field">
-            <label class="field-label">Programul preferat</label>
-            <span class="field-value">{{ volunteer.schedule || 'Nu a fost specificat' }}</span>
+          <div class="info-field" *ngIf="volunteer.schedule">
+            <label class="field-label">Program preferat</label>
+            <span class="field-value">{{ volunteer.schedule }}</span>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Documents and Portfolio Section -->
-    <div class="info-section documents-portfolio">
+    <div class="info-section documents">
       <h2 class="section-title">Documente și portofoliu</h2>
       <div class="section-content">
         <div class="info-grid">
-          <div class="info-field full-width">
-            <label class="field-label">LINK</label>
-            <span class="field-value">
-              <a *ngIf="volunteer.portfolioUrl"
-                 [href]="volunteer.portfolioUrl"
-                 target="_blank"
-                 class="portfolio-link">
-                {{ volunteer.portfolioUrl }}
-              </a>
-              <span *ngIf="!volunteer.portfolioUrl" class="no-data">Nu a fost specificat</span>
-            </span>
+          <div class="info-field" *ngIf="volunteer.portfolioUrl">
+            <label class="field-label">Link portofoliu</label>
+            <a [href]="volunteer.portfolioUrl" target="_blank" class="field-link">
+              {{ volunteer.portfolioUrl }}
+            </a>
           </div>
-          <div class="info-field full-width">
+          <div class="info-field" *ngIf="volunteer.cvFileName">
             <label class="field-label">CV</label>
-            <div class="cv-download-section">
-              <span *ngIf="volunteer.cvFileName" class="cv-info">
-                <span class="cv-name">{{ volunteer.cvFileName }}</span>
-                <span class="cv-size">({{ formatFileSize(volunteer.cvFileSize) }})</span>
-                <button class="download-btn cv-btn" (click)="downloadCV()">
-                  📥 Descarcă CV
-                </button>
-              </span>
-              <span *ngIf="!volunteer.cvFileName" class="no-data">Nu a fost încărcat CV</span>
+            <div class="cv-section">
+              <span class="cv-info">{{ volunteer.cvFileName }}</span>
+              <button class="download-btn" (click)="downloadCV()">
+                 Descarcă CV
+              </button>
+            </div>
+          </div>
+          <div class="info-field">
+            <label class="field-label">Formular aplicație</label>
+            <div class="cv-section">
+              <span class="cv-info"></span>
+              <button class="download-btn download-form-btn" (click)="downloadApplicationPdf()">
+                Descarcă formularul
+              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Admin Actions -->
-    <div class="admin-actions">
-      <button class="download-btn full-app-btn" (click)="downloadFullApplication()">
-        📄 Descarcă tot formularul
-      </button>
+    <!-- Admin Activity Section (Only show if there's activity data) -->
+    <div *ngIf="volunteer.reviewNotes || volunteer.currentRole || volunteer.achievements || volunteer.volunteerHours > 0"
+         class="info-section admin-activity">
+      <h2 class="section-title">Activitate administrativă</h2>
+      <div class="section-content">
+        <div class="info-grid">
+          <div class="info-field full-width" *ngIf="volunteer.reviewNotes">
+            <label class="field-label">Note de review</label>
+            <p class="field-text">{{ volunteer.reviewNotes }}</p>
+          </div>
+          <div class="info-field" *ngIf="volunteer.currentRole">
+            <label class="field-label">Rol curent</label>
+            <span class="field-value">{{ volunteer.currentRole }}</span>
+          </div>
+          <div class="info-field" *ngIf="volunteer.achievements">
+            <label class="field-label">Realizări</label>
+            <p class="field-text">{{ volunteer.achievements }}</p>
+          </div>
+          <div class="info-field" *ngIf="volunteer.volunteerHours > 0">
+            <label class="field-label">Ore de voluntariat</label>
+            <span class="field-value">{{ volunteer.volunteerHours }} ore</span>
+          </div>
+          <div class="info-field" *ngIf="volunteer.reviewedAt">
+            <label class="field-label">Ultima actualizare</label>
+            <span class="field-value">{{ formatDate(volunteer.reviewedAt) }}</span>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Application Info -->
-    <div class="application-info">
-      <p class="submit-date">
-        <strong>Data aplicației:</strong> {{ formatDate(volunteer.submittedAt) }}
-      </p>
+    <!-- Application Metadata Section -->
+    <div class="info-section metadata">
+      <h2 class="section-title">Detalii aplicație</h2>
+      <div class="section-content">
+        <div class="info-grid">
+          <div class="info-field">
+            <label class="field-label">Data aplicației</label>
+            <span class="field-value">{{ formatDate(volunteer.submittedAt) }}</span>
+          </div>
+          <div class="info-field">
+            <label class="field-label">Acord prelucrare date</label>
+            <span class="field-value agreement" [class.positive]="volunteer.dataProcessingAgreement">
+              {{ volunteer.dataProcessingAgreement ? 'Da' : 'Nu' }}
+            </span>
+          </div>
+          <div class="info-field">
+            <label class="field-label">Acord termeni</label>
+            <span class="field-value agreement" [class.positive]="volunteer.termsAgreement">
+              {{ volunteer.termsAgreement ? 'Da' : 'Nu' }}
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
+
   </div>
 
   <!-- Error State -->
   <div *ngIf="!isLoading && !volunteer" class="error-container">
-    <div class="error-icon">❌</div>
-    <h3 class="error-title">Aplicația nu a fost găsită</h3>
-    <p class="error-text">Nu s-au găsit detalii pentru aplicația cu ID-ul {{ volunteerId }}.</p>
-    <button class="back-btn" (click)="goBack()">Înapoi la listă</button>
+    <h2>Aplicația nu a fost găsită</h2>
+    <p>Nu am putut găsi aplicația cu ID-ul specificat.</p>
+    <button class="back-btn" (click)="goBack()">
+      ← Înapoi la listă
+    </button>
   </div>
+
 </div>
