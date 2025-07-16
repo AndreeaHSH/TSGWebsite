@@ -2,7 +2,22 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { VolunteerService, VolunteerListDto } from '../../../services/volunteer.service';
+
+interface Volunteer {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  faculty: string;
+  specialization: string;
+  studyYear: string;
+  preferredRole: string;
+  status: 'Pending' | 'Reviewed' | 'Approved' | 'Rejected' | 'Contacted' | 'Active' | 'Inactive';
+  submittedAt: Date;
+  isFavorite: boolean;
+  hasCv: boolean;
+}
 
 @Component({
   selector: 'app-volunteer-list',
@@ -13,86 +28,102 @@ import { VolunteerService, VolunteerListDto } from '../../../services/volunteer.
 })
 export class VolunteerListComponent implements OnInit {
 
-  volunteers: VolunteerListDto[] = [];
-  filteredVolunteers: VolunteerListDto[] = [];
+  volunteers: Volunteer[] = [];
+  filteredVolunteers: Volunteer[] = [];
   searchTerm: string = '';
   isLoading: boolean = true;
-  error: string = '';
 
-  constructor(
-    private router: Router,
-    private volunteerService: VolunteerService
-  ) {}
+  constructor(private router: Router) {}
 
   ngOnInit(): void {
     this.loadVolunteers();
   }
 
-  // Load volunteers from API
+  // Mock data - Replace with actual API call
   loadVolunteers(): void {
-    this.isLoading = true;
-    this.error = '';
+    // For development: instant loading
+    // setTimeout(() => {
+      this.volunteers = [
+        {
+          id: 1,
+          firstName: 'Alexandru',
+          lastName: 'Popescu',
+          email: 'alex.popescu@student.unitbv.ro',
+          phone: '0740123456',
+          faculty: 'Facultatea de Matematică și Informatică',
+          specialization: 'Informatică',
+          studyYear: 'Anul 2',
+          preferredRole: 'Frontend Developer',
+          status: 'Pending',
+          submittedAt: new Date('2024-01-15'),
+          isFavorite: false,
+          hasCv: true
+        },
+        {
+          id: 2,
+          firstName: 'Maria',
+          lastName: 'Ionescu',
+          email: 'maria.ionescu@student.unitbv.ro',
+          phone: '0741234567',
+          faculty: 'Facultatea de Matematică și Informatică',
+          specialization: 'Informatică',
+          studyYear: 'Anul 3',
+          preferredRole: 'UI/UX Designer',
+          status: 'Reviewed',
+          submittedAt: new Date('2024-01-14'),
+          isFavorite: true,
+          hasCv: true
+        },
+        {
+          id: 3,
+          firstName: 'Andrei',
+          lastName: 'Vlaicu',
+          email: 'andrei.vlaicu@student.unitbv.ro',
+          phone: '0742345678',
+          faculty: 'Facultatea de Electronică și Telecomunicații',
+          specialization: 'Calculatoare',
+          studyYear: 'Anul 1',
+          preferredRole: 'Backend Developer',
+          status: 'Approved',
+          submittedAt: new Date('2024-01-13'),
+          isFavorite: false,
+          hasCv: false
+        },
+        {
+          id: 4,
+          firstName: 'Elena',
+          lastName: 'Radu',
+          email: 'elena.radu@student.unitbv.ro',
+          phone: '0743456789',
+          faculty: 'Facultatea de Matematică și Informatică',
+          specialization: 'Informatică',
+          studyYear: 'Anul 2',
+          preferredRole: 'Mobile Developer',
+          status: 'Contacted',
+          submittedAt: new Date('2024-01-12'),
+          isFavorite: true,
+          hasCv: true
+        },
+        {
+          id: 5,
+          firstName: 'Mihai',
+          lastName: 'Georgescu',
+          email: 'mihai.georgescu@student.unitbv.ro',
+          phone: '0744567890',
+          faculty: 'Facultatea de Electronică și Telecomunicații',
+          specialization: 'Rețele',
+          studyYear: 'Anul 3',
+          preferredRole: 'Network Engineer',
+          status: 'Active',
+          submittedAt: new Date('2024-01-11'),
+          isFavorite: false,
+          hasCv: true
+        }
+      ];
 
-    this.volunteerService.getVolunteers().subscribe({
-      next: (volunteers) => {
-        this.volunteers = volunteers;
-        this.filteredVolunteers = [...this.volunteers];
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Error loading volunteers:', error);
-        this.error = 'Eroare la încărcarea aplicațiilor. Verificați conexiunea la server.';
-        this.isLoading = false;
-
-        // Fallback to mock data for development
-        this.loadMockData();
-      }
-    });
-  }
-
-  // Fallback mock data for development
-  private loadMockData(): void {
-    this.volunteers = [
-      {
-        id: 1,
-        fullName: 'Alexandru Popescu',
-        firstName: 'Alexandru',
-        lastName: 'Popescu',
-        email: 'alex.popescu@student.unitbv.ro',
-        phone: '0740123456',
-        faculty: 'Facultatea de Matematică și Informatică',
-        specialization: 'Informatică',
-        studyYear: 'Anul 2',
-        preferredRole: 'Frontend Developer',
-        status: 'Pending',
-        submittedAt: '2024-01-15T10:30:00Z',
-        isFavorite: false,
-        hasCv: true,
-        volunteerHours: 0,
-        age: 22
-      },
-      {
-        id: 2,
-        fullName: 'Maria Ionescu',
-        firstName: 'Maria',
-        lastName: 'Ionescu',
-        email: 'maria.ionescu@student.unitbv.ro',
-        phone: '0741234567',
-        faculty: 'Facultatea de Matematică și Informatică',
-        specialization: 'Informatică',
-        studyYear: 'Anul 3',
-        preferredRole: 'UI/UX Designer',
-        status: 'Reviewed',
-        submittedAt: '2024-01-14T09:15:00Z',
-        isFavorite: true,
-        hasCv: true,
-        volunteerHours: 0,
-        age: 23
-      }
-    ];
-
-    this.filteredVolunteers = [...this.volunteers];
-    this.error = 'Folosind date demo (nu s-a putut conecta la server)';
+      this.filteredVolunteers = [...this.volunteers];
+      this.isLoading = false;
+    // }, 500); // Commented out for instant loading
   }
 
   onSearch(): void {
@@ -116,18 +147,10 @@ export class VolunteerListComponent implements OnInit {
     this.filteredVolunteers = [...this.volunteers];
   }
 
-  toggleFavorite(volunteer: VolunteerListDto): void {
-    this.volunteerService.toggleFavorite(volunteer.id).subscribe({
-      next: () => {
-        volunteer.isFavorite = !volunteer.isFavorite;
-        console.log(`Toggled favorite for ${volunteer.fullName}: ${volunteer.isFavorite}`);
-      },
-      error: (error) => {
-        console.error('Error toggling favorite:', error);
-        // For development, still toggle locally if API fails
-        volunteer.isFavorite = !volunteer.isFavorite;
-      }
-    });
+  toggleFavorite(volunteer: Volunteer): void {
+    volunteer.isFavorite = !volunteer.isFavorite;
+    // TODO: Call API to update favorite status
+    console.log(`Toggled favorite for ${volunteer.firstName} ${volunteer.lastName}: ${volunteer.isFavorite}`);
   }
 
   viewVolunteerDetails(volunteerId: number): void {
@@ -160,8 +183,7 @@ export class VolunteerListComponent implements OnInit {
     return statusTexts[status] || status;
   }
 
-  formatDate(dateString: string): string {
-    const date = new Date(dateString);
+  formatDate(date: Date): string {
     return new Intl.DateTimeFormat('ro-RO', {
       day: '2-digit',
       month: '2-digit',
@@ -169,7 +191,7 @@ export class VolunteerListComponent implements OnInit {
     }).format(date);
   }
 
-  trackByVolunteer(index: number, volunteer: VolunteerListDto): number {
+  trackByVolunteer(index: number, volunteer: Volunteer): number {
     return volunteer.id;
   }
 }

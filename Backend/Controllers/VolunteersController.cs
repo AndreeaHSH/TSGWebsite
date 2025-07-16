@@ -1,4 +1,5 @@
- using Microsoft.AspNetCore.Mvc;
+// Backend/Controllers/VolunteersController.cs
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TSGwebsite.Data;
 using TSGwebsite.Models;
@@ -19,9 +20,86 @@ namespace TSGwebsite.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Volunteer>>> GetVolunteers()
+        public async Task<ActionResult<IEnumerable<VolunteerListDto>>> GetVolunteers()
         {
-            return await _context.Volunteers.ToListAsync();
+            var volunteers = await _context.Volunteers
+                .Select(v => new VolunteerListDto
+                {
+                    Id = v.Id,
+                    FullName = v.FullName,
+                    Email = v.Email,
+                    Phone = v.Phone,
+                    Faculty = v.Faculty,
+                    Specialization = v.Specialization,
+                    StudyYear = v.StudyYear,
+                    PreferredRole = v.PreferredRole,
+                    Status = v.Status,
+                    SubmittedAt = v.SubmittedAt,
+                    IsFavorite = v.IsFavorite,
+                    HasCv = !string.IsNullOrEmpty(v.CvFileName),
+                    CurrentRole = v.CurrentRole,
+                    VolunteerHours = v.VolunteerHours,
+                    Age = v.Age
+                })
+                .OrderByDescending(v => v.SubmittedAt)
+                .ToListAsync();
+
+            return Ok(volunteers);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<VolunteerDetailDto>> GetVolunteer(int id)
+        {
+            var volunteer = await _context.Volunteers.FindAsync(id);
+
+            if (volunteer == null)
+            {
+                return NotFound();
+            }
+
+            var volunteerDetail = new VolunteerDetailDto
+            {
+                Id = volunteer.Id,
+                FirstName = volunteer.FirstName,
+                LastName = volunteer.LastName,
+                FullName = volunteer.FullName,
+                Email = volunteer.Email,
+                Phone = volunteer.Phone,
+                BirthDate = volunteer.BirthDate,
+                Age = volunteer.Age,
+                Faculty = volunteer.Faculty,
+                Specialization = volunteer.Specialization,
+                StudyYear = volunteer.StudyYear,
+                StudentId = volunteer.StudentId,
+                PreferredRole = volunteer.PreferredRole,
+                AlternativeRole = volunteer.AlternativeRole,
+                ProgrammingLanguages = volunteer.ProgrammingLanguages,
+                Frameworks = volunteer.Frameworks,
+                Tools = volunteer.Tools,
+                Experience = volunteer.Experience,
+                Motivation = volunteer.Motivation,
+                Contribution = volunteer.Contribution,
+                TimeCommitment = volunteer.TimeCommitment,
+                Schedule = volunteer.Schedule,
+                PortfolioUrl = volunteer.PortfolioUrl,
+                CvFileName = volunteer.CvFileName,
+                CvFileSize = volunteer.CvFileSize,
+                DataProcessingAgreement = volunteer.DataProcessingAgreement,
+                TermsAgreement = volunteer.TermsAgreement,
+                Status = volunteer.Status,
+                SubmittedAt = volunteer.SubmittedAt,
+                ReviewedAt = volunteer.ReviewedAt,
+                ReviewNotes = volunteer.ReviewNotes,
+                IsFavorite = volunteer.IsFavorite,
+                FavoritedAt = volunteer.FavoritedAt,
+                ContactedAt = volunteer.ContactedAt,
+                StartedVolunteeringAt = volunteer.StartedVolunteeringAt,
+                Achievements = volunteer.Achievements,
+                VolunteerHours = volunteer.VolunteerHours,
+                CurrentRole = volunteer.CurrentRole
+            };
+
+            return Ok(volunteerDetail);
         }
 
         [HttpPost]
@@ -88,21 +166,105 @@ namespace TSGwebsite.Controllers
             }
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Volunteer>> GetVolunteer(int id)
+        [HttpPut("{id}/status")]
+        public async Task<IActionResult> UpdateVolunteerStatus(int id, [FromBody] VolunteerStatusUpdateDto statusUpdate)
         {
             var volunteer = await _context.Volunteers.FindAsync(id);
-
             if (volunteer == null)
             {
                 return NotFound();
             }
 
-            return volunteer;
+            volunteer.Status = statusUpdate.Status;
+            volunteer.ReviewNotes = statusUpdate.ReviewNotes;
+            volunteer.ReviewedAt = DateTime.UtcNow;
+
+            if (statusUpdate.ContactedAt.HasValue)
+                volunteer.ContactedAt = statusUpdate.ContactedAt;
+
+            if (statusUpdate.StartedVolunteeringAt.HasValue)
+                volunteer.StartedVolunteeringAt = statusUpdate.StartedVolunteeringAt;
+
+            if (!string.IsNullOrEmpty(statusUpdate.Achievements))
+                volunteer.Achievements = statusUpdate.Achievements;
+
+            if (statusUpdate.VolunteerHours.HasValue)
+                volunteer.VolunteerHours = statusUpdate.VolunteerHours.Value;
+
+            if (!string.IsNullOrEmpty(statusUpdate.CurrentRole))
+                volunteer.CurrentRole = statusUpdate.CurrentRole;
+
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        [HttpPut("{id}/favorite")]
+        public async Task<IActionResult> ToggleFavorite(int id)
+        {
+            var volunteer = await _context.Volunteers.FindAsync(id);
+            if (volunteer == null)
+            {
+                return NotFound();
+            }
+
+            volunteer.IsFavorite = !volunteer.IsFavorite;
+            volunteer.FavoritedAt = volunteer.IsFavorite ? DateTime.UtcNow : null;
+
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        [HttpGet("{id}/cv")]
+        public async Task<IActionResult> DownloadCv(int id)
+        {
+            var volunteer = await _context.Volunteers.FindAsync(id);
+            if (volunteer == null || string.IsNullOrEmpty(volunteer.CvFilePath))
+            {
+                return NotFound();
+            }
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), volunteer.CvFilePath);
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound();
+            }
+
+            var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
+            var fileName = volunteer.CvFileName ?? "CV.pdf";
+            
+            return File(fileBytes, "application/octet-stream", fileName);
+        }
+
+        [HttpGet("reports")]
+        public async Task<ActionResult> GetVolunteerReports()
+        {
+            var totalVolunteers = await _context.Volunteers.CountAsync();
+            var pendingVolunteers = await _context.Volunteers.CountAsync(v => v.Status == VolunteerStatus.Pending);
+            var activeVolunteers = await _context.Volunteers.CountAsync(v => v.Status == VolunteerStatus.Active);
+            var approvedVolunteers = await _context.Volunteers.CountAsync(v => v.Status == VolunteerStatus.Approved);
+            var totalVolunteerHours = await _context.Volunteers.SumAsync(v => v.VolunteerHours);
+
+            // Monthly statistics
+            var thisMonth = DateTime.UtcNow.Date.AddDays(1 - DateTime.UtcNow.Day);
+            var newApplicationsThisMonth = await _context.Volunteers
+                .CountAsync(v => v.SubmittedAt >= thisMonth);
+
+            var reports = new
+            {
+                TotalVolunteers = totalVolunteers,
+                PendingVolunteers = pendingVolunteers,
+                ActiveVolunteers = activeVolunteers,
+                ApprovedVolunteers = approvedVolunteers,
+                TotalVolunteerHours = totalVolunteerHours,
+                NewApplicationsThisMonth = newApplicationsThisMonth,
+                LastUpdated = DateTime.UtcNow
+            };
+
+            return Ok(reports);
         }
     }
 
-    // DTO for the form data
+    // DTOs for the API
     public class VolunteerApplicationDto
     {
         public string FirstName { get; set; } = string.Empty;
@@ -127,5 +289,77 @@ namespace TSGwebsite.Controllers
         public string? PortfolioUrl { get; set; }
         public bool DataProcessingAgreement { get; set; }
         public bool TermsAgreement { get; set; }
+    }
+
+    public class VolunteerListDto
+    {
+        public int Id { get; set; }
+        public string FullName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Phone { get; set; } = string.Empty;
+        public string Faculty { get; set; } = string.Empty;
+        public string Specialization { get; set; } = string.Empty;
+        public string StudyYear { get; set; } = string.Empty;
+        public string PreferredRole { get; set; } = string.Empty;
+        public VolunteerStatus Status { get; set; }
+        public DateTime SubmittedAt { get; set; }
+        public bool IsFavorite { get; set; }
+        public bool HasCv { get; set; }
+        public string? CurrentRole { get; set; }
+        public int VolunteerHours { get; set; }
+        public int Age { get; set; }
+    }
+
+    public class VolunteerDetailDto
+    {
+        public int Id { get; set; }
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string FullName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Phone { get; set; } = string.Empty;
+        public DateTime BirthDate { get; set; }
+        public int Age { get; set; }
+        public string Faculty { get; set; } = string.Empty;
+        public string Specialization { get; set; } = string.Empty;
+        public string StudyYear { get; set; } = string.Empty;
+        public string? StudentId { get; set; }
+        public string PreferredRole { get; set; } = string.Empty;
+        public string? AlternativeRole { get; set; }
+        public string? ProgrammingLanguages { get; set; }
+        public string? Frameworks { get; set; }
+        public string? Tools { get; set; }
+        public string? Experience { get; set; }
+        public string Motivation { get; set; } = string.Empty;
+        public string Contribution { get; set; } = string.Empty;
+        public string TimeCommitment { get; set; } = string.Empty;
+        public string? Schedule { get; set; }
+        public string? PortfolioUrl { get; set; }
+        public string? CvFileName { get; set; }
+        public long? CvFileSize { get; set; }
+        public bool DataProcessingAgreement { get; set; }
+        public bool TermsAgreement { get; set; }
+        public VolunteerStatus Status { get; set; }
+        public DateTime SubmittedAt { get; set; }
+        public DateTime? ReviewedAt { get; set; }
+        public string? ReviewNotes { get; set; }
+        public bool IsFavorite { get; set; }
+        public DateTime? FavoritedAt { get; set; }
+        public DateTime? ContactedAt { get; set; }
+        public DateTime? StartedVolunteeringAt { get; set; }
+        public string? Achievements { get; set; }
+        public int VolunteerHours { get; set; }
+        public string? CurrentRole { get; set; }
+    }
+
+    public class VolunteerStatusUpdateDto
+    {
+        public VolunteerStatus Status { get; set; }
+        public string? ReviewNotes { get; set; }
+        public DateTime? ContactedAt { get; set; }
+        public DateTime? StartedVolunteeringAt { get; set; }
+        public string? Achievements { get; set; }
+        public int? VolunteerHours { get; set; }
+        public string? CurrentRole { get; set; }
     }
 }

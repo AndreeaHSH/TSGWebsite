@@ -29,11 +29,9 @@
             "styles": [
               "src/styles.scss"
             ],
-            "server": "src/main.server.ts",
-            "outputMode": "server",
-            "ssr": {
-              "entry": "src/server.ts"
-            }
+            "polyfills": [
+              "zone.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -87,6 +85,9 @@
             ],
             "styles": [
               "src/styles.scss"
+            ],
+            "polyfills": [
+              "zone.js"
             ]
           }
         }
@@ -94,6 +95,6 @@
     }
   },
   "cli": {
-    "analytics": "04411cb9-01ba-42db-b46c-da8573035e24"
+    "analytics": false
   }
 }
