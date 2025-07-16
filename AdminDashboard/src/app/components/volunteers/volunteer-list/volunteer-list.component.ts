@@ -1,3 +1,5 @@
+// volunteer-list.component.ts - Updated with display-only hearts
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -6,9 +8,9 @@ import { HttpClient } from '@angular/common/http';
 
 interface Volunteer {
   id: number;
-  fullName: string;
   firstName: string;
   lastName: string;
+  fullName: string;
   email: string;
   phone: string;
   faculty: string;
@@ -35,8 +37,8 @@ export class VolunteerListComponent implements OnInit {
 
   volunteers: Volunteer[] = [];
   filteredVolunteers: Volunteer[] = [];
-  searchTerm: string = '';
   isLoading: boolean = true;
+  searchTerm: string = '';
 
   constructor(
     private router: Router,
@@ -47,7 +49,6 @@ export class VolunteerListComponent implements OnInit {
     this.loadVolunteers();
   }
 
-  // REAL API CALL - Replace mock data
   loadVolunteers(): void {
     this.isLoading = true;
 
@@ -56,8 +57,6 @@ export class VolunteerListComponent implements OnInit {
         next: (data) => {
           this.volunteers = data.map(volunteer => ({
             ...volunteer,
-            submittedAt: volunteer.submittedAt,
-            // Convert status number to string if needed
             status: this.getStatusString(volunteer.status as any)
           }));
           this.filteredVolunteers = [...this.volunteers];
@@ -67,9 +66,6 @@ export class VolunteerListComponent implements OnInit {
         error: (error) => {
           console.error('Error loading volunteers:', error);
           this.isLoading = false;
-          // Fallback to empty array on error
-          this.volunteers = [];
-          this.filteredVolunteers = [];
         }
       });
   }
@@ -111,19 +107,7 @@ export class VolunteerListComponent implements OnInit {
     this.filteredVolunteers = [...this.volunteers];
   }
 
-  toggleFavorite(volunteer: Volunteer): void {
-    // TODO: Call API to update favorite status
-    this.http.put(`http://localhost:5193/api/volunteers/${volunteer.id}/favorite`, {})
-      .subscribe({
-        next: () => {
-          volunteer.isFavorite = !volunteer.isFavorite;
-          console.log(`Toggled favorite for ${volunteer.fullName}: ${volunteer.isFavorite}`);
-        },
-        error: (error) => {
-          console.error('Error toggling favorite:', error);
-        }
-      });
-  }
+  // REMOVED: toggleFavorite method - favorites can only be modified from detail page
 
   viewVolunteerDetails(volunteerId: number): void {
     this.router.navigate(['/aplicari', volunteerId]);
@@ -166,5 +150,10 @@ export class VolunteerListComponent implements OnInit {
 
   trackByVolunteer(index: number, volunteer: Volunteer): number {
     return volunteer.id;
+  }
+
+  // Method to refresh the list when returning from detail page
+  refreshVolunteers(): void {
+    this.loadVolunteers();
   }
 }

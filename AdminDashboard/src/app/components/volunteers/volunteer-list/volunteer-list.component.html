@@ -1,3 +1,5 @@
+<!-- volunteer-list.component.html - Updated with display-only hearts -->
+
 <div class="volunteer-list-container">
 
   <!-- Search Section -->
@@ -58,16 +60,12 @@
           </div>
         </div>
 
-        <!-- Favorite Heart -->
-        <button
-          class="favorite-btn"
-          [class.active]="volunteer.isFavorite"
-          (click)="toggleFavorite(volunteer); $event.stopPropagation()"
-          aria-label="Marchează ca favorit">
+        <!-- Display-Only Favorite Heart -->
+        <div class="favorite-display" [class.active]="volunteer.isFavorite">
           <div class="heart-icon" [class.filled]="volunteer.isFavorite">
             ❤️
           </div>
-        </button>
+        </div>
       </div>
 
       <!-- Card Body -->
