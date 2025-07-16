@@ -1,4 +1,3 @@
-// AdminDashboard/src/app/services/volunteer/volunteer.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -63,16 +62,6 @@ export interface VolunteerDetailDto {
   currentRole?: string;
 }
 
-export interface VolunteerStatusUpdateDto {
-  status: VolunteerStatus;
-  reviewNotes?: string;
-  contactedAt?: string;
-  startedVolunteeringAt?: string;
-  achievements?: string;
-  volunteerHours?: number;
-  currentRole?: string;
-}
-
 export enum VolunteerStatus {
   Pending = 0,
   Reviewed = 1,
@@ -107,12 +96,6 @@ export class VolunteerService {
 
   getVolunteer(id: number): Observable<VolunteerDetailDto> {
     return this.http.get<VolunteerDetailDto>(`${this.apiUrl}/${id}`, {
-      headers: this.getAuthHeaders()
-    });
-  }
-
-  updateVolunteerStatus(id: number, statusUpdate: VolunteerStatusUpdateDto): Observable<any> {
-    return this.http.put(`${this.apiUrl}/${id}/status`, statusUpdate, {
       headers: this.getAuthHeaders()
     });
   }

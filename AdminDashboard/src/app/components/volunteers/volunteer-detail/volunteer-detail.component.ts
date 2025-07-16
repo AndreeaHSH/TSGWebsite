@@ -1,15 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
 interface VolunteerDetail {
   id: number;
   // Personal Information
   firstName: string;
   lastName: string;
+  fullName: string;
   email: string;
   phone: string;
-  birthDate: Date;
+  birthDate: string;
   age: number;
 
   // Academic Information
@@ -39,14 +41,23 @@ interface VolunteerDetail {
   // Documents and Portfolio
   portfolioUrl: string;
   cvFileName: string;
-  cvFilePath: string;
   cvFileSize: number;
+
+  // Agreements
+  dataProcessingAgreement: boolean;
+  termsAgreement: boolean;
 
   // Admin fields
   status: 'Pending' | 'Reviewed' | 'Approved' | 'Rejected' | 'Contacted' | 'Active' | 'Inactive';
-  submittedAt: Date;
+  submittedAt: string;
   isFavorite: boolean;
   reviewNotes: string;
+  reviewedAt?: string;
+  contactedAt?: string;
+  startedVolunteeringAt?: string;
+  achievements?: string;
+  volunteerHours: number;
+  currentRole?: string;
 }
 
 @Component({
@@ -64,7 +75,8 @@ export class VolunteerDetailComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
@@ -74,60 +86,95 @@ export class VolunteerDetailComponent implements OnInit {
     });
   }
 
-  // Mock data - Replace with actual API call
+  // REAL API CALL - Replace mock data
   loadVolunteerDetails(): void {
-    // For development: instant loading
-    // setTimeout(() => {
-      // Mock volunteer data
-      this.volunteer = {
-        id: this.volunteerId,
-        firstName: 'Alexandru',
-        lastName: 'Popescu',
-        email: 'alex.popescu@student.unitbv.ro',
-        phone: '0740123456',
-        birthDate: new Date('2002-05-15'),
-        age: 22,
-        faculty: 'Facultatea de Matematică și Informatică',
-        specialization: 'Informatică',
-        studyYear: 'Anul 2',
-        studentId: '20221234',
-        preferredRole: 'Frontend Developer',
-        alternativeRole: 'UI/UX Designer',
-        programmingLanguages: 'JavaScript, TypeScript, Python, C++',
-        frameworks: 'Angular, React, Vue.js, Express.js',
-        tools: 'Git, Docker, Figma, VS Code, Postman',
-        experience: 'Am lucrat la mai multe proiecte personale folosind React și Node.js. Am contribuit la câteva proiecte open-source pe GitHub și am participat la hackathon-uri locale.',
-        motivation: 'Doresc să îmi dezvolt abilitățile tehnice într-un mediu real de lucru și să contribui la proiecte care au impact asupra comunității studențești. TSG oferă oportunitatea perfectă să învăț de la experți și să lucrez cu tehnologii moderne.',
-        contribution: 'Pot contribui cu cunoștințele mele în dezvoltarea web, în special frontend. Am experiență cu design responsive și pot ajuta la îmbunătățirea experienței utilizatorului. De asemenea, sunt foarte motivat să învăț tehnologii noi.',
-        timeCommitment: '10-15 ore pe săptămână',
-        schedule: 'Luni-Vineri după orele 16:00, Weekend flexibil',
-        portfolioUrl: 'https://github.com/alexpopescu',
-        cvFileName: 'CV_Alexandru_Popescu.pdf',
-        cvFilePath: '/uploads/cvs/cv_20240115_123456.pdf',
-        cvFileSize: 245760, // bytes
-        status: 'Pending',
-        submittedAt: new Date('2024-01-15'),
-        isFavorite: false,
-        reviewNotes: ''
-      };
+    this.isLoading = true;
 
-      this.isLoading = false;
-    // }, 300); // Commented out for instant loading
+    this.http.get<VolunteerDetail>(`http://localhost:5193/api/volunteers/${this.volunteerId}`)
+      .subscribe({
+        next: (data) => {
+          this.volunteer = {
+            ...data,
+            status: this.getStatusString(data.status as any)
+          };
+          this.isLoading = false;
+          console.log('Loaded volunteer details:', this.volunteer);
+        },
+        error: (error) => {
+          console.error('Error loading volunteer details:', error);
+          this.isLoading = false;
+          this.volunteer = null;
+        }
+      });
+  }
+
+  private getStatusString(status: any): 'Pending' | 'Reviewed' | 'Approved' | 'Rejected' | 'Contacted' | 'Active' | 'Inactive' {
+    // Handle both string and number status values
+    if (typeof status === 'number') {
+      const statusMap: {[key: number]: 'Pending' | 'Reviewed' | 'Approved' | 'Rejected' | 'Contacted' | 'Active' | 'Inactive'} = {
+        0: 'Pending',
+        1: 'Reviewed',
+        2: 'Approved',
+        3: 'Rejected',
+        4: 'Contacted',
+        5: 'Active',
+        6: 'Inactive'
+      };
+      return statusMap[status] || 'Pending';
+    }
+    return status || 'Pending';
   }
 
   toggleFavorite(): void {
     if (this.volunteer) {
-      this.volunteer.isFavorite = !this.volunteer.isFavorite;
-      // TODO: Call API to update favorite status
-      console.log(`Toggled favorite: ${this.volunteer.isFavorite}`);
+      this.http.put(`http://localhost:5193/api/volunteers/${this.volunteer.id}/favorite`, {})
+        .subscribe({
+          next: () => {
+            if (this.volunteer) {
+              this.volunteer.isFavorite = !this.volunteer.isFavorite;
+              console.log(`Toggled favorite: ${this.volunteer.isFavorite}`);
+            }
+          },
+          error: (error) => {
+            console.error('Error toggling favorite:', error);
+          }
+        });
     }
   }
 
   downloadCV(): void {
-    if (this.volunteer?.cvFilePath) {
-      // TODO: Implement actual CV download
-      console.log(`Downloading CV: ${this.volunteer.cvFileName}`);
-      alert(`Se descarcă CV-ul: ${this.volunteer.cvFileName}`);
+    if (this.volunteer?.cvFileName) {
+      this.http.get(`http://localhost:5193/api/volunteers/${this.volunteer.id}/cv`, {
+        responseType: 'blob',
+        observe: 'response'
+      }).subscribe({
+        next: (response) => {
+          // Create blob URL and download
+          const blob = response.body;
+          if (blob) {
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = this.volunteer?.cvFileName || 'CV.pdf';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+
+            console.log(`Downloaded CV: ${this.volunteer?.cvFileName}`);
+          }
+        },
+        error: (error) => {
+          console.error('Error downloading CV:', error);
+          if (error.status === 404) {
+            alert('CV-ul nu a fost găsit pe server.');
+          } else {
+            alert('Eroare la descărcarea CV-ului. Încercați din nou.');
+          }
+        }
+      });
+    } else {
+      alert('Nu există CV disponibil pentru descărcare.');
     }
   }
 
@@ -135,7 +182,7 @@ export class VolunteerDetailComponent implements OnInit {
     if (this.volunteer) {
       // TODO: Implement PDF generation and download
       console.log(`Downloading full application for: ${this.volunteer.firstName} ${this.volunteer.lastName}`);
-      alert(`Se generează și descarcă aplicația completă pentru ${this.volunteer.firstName} ${this.volunteer.lastName}`);
+      alert(`Se va implementa descărcarea PDF pentru ${this.volunteer.firstName} ${this.volunteer.lastName}`);
     }
   }
 
@@ -144,13 +191,15 @@ export class VolunteerDetailComponent implements OnInit {
   }
 
   formatFileSize(bytes: number): string {
+    if (!bytes) return '0 Bytes';
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    if (bytes === 0) return '0 Bytes';
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
     return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
   }
 
-  formatDate(date: Date): string {
+  formatDate(dateString: string): string {
+    if (!dateString) return 'Nu este specificată';
+    const date = new Date(dateString);
     return new Intl.DateTimeFormat('ro-RO', {
       day: '2-digit',
       month: '2-digit',

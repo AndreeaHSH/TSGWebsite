@@ -140,15 +140,15 @@ namespace TSGwebsite.Controllers
                 {
                     var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "uploads", "cvs");
                     Directory.CreateDirectory(uploadsFolder);
-                    
+
                     var fileName = $"cv_{DateTime.Now:yyyyMMdd_HHmmss}_{Path.GetExtension(cvFile.FileName)}";
                     var filePath = Path.Combine(uploadsFolder, fileName);
-                    
+
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
                         await cvFile.CopyToAsync(stream);
                     }
-                    
+
                     volunteer.CvFileName = cvFile.FileName;
                     volunteer.CvFilePath = Path.Combine("uploads", "cvs", fileName);
                     volunteer.CvFileSize = cvFile.Length;
@@ -231,7 +231,7 @@ namespace TSGwebsite.Controllers
 
             var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
             var fileName = volunteer.CvFileName ?? "CV.pdf";
-            
+
             return File(fileBytes, "application/octet-stream", fileName);
         }
 

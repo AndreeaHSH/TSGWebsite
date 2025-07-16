@@ -12,12 +12,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// CORS - Allow Angular app
+// CORS - Allow Angular apps
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularApp", policy =>
     {
-        policy.WithOrigins("http://localhost:4200")
+        policy.WithOrigins("http://localhost:4200", "http://localhost:4201")  // ADD PORT 4201
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -31,6 +31,8 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    // Enable detailed error pages - THIS IS THE KEY ADDITION
+    app.UseDeveloperExceptionPage();
 }
 
 // Use CORS before other middleware

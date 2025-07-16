@@ -2,9 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
 interface Volunteer {
   id: number;
+  fullName: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -14,9 +16,12 @@ interface Volunteer {
   studyYear: string;
   preferredRole: string;
   status: 'Pending' | 'Reviewed' | 'Approved' | 'Rejected' | 'Contacted' | 'Active' | 'Inactive';
-  submittedAt: Date;
+  submittedAt: string;
   isFavorite: boolean;
   hasCv: boolean;
+  currentRole?: string;
+  volunteerHours: number;
+  age: number;
 }
 
 @Component({
@@ -33,97 +38,57 @@ export class VolunteerListComponent implements OnInit {
   searchTerm: string = '';
   isLoading: boolean = true;
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private http: HttpClient
+  ) {}
 
   ngOnInit(): void {
     this.loadVolunteers();
   }
 
-  // Mock data - Replace with actual API call
+  // REAL API CALL - Replace mock data
   loadVolunteers(): void {
-    // For development: instant loading
-    // setTimeout(() => {
-      this.volunteers = [
-        {
-          id: 1,
-          firstName: 'Alexandru',
-          lastName: 'Popescu',
-          email: 'alex.popescu@student.unitbv.ro',
-          phone: '0740123456',
-          faculty: 'Facultatea de Matematică și Informatică',
-          specialization: 'Informatică',
-          studyYear: 'Anul 2',
-          preferredRole: 'Frontend Developer',
-          status: 'Pending',
-          submittedAt: new Date('2024-01-15'),
-          isFavorite: false,
-          hasCv: true
-        },
-        {
-          id: 2,
-          firstName: 'Maria',
-          lastName: 'Ionescu',
-          email: 'maria.ionescu@student.unitbv.ro',
-          phone: '0741234567',
-          faculty: 'Facultatea de Matematică și Informatică',
-          specialization: 'Informatică',
-          studyYear: 'Anul 3',
-          preferredRole: 'UI/UX Designer',
-          status: 'Reviewed',
-          submittedAt: new Date('2024-01-14'),
-          isFavorite: true,
-          hasCv: true
-        },
-        {
-          id: 3,
-          firstName: 'Andrei',
-          lastName: 'Vlaicu',
-          email: 'andrei.vlaicu@student.unitbv.ro',
-          phone: '0742345678',
-          faculty: 'Facultatea de Electronică și Telecomunicații',
-          specialization: 'Calculatoare',
-          studyYear: 'Anul 1',
-          preferredRole: 'Backend Developer',
-          status: 'Approved',
-          submittedAt: new Date('2024-01-13'),
-          isFavorite: false,
-          hasCv: false
-        },
-        {
-          id: 4,
-          firstName: 'Elena',
-          lastName: 'Radu',
-          email: 'elena.radu@student.unitbv.ro',
-          phone: '0743456789',
-          faculty: 'Facultatea de Matematică și Informatică',
-          specialization: 'Informatică',
-          studyYear: 'Anul 2',
-          preferredRole: 'Mobile Developer',
-          status: 'Contacted',
-          submittedAt: new Date('2024-01-12'),
-          isFavorite: true,
-          hasCv: true
-        },
-        {
-          id: 5,
-          firstName: 'Mihai',
-          lastName: 'Georgescu',
-          email: 'mihai.georgescu@student.unitbv.ro',
-          phone: '0744567890',
-          faculty: 'Facultatea de Electronică și Telecomunicații',
-          specialization: 'Rețele',
-          studyYear: 'Anul 3',
-          preferredRole: 'Network Engineer',
-          status: 'Active',
-          submittedAt: new Date('2024-01-11'),
-          isFavorite: false,
-          hasCv: true
-        }
-      ];
+    this.isLoading = true;
 
-      this.filteredVolunteers = [...this.volunteers];
-      this.isLoading = false;
-    // }, 500); // Commented out for instant loading
+    this.http.get<Volunteer[]>('http://localhost:5193/api/volunteers')
+      .subscribe({
+        next: (data) => {
+          this.volunteers = data.map(volunteer => ({
+            ...volunteer,
+            submittedAt: volunteer.submittedAt,
+            // Convert status number to string if needed
+            status: this.getStatusString(volunteer.status as any)
+          }));
+          this.filteredVolunteers = [...this.volunteers];
+          this.isLoading = false;
+          console.log('Loaded volunteers:', this.volunteers);
+        },
+        error: (error) => {
+          console.error('Error loading volunteers:', error);
+          this.isLoading = false;
+          // Fallback to empty array on error
+          this.volunteers = [];
+          this.filteredVolunteers = [];
+        }
+      });
+  }
+
+  private getStatusString(status: any): 'Pending' | 'Reviewed' | 'Approved' | 'Rejected' | 'Contacted' | 'Active' | 'Inactive' {
+    // Handle both string and number status values
+    if (typeof status === 'number') {
+      const statusMap: {[key: number]: 'Pending' | 'Reviewed' | 'Approved' | 'Rejected' | 'Contacted' | 'Active' | 'Inactive'} = {
+        0: 'Pending',
+        1: 'Reviewed',
+        2: 'Approved',
+        3: 'Rejected',
+        4: 'Contacted',
+        5: 'Active',
+        6: 'Inactive'
+      };
+      return statusMap[status] || 'Pending';
+    }
+    return status || 'Pending';
   }
 
   onSearch(): void {
@@ -134,8 +99,7 @@ export class VolunteerListComponent implements OnInit {
 
     const term = this.searchTerm.toLowerCase();
     this.filteredVolunteers = this.volunteers.filter(volunteer =>
-      volunteer.firstName.toLowerCase().includes(term) ||
-      volunteer.lastName.toLowerCase().includes(term) ||
+      volunteer.fullName.toLowerCase().includes(term) ||
       volunteer.email.toLowerCase().includes(term) ||
       volunteer.faculty.toLowerCase().includes(term) ||
       volunteer.preferredRole.toLowerCase().includes(term)
@@ -148,9 +112,17 @@ export class VolunteerListComponent implements OnInit {
   }
 
   toggleFavorite(volunteer: Volunteer): void {
-    volunteer.isFavorite = !volunteer.isFavorite;
     // TODO: Call API to update favorite status
-    console.log(`Toggled favorite for ${volunteer.firstName} ${volunteer.lastName}: ${volunteer.isFavorite}`);
+    this.http.put(`http://localhost:5193/api/volunteers/${volunteer.id}/favorite`, {})
+      .subscribe({
+        next: () => {
+          volunteer.isFavorite = !volunteer.isFavorite;
+          console.log(`Toggled favorite for ${volunteer.fullName}: ${volunteer.isFavorite}`);
+        },
+        error: (error) => {
+          console.error('Error toggling favorite:', error);
+        }
+      });
   }
 
   viewVolunteerDetails(volunteerId: number): void {
@@ -183,7 +155,8 @@ export class VolunteerListComponent implements OnInit {
     return statusTexts[status] || status;
   }
 
-  formatDate(date: Date): string {
+  formatDate(dateString: string): string {
+    const date = new Date(dateString);
     return new Intl.DateTimeFormat('ro-RO', {
       day: '2-digit',
       month: '2-digit',
