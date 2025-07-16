@@ -44,7 +44,7 @@ namespace TSGwebsite.Services
                 };
                 headerTable.AddCell(logoCell);
 
-                var titleCell = new PdfPCell(new Phrase("APLICAȚIE VOLUNTARIAT\nTRANSILVANIA STAR GROUP", titleFont))
+                var titleCell = new PdfPCell(new Phrase("APLICATIE VOLUNTARIAT\nTRANSILVANIA STAR GROUP", titleFont))
                 {
                     Border = Rectangle.NO_BORDER,
                     HorizontalAlignment = Element.ALIGN_LEFT,
