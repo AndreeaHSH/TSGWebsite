@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TSGwebsite.Data;
+using TSGwebsite.Services; // Add this using statement
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,12 +13,16 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Register Services
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IPdfService, PdfService>(); // Add this line
+
 // CORS - Allow Angular apps
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularApp", policy =>
     {
-        policy.WithOrigins("http://localhost:4200", "http://localhost:4201")  // ADD PORT 4201
+        policy.WithOrigins("http://localhost:4200", "http://localhost:4201")
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -31,7 +36,6 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    // Enable detailed error pages - THIS IS THE KEY ADDITION
     app.UseDeveloperExceptionPage();
 }
 

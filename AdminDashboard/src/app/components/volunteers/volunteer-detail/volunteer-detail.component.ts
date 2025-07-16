@@ -179,12 +179,52 @@ export class VolunteerDetailComponent implements OnInit {
   }
 
   downloadFullApplication(): void {
-    if (this.volunteer) {
-      // TODO: Implement PDF generation and download
-      console.log(`Downloading full application for: ${this.volunteer.firstName} ${this.volunteer.lastName}`);
-      alert(`Se va implementa descărcarea PDF pentru ${this.volunteer.firstName} ${this.volunteer.lastName}`);
-    }
+  if (this.volunteer) {
+    this.http.get(`http://localhost:5193/api/volunteers/${this.volunteer.id}/download-pdf`, {
+      responseType: 'blob',
+      observe: 'response'
+    }).subscribe({
+      next: (response) => {
+        // Create blob URL and download
+        const blob = response.body;
+        if (blob) {
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+
+          // Extract filename from Content-Disposition header or create default
+          const contentDisposition = response.headers.get('Content-Disposition');
+          let filename = `Aplicatie_TSG_${this.volunteer?.firstName}_${this.volunteer?.lastName}_${Date.now()}.pdf`;
+
+          if (contentDisposition) {
+            const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+            if (filenameMatch && filenameMatch[1]) {
+              filename = filenameMatch[1].replace(/['"]/g, '');
+            }
+          }
+
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+
+          console.log(`Downloaded full application PDF: ${filename}`);
+        }
+      },
+      error: (error) => {
+        console.error('Error downloading PDF:', error);
+        if (error.status === 404) {
+          alert('Aplicația nu a fost găsită.');
+        } else {
+          alert('Eroare la descărcarea PDF-ului. Încercați din nou.');
+        }
+      }
+    });
+  } else {
+    alert('Nu există aplicație disponibilă pentru descărcare.');
   }
+}
 
   goBack(): void {
     this.router.navigate(['/aplicari']);

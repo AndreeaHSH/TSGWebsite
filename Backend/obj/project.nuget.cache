@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "LuoNlg2yZXQ=",
+  "dgSpecHash": "f+LL4nzq55M=",
   "success": true,
   "projectFilePath": "C:\\Repo\\TSGwebsite\\Backend\\TSGwebsite.csproj",
   "expectedPackageFiles": [
@@ -14,6 +14,7 @@
     "C:\\Users\\chiri\\.nuget\\packages\\fluentvalidation.aspnetcore\\11.3.1\\fluentvalidation.aspnetcore.11.3.1.nupkg.sha512",
     "C:\\Users\\chiri\\.nuget\\packages\\fluentvalidation.dependencyinjectionextensions\\11.11.0\\fluentvalidation.dependencyinjectionextensions.11.11.0.nupkg.sha512",
     "C:\\Users\\chiri\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
+    "C:\\Users\\chiri\\.nuget\\packages\\itextsharp\\5.5.13.4\\itextsharp.5.5.13.4.nupkg.sha512",
     "C:\\Users\\chiri\\.nuget\\packages\\mailkit\\4.13.0\\mailkit.4.13.0.nupkg.sha512",
     "C:\\Users\\chiri\\.nuget\\packages\\microsoft.aspnetcore.openapi\\8.0.18\\microsoft.aspnetcore.openapi.8.0.18.nupkg.sha512",
     "C:\\Users\\chiri\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\7.0.0\\microsoft.bcl.asyncinterfaces.7.0.0.nupkg.sha512",
@@ -102,5 +103,16 @@
     "C:\\Users\\chiri\\.nuget\\packages\\system.threading.tasks.extensions\\4.5.4\\system.threading.tasks.extensions.4.5.4.nupkg.sha512",
     "C:\\Users\\chiri\\.nuget\\packages\\system.windows.extensions\\6.0.0\\system.windows.extensions.6.0.0.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'iTextSharp 5.5.13.4' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net8.0'. This package may not be fully compatible with your project.",
+      "libraryId": "iTextSharp",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    }
+  ]
 }

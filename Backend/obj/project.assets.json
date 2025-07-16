@@ -165,6 +165,18 @@
           }
         }
       },
+      "iTextSharp/5.5.13.4": {
+        "type": "package",
+        "dependencies": {
+          "BouncyCastle.Cryptography": "2.4.0"
+        },
+        "compile": {
+          "lib/net461/itextsharp.dll": {}
+        },
+        "runtime": {
+          "lib/net461/itextsharp.dll": {}
+        }
+      },
       "MailKit/4.13.0": {
         "type": "package",
         "dependencies": {
@@ -2085,6 +2097,22 @@
         "lib/netstandard2.0/Humanizer.dll",
         "lib/netstandard2.0/Humanizer.xml",
         "logo.png"
+      ]
+    },
+    "iTextSharp/5.5.13.4": {
+      "sha512": "/cvCNv8AJ+XuD99u4NfHSSxkBJKTdvP36wcfQF9V1Cjzi1ycyFSa4vJ64a3DhFVUTKVO60WF8OmAqngQDTHgYA==",
+      "type": "package",
+      "path": "itextsharp/5.5.13.4",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.md",
+        "gnu-agpl-v3.0.md",
+        "itextsharp.5.5.13.4.nupkg.sha512",
+        "itextsharp.nuspec",
+        "lib/net461/iTextSharp.xml",
+        "lib/net461/itextsharp.dll",
+        "notice.txt"
       ]
     },
     "MailKit/4.13.0": {
@@ -5642,7 +5670,8 @@
       "Microsoft.EntityFrameworkCore.InMemory >= 9.0.7",
       "Microsoft.EntityFrameworkCore.SqlServer >= 9.0.7",
       "Microsoft.EntityFrameworkCore.Tools >= 9.0.7",
-      "Swashbuckle.AspNetCore >= 6.6.2"
+      "Swashbuckle.AspNetCore >= 6.6.2",
+      "iTextSharp >= 5.5.13.4"
     ]
   },
   "packageFolders": {
@@ -5732,6 +5761,10 @@
           "Swashbuckle.AspNetCore": {
             "target": "Package",
             "version": "[6.6.2, )"
+          },
+          "iTextSharp": {
+            "target": "Package",
+            "version": "[5.5.13.4, )"
           }
         },
         "imports": [
@@ -5756,5 +5789,17 @@
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.412/PortableRuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1701",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Package 'iTextSharp 5.5.13.4' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1' instead of the project target framework 'net8.0'. This package may not be fully compatible with your project.",
+      "libraryId": "iTextSharp",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    }
+  ]
 }

@@ -1,8 +1,8 @@
-// Backend/Controllers/VolunteersController.cs
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TSGwebsite.Data;
 using TSGwebsite.Models;
+using TSGwebsite.Services; 
 
 namespace TSGwebsite.Controllers
 {
@@ -12,11 +12,19 @@ namespace TSGwebsite.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<VolunteersController> _logger;
+        private readonly IEmailService _emailService;
+        private readonly IPdfService _pdfService;
 
-        public VolunteersController(ApplicationDbContext context, ILogger<VolunteersController> logger)
+        public VolunteersController(
+            ApplicationDbContext context,
+            ILogger<VolunteersController> logger,
+            IEmailService emailService,
+            IPdfService pdfService)
         {
             _context = context;
             _logger = logger;
+            _emailService = emailService;
+            _pdfService = pdfService;
         }
 
         [HttpGet]
@@ -157,6 +165,24 @@ namespace TSGwebsite.Controllers
                 _context.Volunteers.Add(volunteer);
                 await _context.SaveChangesAsync();
 
+                try
+                {
+                    var emailSent = await _emailService.SendNewApplicationNotificationAsync(volunteer);
+                    if (emailSent)
+                    {
+                        _logger.LogInformation($"Email notification sent successfully for volunteer: {volunteer.FullName}");
+                    }
+                    else
+                    {
+                        _logger.LogWarning($"Failed to send email notification for volunteer: {volunteer.FullName}");
+                    }
+                }
+                catch (Exception emailEx)
+                {
+                    _logger.LogError(emailEx, $"Error sending email notification for volunteer: {volunteer.FullName}");
+                    // Don't fail the entire request if email fails
+                }
+
                 return CreatedAtAction(nameof(GetVolunteer), new { id = volunteer.Id }, volunteer);
             }
             catch (Exception ex)
@@ -262,104 +288,129 @@ namespace TSGwebsite.Controllers
 
             return Ok(reports);
         }
-    }
+        [HttpGet("{id}/download-pdf")]
+        public async Task<IActionResult> DownloadApplicationPdf(int id)
+        {
+            try
+            {
+                var volunteer = await _context.Volunteers.FindAsync(id);
+                if (volunteer == null)
+                {
+                    return NotFound("Volunteer application not found.");
+                }
 
-    // DTOs for the API
-    public class VolunteerApplicationDto
-    {
-        public string FirstName { get; set; } = string.Empty;
-        public string LastName { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string Phone { get; set; } = string.Empty;
-        public DateTime BirthDate { get; set; }
-        public string Faculty { get; set; } = string.Empty;
-        public string Specialization { get; set; } = string.Empty;
-        public string StudyYear { get; set; } = string.Empty;
-        public string? StudentId { get; set; }
-        public string PreferredRole { get; set; } = string.Empty;
-        public string? AlternativeRole { get; set; }
-        public string? ProgrammingLanguages { get; set; }
-        public string? Frameworks { get; set; }
-        public string? Tools { get; set; }
-        public string? Experience { get; set; }
-        public string Motivation { get; set; } = string.Empty;
-        public string Contribution { get; set; } = string.Empty;
-        public string TimeCommitment { get; set; } = string.Empty;
-        public string? Schedule { get; set; }
-        public string? PortfolioUrl { get; set; }
-        public bool DataProcessingAgreement { get; set; }
-        public bool TermsAgreement { get; set; }
-    }
+                // Generate PDF
+                var pdfBytes = await _pdfService.GenerateVolunteerApplicationPdfAsync(volunteer);
 
-    public class VolunteerListDto
-    {
-        public int Id { get; set; }
-        public string FullName { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string Phone { get; set; } = string.Empty;
-        public string Faculty { get; set; } = string.Empty;
-        public string Specialization { get; set; } = string.Empty;
-        public string StudyYear { get; set; } = string.Empty;
-        public string PreferredRole { get; set; } = string.Empty;
-        public VolunteerStatus Status { get; set; }
-        public DateTime SubmittedAt { get; set; }
-        public bool IsFavorite { get; set; }
-        public bool HasCv { get; set; }
-        public string? CurrentRole { get; set; }
-        public int VolunteerHours { get; set; }
-        public int Age { get; set; }
-    }
+                // Create filename
+                var fileName = $"Aplicatie_TSG_{volunteer.FirstName}_{volunteer.LastName}_{volunteer.Id}_{DateTime.Now:yyyyMMdd}.pdf";
 
-    public class VolunteerDetailDto
-    {
-        public int Id { get; set; }
-        public string FirstName { get; set; } = string.Empty;
-        public string LastName { get; set; } = string.Empty;
-        public string FullName { get; set; } = string.Empty;
-        public string Email { get; set; } = string.Empty;
-        public string Phone { get; set; } = string.Empty;
-        public DateTime BirthDate { get; set; }
-        public int Age { get; set; }
-        public string Faculty { get; set; } = string.Empty;
-        public string Specialization { get; set; } = string.Empty;
-        public string StudyYear { get; set; } = string.Empty;
-        public string? StudentId { get; set; }
-        public string PreferredRole { get; set; } = string.Empty;
-        public string? AlternativeRole { get; set; }
-        public string? ProgrammingLanguages { get; set; }
-        public string? Frameworks { get; set; }
-        public string? Tools { get; set; }
-        public string? Experience { get; set; }
-        public string Motivation { get; set; } = string.Empty;
-        public string Contribution { get; set; } = string.Empty;
-        public string TimeCommitment { get; set; } = string.Empty;
-        public string? Schedule { get; set; }
-        public string? PortfolioUrl { get; set; }
-        public string? CvFileName { get; set; }
-        public long? CvFileSize { get; set; }
-        public bool DataProcessingAgreement { get; set; }
-        public bool TermsAgreement { get; set; }
-        public VolunteerStatus Status { get; set; }
-        public DateTime SubmittedAt { get; set; }
-        public DateTime? ReviewedAt { get; set; }
-        public string? ReviewNotes { get; set; }
-        public bool IsFavorite { get; set; }
-        public DateTime? FavoritedAt { get; set; }
-        public DateTime? ContactedAt { get; set; }
-        public DateTime? StartedVolunteeringAt { get; set; }
-        public string? Achievements { get; set; }
-        public int VolunteerHours { get; set; }
-        public string? CurrentRole { get; set; }
-    }
+                // Return PDF file
+                return File(pdfBytes, "application/pdf", fileName);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error generating PDF for volunteer {id}");
+                return StatusCode(500, new { message = "An error occurred while generating the PDF." });
+            }
+        }
 
-    public class VolunteerStatusUpdateDto
-    {
-        public VolunteerStatus Status { get; set; }
-        public string? ReviewNotes { get; set; }
-        public DateTime? ContactedAt { get; set; }
-        public DateTime? StartedVolunteeringAt { get; set; }
-        public string? Achievements { get; set; }
-        public int? VolunteerHours { get; set; }
-        public string? CurrentRole { get; set; }
+        // DTOs for the API
+        public class VolunteerApplicationDto
+        {
+            public string FirstName { get; set; } = string.Empty;
+            public string LastName { get; set; } = string.Empty;
+            public string Email { get; set; } = string.Empty;
+            public string Phone { get; set; } = string.Empty;
+            public DateTime BirthDate { get; set; }
+            public string Faculty { get; set; } = string.Empty;
+            public string Specialization { get; set; } = string.Empty;
+            public string StudyYear { get; set; } = string.Empty;
+            public string? StudentId { get; set; }
+            public string PreferredRole { get; set; } = string.Empty;
+            public string? AlternativeRole { get; set; }
+            public string? ProgrammingLanguages { get; set; }
+            public string? Frameworks { get; set; }
+            public string? Tools { get; set; }
+            public string? Experience { get; set; }
+            public string Motivation { get; set; } = string.Empty;
+            public string Contribution { get; set; } = string.Empty;
+            public string TimeCommitment { get; set; } = string.Empty;
+            public string? Schedule { get; set; }
+            public string? PortfolioUrl { get; set; }
+            public bool DataProcessingAgreement { get; set; }
+            public bool TermsAgreement { get; set; }
+        }
+
+        public class VolunteerListDto
+        {
+            public int Id { get; set; }
+            public string FullName { get; set; } = string.Empty;
+            public string Email { get; set; } = string.Empty;
+            public string Phone { get; set; } = string.Empty;
+            public string Faculty { get; set; } = string.Empty;
+            public string Specialization { get; set; } = string.Empty;
+            public string StudyYear { get; set; } = string.Empty;
+            public string PreferredRole { get; set; } = string.Empty;
+            public VolunteerStatus Status { get; set; }
+            public DateTime SubmittedAt { get; set; }
+            public bool IsFavorite { get; set; }
+            public bool HasCv { get; set; }
+            public string? CurrentRole { get; set; }
+            public int VolunteerHours { get; set; }
+            public int Age { get; set; }
+        }
+
+        public class VolunteerDetailDto
+        {
+            public int Id { get; set; }
+            public string FirstName { get; set; } = string.Empty;
+            public string LastName { get; set; } = string.Empty;
+            public string FullName { get; set; } = string.Empty;
+            public string Email { get; set; } = string.Empty;
+            public string Phone { get; set; } = string.Empty;
+            public DateTime BirthDate { get; set; }
+            public int Age { get; set; }
+            public string Faculty { get; set; } = string.Empty;
+            public string Specialization { get; set; } = string.Empty;
+            public string StudyYear { get; set; } = string.Empty;
+            public string? StudentId { get; set; }
+            public string PreferredRole { get; set; } = string.Empty;
+            public string? AlternativeRole { get; set; }
+            public string? ProgrammingLanguages { get; set; }
+            public string? Frameworks { get; set; }
+            public string? Tools { get; set; }
+            public string? Experience { get; set; }
+            public string Motivation { get; set; } = string.Empty;
+            public string Contribution { get; set; } = string.Empty;
+            public string TimeCommitment { get; set; } = string.Empty;
+            public string? Schedule { get; set; }
+            public string? PortfolioUrl { get; set; }
+            public string? CvFileName { get; set; }
+            public long? CvFileSize { get; set; }
+            public bool DataProcessingAgreement { get; set; }
+            public bool TermsAgreement { get; set; }
+            public VolunteerStatus Status { get; set; }
+            public DateTime SubmittedAt { get; set; }
+            public DateTime? ReviewedAt { get; set; }
+            public string? ReviewNotes { get; set; }
+            public bool IsFavorite { get; set; }
+            public DateTime? FavoritedAt { get; set; }
+            public DateTime? ContactedAt { get; set; }
+            public DateTime? StartedVolunteeringAt { get; set; }
+            public string? Achievements { get; set; }
+            public int VolunteerHours { get; set; }
+            public string? CurrentRole { get; set; }
+        }
+
+        public class VolunteerStatusUpdateDto
+        {
+            public VolunteerStatus Status { get; set; }
+            public string? ReviewNotes { get; set; }
+            public DateTime? ContactedAt { get; set; }
+            public DateTime? StartedVolunteeringAt { get; set; }
+            public string? Achievements { get; set; }
+            public int? VolunteerHours { get; set; }
+            public string? CurrentRole { get; set; }
+        }
     }
-}
