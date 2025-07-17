@@ -3,25 +3,24 @@
   <section class="blog-section">
     <div class="section-container">
 
-      <!-- Blog Header -->
+      <!-- Section Header -->
       <div class="blog-header">
-        <h2 class="section-title">Blog Transilvania Star Group</h2>
-        <p class="blog-description">
-          Descoperă ultimele noutăți, articole tehnice și povești din spatele proiectelor noastre.
-          Urmărește evoluția TSG și învață din experiențele echipei noastre.
+        <h2 class="section-title">Blog TSG</h2>
+        <p class="section-subtitle">
+          Descoperiți ultimele noutăți, articole și insights din lumea TSG
         </p>
       </div>
 
       <!-- Loading State -->
       <div *ngIf="isLoading" class="loading-container">
         <div class="loading-spinner"></div>
-        <p class="loading-text">Se încarcă postările...</p>
+        <p class="loading-text">Se încarcă articolele...</p>
       </div>
 
       <!-- Error State -->
       <div *ngIf="error && !isLoading" class="error-container">
         <div class="error-icon">⚠️</div>
-        <h3 class="error-title">Eroare la încărcarea blogului</h3>
+        <h3 class="error-title">Nu am putut încărca articolele</h3>
         <p class="error-message">{{ error }}</p>
         <button class="retry-btn" (click)="retryLoad()">
           Încearcă din nou
@@ -29,66 +28,49 @@
       </div>
 
       <!-- Blog Content -->
-      <div *ngIf="!isLoading && !error">
+      <div *ngIf="!isLoading && !error" class="blog-content">
 
         <!-- Featured Post -->
         <div *ngIf="featuredPost" class="featured-post" (click)="navigateToPost(featuredPost)">
-          <div class="post-image" *ngIf="featuredPost.featuredImage">
-            <img
-              [src]="getPrimaryImage(featuredPost)"
-              [alt]="featuredPost.title"
-              class="post-img"
-              (error)="onImageError($event)"
-              loading="lazy">
-            <div *ngIf="hasImages(featuredPost) && featuredPost.imageCount > 1" class="image-count-badge">
-              +{{ featuredPost.imageCount - 1 }} imagini
+          <div class="featured-content">
+            <div class="featured-image" *ngIf="featuredPost.featuredImage">
+              <img [src]="featuredPost.featuredImage" [alt]="featuredPost.title" class="featured-img">
+              <div class="featured-overlay">
+                <span class="featured-badge">Articol principal</span>
+              </div>
             </div>
-          </div>
+            <div class="post-content">
+              <div class="post-meta">
+                <span class="post-date">{{ formatDate(featuredPost.publishedAt) }}</span>
+                <span class="reading-time">{{ getReadingTimeText(featuredPost.readingTime) }}</span>
+              </div>
+              <h3 class="post-title">{{ featuredPost.title }}</h3>
+              <p class="post-excerpt">{{ truncateText(featuredPost.summary, 150) }}</p>
 
-          <div class="post-content">
-            <div class="post-meta">
-              <span class="post-date">{{ formatDate(featuredPost.publishedAt) }}</span>
-              <span class="reading-time">{{ getReadingTimeText(featuredPost.readingTime) }}</span>
-              <span class="post-author">de {{ featuredPost.author }}</span>
-            </div>
-
-            <h3 class="post-title">{{ featuredPost.title }}</h3>
-
-            <p class="post-excerpt">
-              {{ truncateText(featuredPost.summary, 300) }}
-            </p>
-
-            <div *ngIf="parseTags(featuredPost.tags).length > 0" class="post-tags">
-              <span
-                *ngFor="let tag of parseTags(featuredPost.tags); trackBy: trackByTag"
-                class="tag"
-                (click)="navigateToTag(tag); $event.stopPropagation()">
-                {{ tag }}
-              </span>
+              <div *ngIf="parseTags(featuredPost.tags).length > 0" class="post-tags">
+                <span
+                  *ngFor="let tag of parseTags(featuredPost.tags); trackBy: trackByTag"
+                  class="tag"
+                  (click)="navigateToTag(tag); $event.stopPropagation()">
+                  {{ tag }}
+                </span>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- Blog Posts Grid -->
         <div *ngIf="blogPosts.length > 0" class="blog-posts-section">
-          <h3 class="posts-section-title">Alte articole</h3>
+          <h3 class="posts-section-title">Articole recente</h3>
 
           <div class="blog-posts-grid">
             <div
-              *ngFor="let post of blogPosts; trackBy: trackByPostId"
+              *ngFor="let post of blogPosts; trackBy: trackByPost"
               class="blog-post-card"
               (click)="navigateToPost(post)">
 
               <div class="post-image" *ngIf="post.featuredImage">
-                <img
-                  [src]="getPrimaryImage(post)"
-                  [alt]="post.title"
-                  class="post-img"
-                  (error)="onImageError($event)"
-                  loading="lazy">
-                <div *ngIf="hasImages(post) && post.imageCount > 1" class="image-count-badge">
-                  +{{ post.imageCount - 1 }}
-                </div>
+                <img [src]="post.featuredImage" [alt]="post.title" class="post-img">
               </div>
 
               <div class="card-content">

@@ -9,23 +9,26 @@ export const routes: Routes = [
     title: 'TSG - Transilvania Star Group'
   },
 
-  // Blog routes
+  // Blog routes - ORDER IS CRITICAL!
   {
     path: 'blog',
     loadComponent: () => import('./pages/blog/blog').then(m => m.BlogComponent),
     title: 'Blog - TSG'
   },
-  // Future blog detail route
-  // {
-  //   path: 'blog/:slug',
-  //   loadComponent: () => import('./pages/blog/blog-detail/blog-detail').then(m => m.BlogDetailComponent),
-  //   title: 'Blog Post - TSG'
-  // },
-  // {
-  //   path: 'blog/tag/:tag',
-  //   loadComponent: () => import('./pages/blog/blog-tag/blog-tag').then(m => m.BlogTagComponent),
-  //   title: 'Blog Tag - TSG'
-  // },
+
+  // Blog tag filter route - MUST come before blog/:slug
+  {
+    path: 'blog/tag/:tag',
+    loadComponent: () => import('./pages/blog/blog-tag/blog-tag').then(m => m.BlogTagComponent),
+    title: 'Blog Tag - TSG'
+  },
+
+  // Blog detail route - MUST come after specific routes
+  {
+    path: 'blog/:slug',
+    loadComponent: () => import('./pages/blog/blog-detail/blog-detail').then(m => m.BlogDetailComponent),
+    title: 'Blog Post - TSG'
+  },
 
   // Other existing routes
   {

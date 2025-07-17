@@ -49,15 +49,14 @@ export class BlogService {
       params = params.set('sortOrder', 'desc');
 
       if (limit) {
-        // Note: You might need to add pagination to your backend API
-        // For now, we'll get all and slice on frontend
+        params = params.set('limit', limit.toString());
       }
 
       const response = await firstValueFrom(
         this.http.get<PublicBlogPost[]>(this.apiUrl, { params })
       );
 
-      // Apply limit on frontend if specified
+      // Apply limit on frontend if backend doesn't support it
       return limit ? response.slice(0, limit) : response;
     } catch (error) {
       console.error('Error fetching published blog posts:', error);
@@ -92,6 +91,9 @@ export class BlogService {
         this.http.get<PublicBlogPostDetail>(`${this.apiUrl}/${post.id}`)
       );
 
+      // Increment view count (optional - you might want to do this on backend)
+      this.incrementViewCount(post.id);
+
       return response;
     } catch (error) {
       console.error(`Error fetching blog post with slug ${slug}:`, error);
@@ -102,16 +104,42 @@ export class BlogService {
   // Get recent posts (excluding current post)
   async getRecentPosts(excludeId?: number, limit: number = 3): Promise<PublicBlogPost[]> {
     try {
-      const posts = await this.getPublishedPosts();
+      const allPosts = await this.getPublishedPosts();
 
-      let filteredPosts = posts;
+      let filteredPosts = allPosts;
       if (excludeId) {
-        filteredPosts = posts.filter(post => post.id !== excludeId);
+        filteredPosts = allPosts.filter(post => post.id !== excludeId);
       }
 
       return filteredPosts.slice(0, limit);
     } catch (error) {
-      console.error('Error fetching recent blog posts:', error);
+      console.error('Error fetching recent posts:', error);
+      return [];
+    }
+  }
+
+  // Get posts by author
+  async getPostsByAuthor(author: string): Promise<PublicBlogPost[]> {
+    try {
+      const allPosts = await this.getPublishedPosts();
+      return allPosts.filter(post =>
+        post.author.toLowerCase() === author.toLowerCase()
+      );
+    } catch (error) {
+      console.error(`Error fetching posts by author ${author}:`, error);
+      return [];
+    }
+  }
+
+  // Get popular posts (by view count)
+  async getPopularPosts(limit: number = 5): Promise<PublicBlogPost[]> {
+    try {
+      const allPosts = await this.getPublishedPosts();
+      return allPosts
+        .sort((a, b) => b.viewCount - a.viewCount)
+        .slice(0, limit);
+    } catch (error) {
+      console.error('Error fetching popular posts:', error);
       return [];
     }
   }
@@ -119,104 +147,92 @@ export class BlogService {
   // Get posts by tag
   async getPostsByTag(tag: string): Promise<PublicBlogPost[]> {
     try {
-      let params = new HttpParams();
-      params = params.set('status', 'published');
-      params = params.set('search', tag); // Backend searches in tags too
-      params = params.set('sortBy', 'publishedAt');
-      params = params.set('sortOrder', 'desc');
+      const allPosts = await this.getPublishedPosts();
 
-      const response = await firstValueFrom(
-        this.http.get<PublicBlogPost[]>(this.apiUrl, { params })
-      );
-
-      // Additional filtering to ensure the tag is actually in the post's tags
-      return response.filter(post =>
-        this.parseTags(post.tags).some(postTag =>
+      return allPosts.filter(post => {
+        const postTags = this.parseTags(post.tags);
+        return postTags.some(postTag =>
           postTag.toLowerCase() === tag.toLowerCase()
-        )
-      );
+        );
+      });
     } catch (error) {
-      console.error(`Error fetching posts by tag ${tag}:`, error);
+      console.error(`Error fetching posts with tag ${tag}:`, error);
       return [];
     }
   }
 
-  // Get all unique tags from published posts
+  // Get all unique tags
   async getAllTags(): Promise<string[]> {
     try {
-      const posts = await this.getPublishedPosts();
-      const allTags = new Set<string>();
+      const allPosts = await this.getPublishedPosts();
+      const allTags = allPosts
+        .flatMap(post => this.parseTags(post.tags))
+        .filter((tag, index, array) => array.indexOf(tag) === index)
+        .sort();
 
-      posts.forEach(post => {
-        this.parseTags(post.tags).forEach(tag => {
-          allTags.add(tag);
-        });
-      });
-
-      return Array.from(allTags).sort();
+      return allTags;
     } catch (error) {
       console.error('Error fetching all tags:', error);
       return [];
     }
   }
 
-  // Utility method to parse tags from string
-  parseTags(tagsString: string): string[] {
-    if (!tagsString) return [];
-    return tagsString
-      .split(',')
-      .map(tag => tag.trim())
-      .filter(tag => tag.length > 0);
+  // Search posts by title or content
+  async searchPosts(query: string): Promise<PublicBlogPost[]> {
+    try {
+      const allPosts = await this.getPublishedPosts();
+      const searchQuery = query.toLowerCase();
+
+      return allPosts.filter(post =>
+        post.title.toLowerCase().includes(searchQuery) ||
+        post.summary.toLowerCase().includes(searchQuery) ||
+        this.parseTags(post.tags).some(tag =>
+          tag.toLowerCase().includes(searchQuery)
+        )
+      );
+    } catch (error) {
+      console.error(`Error searching posts with query ${query}:`, error);
+      return [];
+    }
   }
 
-  // Utility method to format date for display
-  formatDate(dateString: string): string {
+  // Increment view count (optional method)
+  private async incrementViewCount(postId: number): Promise<void> {
+    try {
+      await firstValueFrom(
+        this.http.post(`${this.apiUrl}/${postId}/view`, {})
+      );
+    } catch (error) {
+      // Silently fail - this is not critical
+      console.debug('Could not increment view count:', error);
+    }
+  }
+
+  // Helper method to parse tags
+  private parseTags(tags: string): string[] {
+    return tags ? tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0) : [];
+  }
+
+  // Helper method to calculate reading time (if not provided by backend)
+  calculateReadingTime(content: string): number {
+    const wordsPerMinute = 200;
+    const wordCount = content.split(/\s+/).length;
+    return Math.ceil(wordCount / wordsPerMinute);
+  }
+
+  // Helper method to format date
+  formatDate(dateString: string, locale: string = 'ro-RO'): string {
     const date = new Date(dateString);
-    return date.toLocaleDateString('ro-RO', {
+    return date.toLocaleDateString(locale, {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
     });
   }
 
-  // Utility method to format reading time
-  getReadingTimeText(minutes: number): string {
-    if (minutes === 1) return '1 min citire';
-    return `${minutes} min citire`;
-  }
-
-  // Utility method to truncate text
-  truncateText(text: string, maxLength: number = 150): string {
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength).trim() + '...';
-  }
-
-  // Utility method to create excerpt from content
-  createExcerpt(content: string, maxLength: number = 200): string {
-    // Remove HTML tags if any
-    const textContent = content.replace(/<[^>]*>/g, '');
-    return this.truncateText(textContent, maxLength);
-  }
-
-  // Utility method to get primary image or placeholder
-  getPrimaryImage(post: PublicBlogPost): string {
-    return post.featuredImage || '/assets/images/blog-placeholder.jpg';
-  }
-
-  // Generate blog post URL
-  generatePostUrl(slug: string): string {
-    return `/blog/${slug}`;
-  }
-
-  // Check if post has images
-  hasImages(post: PublicBlogPost): boolean {
-    return post.imageCount > 0;
-  }
-
-  // Get image count text
-  getImageCountText(imageCount: number): string {
-    if (imageCount === 0) return '';
-    if (imageCount === 1) return '1 imagine';
-    return `${imageCount} imagini`;
+  // Helper method to truncate text
+  truncateText(text: string, maxLength: number): string {
+    if (!text) return '';
+    return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
   }
 }

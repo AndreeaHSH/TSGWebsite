@@ -71,10 +71,19 @@
 
           <!-- Post Actions -->
           <div class="post-actions">
-            <button class="action-btn share-btn" (click)="sharePost()">
-              📤 Distribuie
+            <button class="action-btn" (click)="shareOnFacebook()" title="Distribuie pe Facebook">
+              📘 Facebook
             </button>
-            <button class="action-btn print-btn" (click)="printPost()">
+            <button class="action-btn" (click)="shareOnTwitter()" title="Distribuie pe Twitter">
+              🐦 Twitter
+            </button>
+            <button class="action-btn" (click)="shareOnLinkedIn()" title="Distribuie pe LinkedIn">
+              💼 LinkedIn
+            </button>
+            <button class="action-btn" (click)="copyLink()" title="Copiază link-ul">
+              🔗 Copiază link
+            </button>
+            <button class="action-btn" (click)="printPost()" title="Tipărește articolul">
               🖨️ Tipărește
             </button>
           </div>
@@ -82,12 +91,7 @@
 
         <!-- Featured Image -->
         <div *ngIf="blogPost.featuredImage" class="featured-image-container">
-          <img
-            [src]="getPrimaryImage(blogPost)"
-            [alt]="blogPost.title"
-            class="featured-image"
-            (error)="onImageError($event)"
-            loading="lazy">
+          <img [src]="blogPost.featuredImage" [alt]="blogPost.title" class="featured-image">
         </div>
 
         <!-- Post Summary -->
@@ -96,88 +100,70 @@
         </div>
 
         <!-- Post Content -->
-        <div class="post-content" [innerHTML]="blogPost.content"></div>
+        <div class="post-content" [innerHTML]="blogPost.content">
+        </div>
 
-        <!-- Additional Images Gallery -->
-        <div *ngIf="blogPost.blogImages && blogPost.blogImages.length > 1" class="images-gallery">
-          <h3 class="gallery-title">Galerie imagini</h3>
+        <!-- Images Gallery -->
+        <div *ngIf="blogPost.blogImages && blogPost.blogImages.length > 0" class="images-gallery">
+          <h3 class="gallery-title">Galerie foto</h3>
           <div class="gallery-grid">
             <div
-              *ngFor="let image of blogPost.blogImages; trackBy: trackByImage; let i = index"
+              *ngFor="let image of blogPost.blogImages; let i = index; trackBy: trackByImage"
               class="gallery-item"
               [class.featured]="i === 0">
-              <img
-                [src]="image"
-                [alt]="blogPost.title + ' - Imagine ' + (i + 1)"
-                class="gallery-image"
-                (error)="onImageError($event)"
-                loading="lazy">
+              <img [src]="image" [alt]="'Imagine ' + (i + 1) + ' din articol'" class="gallery-img">
             </div>
           </div>
         </div>
 
-        <!-- Post Footer -->
-        <footer class="post-footer">
-          <div class="post-tags-footer">
-            <h4 class="tags-title">Categorii:</h4>
-            <span
-              *ngFor="let tag of parseTags(blogPost.tags); trackBy: trackByTag"
-              class="tag"
-              (click)="navigateToTag(tag)">
-              {{ tag }}
-            </span>
+        <!-- Post Share -->
+        <div class="post-share">
+          <h4 class="share-title">Distribuie acest articol</h4>
+          <div class="share-buttons">
+            <button class="share-btn facebook" (click)="shareOnFacebook()">
+              📘 Facebook
+            </button>
+            <button class="share-btn twitter" (click)="shareOnTwitter()">
+              🐦 Twitter
+            </button>
+            <button class="share-btn linkedin" (click)="shareOnLinkedIn()">
+              💼 LinkedIn
+            </button>
+            <button class="share-btn copy" (click)="copyLink()">
+              🔗 Copiază link
+            </button>
           </div>
-
-          <div class="post-share">
-            <h4 class="share-title">Distribuie:</h4>
-            <div class="share-buttons">
-              <button class="social-btn facebook" (click)="sharePost()">
-                📘 Facebook
-              </button>
-              <button class="social-btn twitter" (click)="sharePost()">
-                🐦 Twitter
-              </button>
-              <button class="social-btn linkedin" (click)="sharePost()">
-                💼 LinkedIn
-              </button>
-            </div>
-          </div>
-        </footer>
+        </div>
 
         <!-- Related Posts -->
-        <section *ngIf="relatedPosts.length > 0" class="related-posts">
+        <div *ngIf="relatedPosts.length > 0" class="related-posts">
           <h3 class="related-title">Articole similare</h3>
           <div class="related-grid">
             <div
-              *ngFor="let post of relatedPosts; trackBy: trackByPostId"
+              *ngFor="let post of relatedPosts; trackBy: trackByRelatedPost"
               class="related-post-card"
-              (click)="navigateToPost(post)">
+              (click)="navigateToRelatedPost(post)">
 
               <div class="related-image" *ngIf="post.featuredImage">
-                <img
-                  [src]="getPrimaryImage(post)"
-                  [alt]="post.title"
-                  class="related-img"
-                  (error)="onImageError($event)"
-                  loading="lazy">
+                <img [src]="post.featuredImage" [alt]="post.title" class="related-img">
               </div>
 
               <div class="related-content">
                 <h4 class="related-post-title">{{ post.title }}</h4>
-                <p class="related-excerpt">{{ post.summary }}</p>
+                <p class="related-excerpt">{{ truncateText(post.summary, 100) }}</p>
                 <div class="related-meta">
-                  <span class="related-date">{{ formatDate(post.publishedAt) }}</span>
-                  <span class="related-reading-time">{{ getReadingTimeText(post.readingTime) }}</span>
+                  <span>{{ formatDate(post.publishedAt) }}</span>
+                  <span>{{ getReadingTimeText(post.readingTime) }}</span>
                 </div>
               </div>
             </div>
           </div>
-        </section>
+        </div>
 
-        <!-- Navigation -->
+        <!-- Post Navigation -->
         <div class="post-navigation">
-          <button class="nav-btn back-to-blog" (click)="goBackToBlog()">
-            ← Toate articolele
+          <button class="nav-btn" (click)="goBackToBlog()">
+            Înapoi la toate articolele
           </button>
         </div>
 

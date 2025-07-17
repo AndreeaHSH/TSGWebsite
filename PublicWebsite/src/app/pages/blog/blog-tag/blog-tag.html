@@ -1,0 +1,105 @@
+<!-- PublicWebsite/src/app/pages/blog/blog-tag/blog-tag.html -->
+<main class="site-main">
+  <section class="blog-tag-section">
+    <div class="section-container">
+
+      <!-- Back Navigation -->
+      <div class="back-navigation">
+        <button class="back-link" (click)="goBackToBlog()">
+          ← Înapoi la blog
+        </button>
+      </div>
+
+      <!-- Section Header -->
+      <div class="blog-header">
+        <h2 class="section-title">
+          <span class="tag-icon">🏷️</span>
+          Articole cu tag: <span class="current-tag">{{ currentTag }}</span>
+        </h2>
+        <p class="section-subtitle" *ngIf="!isLoading && !error">
+          {{ blogPosts.length }}
+          {{ blogPosts.length === 1 ? 'articol găsit' : 'articole găsite' }}
+        </p>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="loading-container">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Se încarcă articolele...</p>
+      </div>
+
+      <!-- Error State -->
+      <div *ngIf="error && !isLoading" class="error-container">
+        <div class="error-icon">⚠️</div>
+        <h3 class="error-title">Nu am putut încărca articolele</h3>
+        <p class="error-message">{{ error }}</p>
+        <button class="retry-btn" (click)="retryLoad()">
+          Încearcă din nou
+        </button>
+      </div>
+
+      <!-- Blog Posts Content -->
+      <div *ngIf="!isLoading && !error" class="blog-content">
+
+        <!-- Blog Posts Grid -->
+        <div *ngIf="blogPosts.length > 0" class="blog-posts-grid">
+          <div
+            *ngFor="let post of blogPosts; trackBy: trackByPost"
+            class="blog-post-card"
+            (click)="navigateToPost(post)">
+
+            <div class="post-image" *ngIf="post.featuredImage">
+              <img [src]="post.featuredImage" [alt]="post.title" class="post-img">
+            </div>
+
+            <div class="card-content">
+              <div class="post-meta">
+                <span class="post-author">{{ post.author }}</span>
+                <span class="post-date">{{ formatDate(post.publishedAt) }}</span>
+                <span class="reading-time">{{ getReadingTimeText(post.readingTime) }}</span>
+              </div>
+
+              <h3 class="post-title">{{ post.title }}</h3>
+
+              <p class="post-excerpt">
+                {{ truncateText(post.summary, 120) }}
+              </p>
+
+              <div *ngIf="parseTags(post.tags).length > 0" class="post-tags">
+                <span
+                  *ngFor="let tag of parseTags(post.tags); trackBy: trackByTag"
+                  class="tag"
+                  [class.current-tag-highlight]="tag.toLowerCase() === currentTag.toLowerCase()"
+                  (click)="navigateToTag(tag); $event.stopPropagation()">
+                  {{ tag }}
+                </span>
+              </div>
+
+              <div class="post-stats">
+                <span class="view-count">
+                  <span class="view-icon">👁️</span>
+                  {{ post.viewCount }} vizualizări
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="blogPosts.length === 0" class="empty-state">
+          <div class="empty-icon">🔍</div>
+          <h3 class="empty-title">Nu există articole cu tag-ul "{{ currentTag }}"</h3>
+          <p class="empty-message">
+            Nu am găsit niciun articol cu acest tag.
+            Încearcă să navighezi înapoi la blog pentru a vedea toate articolele disponibile.
+          </p>
+          <button class="back-to-blog-btn" (click)="goBackToBlog()">
+            Vezi toate articolele
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+</main>

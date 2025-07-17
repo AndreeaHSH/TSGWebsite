@@ -1,83 +1,87 @@
-// PublicWebsite/src/app/pages/blog/blog.ts
+// PublicWebsite/src/app/pages/blog/blog-tag/blog-tag.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import { BlogService, PublicBlogPost } from '../../services/blog';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Title } from '@angular/platform-browser';
+import { BlogService, PublicBlogPost } from '../../../services/blog';
 
 @Component({
-  selector: 'app-blog',
+  selector: 'app-blog-tag',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './blog.html',
-  styleUrls: ['./blog.scss']
+  templateUrl: './blog-tag.html',
+  styleUrls: ['./blog-tag.scss']
 })
-export class BlogComponent implements OnInit {
-  featuredPost: PublicBlogPost | null = null;
+export class BlogTagComponent implements OnInit {
+  currentTag = '';
   blogPosts: PublicBlogPost[] = [];
-  allTags: string[] = [];
+  allPosts: PublicBlogPost[] = [];
   isLoading = true;
   error: string | null = null;
 
   constructor(
+    private route: ActivatedRoute,
+    private router: Router,
     private blogService: BlogService,
-    private router: Router
+    private titleService: Title
   ) {}
 
   async ngOnInit(): Promise<void> {
-    await this.loadBlogData();
+    // Get tag from route parameters
+    this.route.params.subscribe(async params => {
+      this.currentTag = params['tag'];
+      if (this.currentTag) {
+        this.titleService.setTitle(`${this.currentTag} - Blog TSG`);
+        await this.loadPostsByTag();
+      } else {
+        this.router.navigate(['/blog']);
+      }
+    });
   }
 
-  async loadBlogData(): Promise<void> {
+  async loadPostsByTag(): Promise<void> {
     this.isLoading = true;
     this.error = null;
 
     try {
-      // Load featured post and other posts
-      const [featured, posts] = await Promise.all([
-        this.blogService.getFeaturedPost(),
-        this.blogService.getPublishedPosts()
-      ]);
+      // Load all published posts
+      this.allPosts = await this.blogService.getPublishedPosts();
 
-      this.featuredPost = featured;
-      this.blogPosts = posts?.filter(post => post.id !== featured?.id) || [];
-
-      // Extract unique tags
-      this.extractTags();
+      // Filter posts by current tag
+      this.blogPosts = this.allPosts.filter(post =>
+        this.parseTags(post.tags).some(tag =>
+          tag.toLowerCase() === this.currentTag.toLowerCase()
+        )
+      );
 
     } catch (error) {
-      console.error('Error loading blog data:', error);
+      console.error('Error loading posts by tag:', error);
       this.error = 'Nu am putut încărca articolele. Vă rugăm să încercați din nou.';
     } finally {
       this.isLoading = false;
     }
   }
 
-  private extractTags(): void {
-    const allPostTags = [this.featuredPost, ...this.blogPosts]
-      .filter(post => post && post.tags)
-      .flatMap(post => this.parseTags(post!.tags));
-
-    this.allTags = [...new Set(allPostTags)].sort();
+  // Navigation methods
+  goBackToBlog(): void {
+    this.router.navigate(['/blog']);
   }
 
-  // Navigate to blog detail page using slug
   navigateToPost(post: PublicBlogPost): void {
     if (post?.slug) {
       this.router.navigate(['/blog', post.slug]);
     }
   }
 
-  // Navigate to tag filter page
   navigateToTag(tag: string): void {
     this.router.navigate(['/blog/tag', tag]);
   }
 
-  // Parse tags from comma-separated string
+  // Utility methods
   parseTags(tags: string): string[] {
     return tags ? tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0) : [];
   }
 
-  // Format date for display
   formatDate(dateString: string): string {
     const date = new Date(dateString);
     return date.toLocaleDateString('ro-RO', {
@@ -87,18 +91,16 @@ export class BlogComponent implements OnInit {
     });
   }
 
-  // Get reading time text
   getReadingTimeText(readingTime: number): string {
     return `${readingTime} min citire`;
   }
 
-  // Truncate text to specified length
   truncateText(text: string, maxLength: number): string {
     if (!text) return '';
     return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
   }
 
-  // Track by function for ngFor
+  // Track by functions
   trackByPost(index: number, post: PublicBlogPost): number {
     return post.id;
   }
@@ -107,8 +109,8 @@ export class BlogComponent implements OnInit {
     return tag;
   }
 
-  // Retry loading data
+  // Retry functionality
   async retryLoad(): Promise<void> {
-    await this.loadBlogData();
+    await this.loadPostsByTag();
   }
 }
