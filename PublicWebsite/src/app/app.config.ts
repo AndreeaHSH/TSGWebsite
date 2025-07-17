@@ -1,24 +1,18 @@
+// PublicWebsite/src/app/app.config.ts
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter, withEnabledBlockingInitialNavigation, withInMemoryScrolling } from '@angular/router';
-import { provideAnimations } from '@angular/platform-browser/animations';
-import { provideHttpClient, withInterceptors, withFetch } from '@angular/common/http';
+import { provideRouter } from '@angular/router';
 import { provideClientHydration } from '@angular/platform-browser';
+import { provideHttpClient, withFetch } from '@angular/common/http';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(
-      routes,
-      withEnabledBlockingInitialNavigation(),
-      withInMemoryScrolling({ scrollPositionRestoration: 'top' })
-    ),
-    provideAnimations(),
-    provideHttpClient(
-      withFetch(),
-      withInterceptors([])
-    ),
-    provideClientHydration()
+    provideRouter(routes),
+    provideClientHydration(),
+    provideHttpClient(withFetch()),
+    provideAnimationsAsync()
   ]
 };

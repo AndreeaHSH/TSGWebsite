@@ -181,3 +181,4 @@ C:\Repo\TSGwebsite\Backend\obj\Debug\net8.0\TSGwebsite.genruntimeconfig.cache
 C:\Repo\TSGwebsite\Backend\obj\Debug\net8.0\ref\TSGwebsite.dll
 C:\Repo\TSGwebsite\Backend\obj\Debug\net8.0\TSGwebsite.sourcelink.json
 C:\Repo\TSGwebsite\Backend\bin\Debug\net8.0\itextsharp.dll
+C:\Repo\TSGwebsite\Backend\bin\Debug\net8.0\TSGwebsite.staticwebassets.runtime.json

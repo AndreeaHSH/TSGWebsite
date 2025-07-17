@@ -1,6 +1,16 @@
+// AdminDashboard/src/app/components/layout/sidebar/sidebar.component.ts
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
+
+interface NavigationItem {
+  label: string;
+  route: string;
+  icon: string;
+  isActive?: boolean;
+  isEnabled: boolean;
+  description?: string;
+}
 
 @Component({
   selector: 'app-sidebar',
@@ -11,45 +21,47 @@ import { RouterModule, Router } from '@angular/router';
 })
 export class SidebarComponent {
 
-  constructor(private router: Router) {}
-
-  navigationItems = [
+  navigationItems: NavigationItem[] = [
     {
-      id: 'aplicari',
       label: 'Aplicări',
       route: '/aplicari',
-      icon: '👥'
+      icon: '📋',
+      isEnabled: true,
+      description: 'Gestionează aplicările de voluntariat'
     },
     {
-      id: 'blog',
       label: 'Blog',
       route: '/blog',
-      icon: '📝'
+      icon: '📝',
+      isEnabled: true,
+      description: 'Creează și gestionează postările de blog'
     },
     {
-      id: 'raport',
       label: 'Raport',
       route: '/raport',
-      icon: '📊'
+      icon: '📊',
+      isEnabled: false,
+      description: 'Statistici și rapoarte (în curând)'
     }
   ];
 
-  isActiveRoute(route: string): boolean {
-    return this.router.url.includes(route);
-  }
+  constructor(private router: Router) {}
 
-  onNavigate(route: string): void {
-    // Only navigate to existing routes
-    if (route === '/aplicari') {
+  navigateTo(route: string, isEnabled: boolean): void {
+    if (isEnabled) {
       this.router.navigate([route]);
-    } else {
-      // Temporarily show alert for non-implemented routes
-      alert(`Secțiunea "${route}" va fi implementată în curând!`);
     }
   }
 
-  onLogin(): void {
-    // Temporarily show alert for login
-    alert('Funcționalitatea de login va fi implementată în curând!');
+  isRouteActive(route: string): boolean {
+    return this.router.url === route || this.router.url.startsWith(route + '/');
+  }
+
+  // Handle logout (placeholder for future implementation)
+  logout(): void {
+    // TODO: Implement logout functionality
+    console.log('Logout functionality will be implemented here');
+    // For now, just show an alert
+    alert('Funcționalitatea de logout va fi implementată în curând');
   }
 }

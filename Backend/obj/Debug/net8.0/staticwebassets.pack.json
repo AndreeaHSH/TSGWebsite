@@ -1,0 +1,25 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Repo\\TSGwebsite\\Backend\\wwwroot\\uploads\\blog\\featured_20250717_114908_Captură de ecran 2025-02-17 190954.png",
+      "PackagePath": "staticwebassets\\uploads\\blog\\featured_20250717_114908_Captură de ecran 2025-02-17 190954.png"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.TSGwebsite.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.TSGwebsite.props",
+      "PackagePath": "build\\TSGwebsite.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.TSGwebsite.props",
+      "PackagePath": "buildMultiTargeting\\TSGwebsite.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.TSGwebsite.props",
+      "PackagePath": "buildTransitive\\TSGwebsite.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

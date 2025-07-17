@@ -1,9 +1,10 @@
+<!-- PublicWebsite/src/app/pages/blog/blog.html -->
 <main class="site-main">
   <section class="blog-section">
     <div class="section-container">
 
       <!-- Blog Header -->
-      <div class="blog-header" [@fadeInUp]>
+      <div class="blog-header">
         <h2 class="section-title">Blog Transilvania Star Group</h2>
         <p class="blog-description">
           Descoperă ultimele noutăți, articole tehnice și povești din spatele proiectelor noastre.
@@ -11,130 +12,133 @@
         </p>
       </div>
 
-      <!-- Featured Post -->
-      <article class="featured-post" [@fadeInUp]>
-        <div class="post-image" *ngIf="featuredPost.imageUrl">
-          <img
-            [src]="featuredPost.imageUrl"
-            [alt]="featuredPost.title"
-            class="post-img"
-            (error)="onImageError($event)"
-            loading="lazy">
-        </div>
-        <div class="post-content">
-          <div class="post-meta">
-            <time
-              class="post-date"
-              [dateTime]="featuredPost.date.toISOString()">
-              {{ formatDate(featuredPost.date) }}
-            </time>
-          </div>
-          <h3 class="post-title">{{ featuredPost.title }}</h3>
-          <div class="post-excerpt">
-            <p>{{ featuredPost.excerpt }}</p>
-          </div>
-          <div class="post-tags">
-            <span
-              *ngFor="let tag of featuredPost.tags"
-              class="tag">
-              {{ tag }}
-            </span>
-          </div>
-        </div>
-      </article>
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="loading-container">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Se încarcă postările...</p>
+      </div>
 
-      <!-- Blog Posts Grid -->
-      <div class="blog-posts-grid" [@staggerCards]>
-        <article
-          *ngFor="let post of blogPosts; trackBy: trackByPostId; let i = index"
-          class="blog-post-card"
-          [style.animation-delay.s]="i * 0.1">
+      <!-- Error State -->
+      <div *ngIf="error && !isLoading" class="error-container">
+        <div class="error-icon">⚠️</div>
+        <h3 class="error-title">Eroare la încărcarea blogului</h3>
+        <p class="error-message">{{ error }}</p>
+        <button class="retry-btn" (click)="retryLoad()">
+          Încearcă din nou
+        </button>
+      </div>
 
-          <div class="card-content">
-            <div class="post-meta">
-              <time
-                class="post-date"
-                [dateTime]="post.date.toISOString()">
-                {{ formatDate(post.date) }}
-              </time>
+      <!-- Blog Content -->
+      <div *ngIf="!isLoading && !error">
+
+        <!-- Featured Post -->
+        <div *ngIf="featuredPost" class="featured-post" (click)="navigateToPost(featuredPost)">
+          <div class="post-image" *ngIf="featuredPost.featuredImage">
+            <img
+              [src]="getPrimaryImage(featuredPost)"
+              [alt]="featuredPost.title"
+              class="post-img"
+              (error)="onImageError($event)"
+              loading="lazy">
+            <div *ngIf="hasImages(featuredPost) && featuredPost.imageCount > 1" class="image-count-badge">
+              +{{ featuredPost.imageCount - 1 }} imagini
             </div>
-            <h3 class="post-title">{{ post.title }}</h3>
-            <p class="post-excerpt">{{ post.excerpt }}</p>
-            <div class="post-tags">
+          </div>
+
+          <div class="post-content">
+            <div class="post-meta">
+              <span class="post-date">{{ formatDate(featuredPost.publishedAt) }}</span>
+              <span class="reading-time">{{ getReadingTimeText(featuredPost.readingTime) }}</span>
+              <span class="post-author">de {{ featuredPost.author }}</span>
+            </div>
+
+            <h3 class="post-title">{{ featuredPost.title }}</h3>
+
+            <p class="post-excerpt">
+              {{ truncateText(featuredPost.summary, 300) }}
+            </p>
+
+            <div *ngIf="parseTags(featuredPost.tags).length > 0" class="post-tags">
               <span
-                *ngFor="let tag of post.tags"
-                class="tag">
+                *ngFor="let tag of parseTags(featuredPost.tags); trackBy: trackByTag"
+                class="tag"
+                (click)="navigateToTag(tag); $event.stopPropagation()">
                 {{ tag }}
               </span>
             </div>
           </div>
-        </article>
-      </div>
-
-      <!-- Blog Categories -->
-      <div class="blog-categories" [@fadeInUp]>
-        <h3 class="categories-title">Categorii</h3>
-        <div class="categories-grid">
-          <a
-            *ngFor="let category of categories; trackBy: trackByCategoryId"
-            href="#"
-            class="category-link"
-            (click)="onCategoryClick(category); $event.preventDefault()">
-            <span class="category-icon">{{ category.icon }}</span>
-            <span class="category-name">{{ category.name }}</span>
-            <span class="category-count">{{ category.count }} articole</span>
-          </a>
         </div>
-      </div>
 
-      <!-- Newsletter Signup -->
-      <div class="newsletter-signup" [@fadeInUp]>
-        <div class="newsletter-content">
-          <h3 class="newsletter-title">Rămâi la curent cu TSG</h3>
-          <p class="newsletter-description">
-            Abonează-te la newsletter-ul nostru pentru a primi ultimele noutăți despre proiectele TSG,
-            oportunități de voluntariat și articole tehnice.
+        <!-- Blog Posts Grid -->
+        <div *ngIf="blogPosts.length > 0" class="blog-posts-section">
+          <h3 class="posts-section-title">Alte articole</h3>
+
+          <div class="blog-posts-grid">
+            <div
+              *ngFor="let post of blogPosts; trackBy: trackByPostId"
+              class="blog-post-card"
+              (click)="navigateToPost(post)">
+
+              <div class="post-image" *ngIf="post.featuredImage">
+                <img
+                  [src]="getPrimaryImage(post)"
+                  [alt]="post.title"
+                  class="post-img"
+                  (error)="onImageError($event)"
+                  loading="lazy">
+                <div *ngIf="hasImages(post) && post.imageCount > 1" class="image-count-badge">
+                  +{{ post.imageCount - 1 }}
+                </div>
+              </div>
+
+              <div class="card-content">
+                <div class="post-meta">
+                  <span class="post-date">{{ formatDate(post.publishedAt) }}</span>
+                  <span class="reading-time">{{ getReadingTimeText(post.readingTime) }}</span>
+                </div>
+
+                <h4 class="post-title">{{ post.title }}</h4>
+
+                <p class="post-excerpt">
+                  {{ truncateText(post.summary, 120) }}
+                </p>
+
+                <div *ngIf="parseTags(post.tags).length > 0" class="post-tags">
+                  <span
+                    *ngFor="let tag of parseTags(post.tags); trackBy: trackByTag"
+                    class="tag"
+                    (click)="navigateToTag(tag); $event.stopPropagation()">
+                    {{ tag }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Blog Categories/Tags -->
+        <div *ngIf="allTags.length > 0" class="blog-categories">
+          <h3 class="categories-title">Explorează după categorii</h3>
+          <div class="categories-grid">
+            <button
+              *ngFor="let tag of allTags; trackBy: trackByTag"
+              class="category-link"
+              (click)="navigateToTag(tag)">
+              <span class="category-name">{{ tag }}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!featuredPost && blogPosts.length === 0" class="empty-state">
+          <div class="empty-icon">📝</div>
+          <h3 class="empty-title">În curând vor apărea articole</h3>
+          <p class="empty-message">
+            Echipa TSG lucrează la conținut interesant pentru tine.
+            Urmărește această pagină pentru ultimele noutăți!
           </p>
-          <form
-            [formGroup]="newsletterForm"
-            (ngSubmit)="onNewsletterSubmit()"
-            class="newsletter-form">
-
-            <div class="form-group">
-              <input
-                type="email"
-                formControlName="email"
-                class="newsletter-input"
-                [class.invalid]="isNewsletterFieldInvalid('email')"
-                placeholder="Adresa ta de email">
-
-              <button
-                type="submit"
-                class="newsletter-btn"
-                [disabled]="isSubscribing || newsletterForm.invalid">
-                <span *ngIf="!isSubscribing">Abonează-te</span>
-                <span *ngIf="isSubscribing">Se abonează...</span>
-              </button>
-            </div>
-
-            <div *ngIf="isNewsletterFieldInvalid('email')" class="error-message">
-              {{ getNewsletterFieldError('email') }}
-            </div>
-
-            <label class="newsletter-checkbox">
-              <input
-                type="checkbox"
-                formControlName="agreeToPrivacy"
-                [class.invalid]="isNewsletterFieldInvalid('agreeToPrivacy')">
-              <span class="checkmark"></span>
-              Sunt de acord cu <a href="#" class="privacy-link">politica de confidențialitate</a>
-            </label>
-
-            <div *ngIf="isNewsletterFieldInvalid('agreeToPrivacy')" class="error-message">
-              {{ getNewsletterFieldError('agreeToPrivacy') }}
-            </div>
-          </form>
         </div>
+
       </div>
 
     </div>

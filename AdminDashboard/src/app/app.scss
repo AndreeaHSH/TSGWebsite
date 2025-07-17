@@ -1,19 +1,166 @@
-.admin-layout {
+// AdminDashboard/src/app/app.scss
+
+// Global app layout
+.app-container {
   display: flex;
   height: 100vh;
   overflow: hidden;
-}
 
-.main-content {
-  flex: 1;
-  background: #ffffff;
-  overflow-y: auto;
-  padding: 0;
-}
-
-// Responsive
-@media (max-width: 768px) {
-  .admin-layout {
+  @media (max-width: 768px) {
     flex-direction: column;
+    height: auto;
+    overflow: visible;
+  }
+}
+
+.app-sidebar {
+  flex-shrink: 0;
+
+  @media (max-width: 768px) {
+    order: 1; // Sidebar at top on mobile
+  }
+}
+
+.app-main {
+  flex: 1;
+  margin-left: 280px; // Match sidebar width
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #f8f9fa;
+  min-height: 100vh;
+
+  @media (max-width: 1024px) {
+    margin-left: 250px; // Smaller sidebar on tablets
+  }
+
+  @media (max-width: 768px) {
+    margin-left: 0;
+    order: 2; // Main content below sidebar on mobile
+    min-height: auto;
+  }
+}
+
+// Global styles for smooth transitions
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: #f8f9fa;
+  color: #333;
+  line-height: 1.6;
+}
+
+// Router outlet animations
+router-outlet + * {
+  animation: routeAnimation 0.3s ease-in-out;
+}
+
+@keyframes routeAnimation {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Global scrollbar styling
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+
+  &:hover {
+    background: #a8a8a8;
+  }
+}
+
+// Ensure proper spacing for page content
+.page-content {
+  padding: 0; // Remove default padding since components handle their own
+  width: 100%;
+  min-height: 100vh;
+}
+
+// Loading states
+.global-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  font-size: 1.2rem;
+  color: #FF6D48;
+}
+
+// Error states
+.global-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 2rem;
+  text-align: center;
+  color: #dc3545;
+
+  h2 {
+    color: #FF6D48;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    margin-bottom: 2rem;
+    max-width: 400px;
+  }
+}
+
+// Responsive utilities
+@media (max-width: 768px) {
+  .hide-mobile {
+    display: none !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .hide-desktop {
+    display: none !important;
+  }
+}
+
+// Focus styles for accessibility
+*:focus {
+  outline: 2px solid #FF6D48;
+  outline-offset: 2px;
+}
+
+// Skip to content link for accessibility
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: #FF6D48;
+  color: white;
+  padding: 8px;
+  text-decoration: none;
+  border-radius: 4px;
+  z-index: 9999;
+
+  &:focus {
+    top: 6px;
   }
 }

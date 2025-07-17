@@ -1,0 +1,253 @@
+<!-- AdminDashboard/src/app/components/blog/blog-management/blog-management.component.html -->
+<div class="blog-management-container">
+
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">Management Blog</h1>
+      <p class="page-subtitle">Gestionează postările de pe website-ul public</p>
+    </div>
+    <button
+      class="create-btn"
+      (click)="navigateToCreate()"
+      [disabled]="isLoading()">
+      <span class="btn-icon">+</span>
+      Adaugă Post Nou
+    </button>
+  </div>
+
+  <!-- Filters and Search Section -->
+  <div class="filters-section">
+    <div class="search-container">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input
+          type="text"
+          [(ngModel)]="filters.search"
+          (ngModelChange)="onFilterChange()"
+          placeholder="Caută după titlu, rezumat, tags sau autor..."
+          class="search-input">
+      </div>
+    </div>
+
+    <div class="filter-controls">
+      <div class="filter-group">
+        <label class="filter-label">Status:</label>
+        <select
+          [(ngModel)]="filters.status"
+          (ngModelChange)="onFilterChange()"
+          class="filter-select">
+          <option value="all">Toate</option>
+          <option value="published">Publicate</option>
+          <option value="draft">Ciorne</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">Sortare:</label>
+        <select
+          [(ngModel)]="filters.sortBy"
+          (ngModelChange)="onFilterChange()"
+          class="filter-select">
+          <option value="createdAt">Data creării</option>
+          <option value="publishedAt">Data publicării</option>
+          <option value="title">Titlu</option>
+          <option value="viewCount">Vizualizări</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">Ordine:</label>
+        <select
+          [(ngModel)]="filters.sortOrder"
+          (ngModelChange)="onFilterChange()"
+          class="filter-select">
+          <option value="desc">Descrescător</option>
+          <option value="asc">Crescător</option>
+        </select>
+      </div>
+
+      <!-- Clear Filters Button -->
+      <button
+        *ngIf="hasActiveFilters()"
+        class="clear-filters-btn"
+        (click)="clearFilters()"
+        title="Șterge toate filtrele">
+        ✕ Șterge filtre
+      </button>
+    </div>
+  </div>
+
+  <!-- Results Summary -->
+  <div class="results-summary" *ngIf="!isLoading()">
+    <span class="results-count">{{ getResultsSummaryText() }}</span>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error()" class="error-message">
+    <span class="error-icon">⚠️</span>
+    <span class="error-text">{{ error() }}</span>
+    <button class="retry-btn" (click)="retryLoad()">Încearcă din nou</button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading()" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p class="loading-text">Se încarcă postările...</p>
+  </div>
+
+  <!-- Blog Posts Grid -->
+  <div *ngIf="!isLoading() && !error()" class="posts-grid">
+
+    <!-- Empty State -->
+    <div *ngIf="filteredPosts().length === 0" class="empty-state">
+      <div class="empty-icon">📝</div>
+      <h3 class="empty-title">{{ getEmptyStateTitle() }}</h3>
+      <p class="empty-message">{{ getEmptyStateMessage() }}</p>
+      <button
+        *ngIf="shouldShowCreateInEmptyState()"
+        class="create-btn-secondary"
+        (click)="navigateToCreate()">
+        Creează prima postare
+      </button>
+    </div>
+
+    <!-- Blog Posts Cards -->
+    <div *ngFor="let post of filteredPosts(); trackBy: trackByPost" class="post-card">
+
+      <!-- Card Header -->
+      <div class="card-header">
+        <div class="post-info">
+          <h3 class="post-title">{{ post.title }}</h3>
+          <div class="post-meta">
+            <span class="post-author">{{ post.author }}</span>
+            <span class="post-date">{{ formatDate(post.createdAt) }}</span>
+            <span class="reading-time">{{ getReadingTimeText(post.readingTime) }}</span>
+          </div>
+        </div>
+
+        <div class="card-actions">
+          <span
+            class="status-badge"
+            [style.background-color]="getStatusColor(post)">
+            {{ getStatusText(post) }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Card Content -->
+      <div class="card-content">
+        <p class="post-summary">{{ truncateSummary(post.summary) }}</p>
+
+        <!-- Featured Image Preview -->
+        <div *ngIf="post.featuredImage" class="featured-image-preview">
+          <img [src]="post.featuredImage" [alt]="post.title" class="preview-image">
+          <div class="image-count-overlay" *ngIf="post.imageCount > 1">
+            <span class="image-count">{{ getImageCountText(post.imageCount) }}</span>
+          </div>
+        </div>
+
+        <!-- No Image State -->
+        <div *ngIf="!post.featuredImage" class="no-image-state">
+          <div class="no-image-placeholder">
+            <span class="no-image-icon">🖼️</span>
+            <span class="no-image-text">{{ getImageCountText(post.imageCount) }}</span>
+          </div>
+        </div>
+
+        <!-- Tags -->
+        <div *ngIf="getTags(post.tags).length > 0" class="tags-container">
+          <span
+            *ngFor="let tag of getTags(post.tags); trackBy: trackByTag"
+            class="tag">
+            {{ tag }}
+          </span>
+        </div>
+
+        <!-- Stats -->
+        <div class="post-stats">
+          <div class="stat">
+            <span class="stat-icon">👁️</span>
+            <span class="stat-text">{{ getViewCountText(post.viewCount) }}</span>
+          </div>
+          <div class="stat" *ngIf="post.publishedAt">
+            <span class="stat-icon">📅</span>
+            <span class="stat-text">{{ formatDate(post.publishedAt) }}</span>
+          </div>
+          <div class="stat" *ngIf="!post.publishedAt">
+            <span class="stat-icon">📝</span>
+            <span class="stat-text">Ciornă din {{ formatDate(post.createdAt) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Footer -->
+      <div class="card-footer">
+        <div class="action-buttons">
+          <button
+            class="action-btn edit-btn"
+            (click)="navigateToEdit(post.id)"
+            title="Editează postarea">
+            ✏️ Editează
+          </button>
+
+          <button
+            class="action-btn publish-btn"
+            (click)="togglePublishStatus(post)"
+            [disabled]="isPublishing(post.id)"
+            [title]="post.isPublished ? 'Retrage din publicare' : 'Publică postarea'">
+            <span *ngIf="isPublishing(post.id)" class="publishing-spinner">⏳</span>
+            <span *ngIf="!isPublishing(post.id)">
+              {{ post.isPublished ? '📤 Retrage' : '📢 Publică' }}
+            </span>
+          </button>
+
+          <button
+            class="action-btn delete-btn"
+            (click)="openDeleteConfirmation(post)"
+            title="Șterge postarea">
+            🗑️ Șterge
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div *ngIf="isDeleteConfirmOpen()" class="modal-overlay" (click)="closeDeleteConfirmation()">
+    <div class="confirmation-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 class="modal-title">Confirmare ștergere</h3>
+        <button class="modal-close-btn" (click)="closeDeleteConfirmation()">✕</button>
+      </div>
+
+      <div class="modal-content">
+        <div class="warning-icon">⚠️</div>
+        <p class="warning-text">
+          Ești sigur că vrei să ștergi postarea
+          <strong>"{{ postToDelete()?.title }}"</strong>?
+        </p>
+        <p class="warning-subtitle">
+          Această acțiune nu poate fi anulată și va șterge și toate imaginile asociate.
+        </p>
+      </div>
+
+      <div class="modal-footer">
+        <button
+          class="modal-btn cancel-btn"
+          (click)="closeDeleteConfirmation()"
+          [disabled]="isDeleting()">
+          Anulează
+        </button>
+        <button
+          class="modal-btn confirm-btn"
+          (click)="confirmDelete()"
+          [disabled]="isDeleting()">
+          <span *ngIf="isDeleting()" class="deleting-spinner">⏳</span>
+          <span *ngIf="!isDeleting()">🗑️ Șterge postarea</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>

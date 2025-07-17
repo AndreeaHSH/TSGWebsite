@@ -1,0 +1,338 @@
+<!-- AdminDashboard/src/app/components/blog/blog-editor/blog-editor.component.html -->
+<div class="blog-editor-container">
+
+  <!-- Header Section -->
+  <div class="editor-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        {{ isEditMode() ? 'Editează Postarea' : 'Postare Nouă' }}
+      </h1>
+      <div class="header-meta">
+        <span class="status-info" *ngIf="isEditMode()">
+          {{ formData().isPublished ? '📢 Publicat' : '📝 Ciornă' }}
+        </span>
+        <span class="last-saved" *ngIf="lastSaved()">
+          {{ getLastSavedText() }}
+        </span>
+        <span class="unsaved-indicator" *ngIf="hasUnsavedChanges()">
+          ● Modificări nesalvate
+        </span>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button
+        class="action-btn cancel-btn"
+        (click)="cancel()"
+        [disabled]="isSaving()">
+        Anulează
+      </button>
+      <button
+        class="action-btn draft-btn"
+        (click)="saveDraft()"
+        [disabled]="isSaving()">
+        <span *ngIf="isSaving()">💾 Se salvează...</span>
+        <span *ngIf="!isSaving()">💾 Salvează ca ciornă</span>
+      </button>
+      <button
+        class="action-btn publish-btn"
+        (click)="saveAndPublish()"
+        [disabled]="isSaving()">
+        <span *ngIf="isSaving()">📢 Se publică...</span>
+        <span *ngIf="!isSaving()">📢 {{ isEditMode() ? 'Actualizează' : 'Publică' }}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error()" class="error-message">
+    <span class="error-icon">⚠️</span>
+    <span class="error-text">{{ error() }}</span>
+    <button class="error-close" (click)="error.set(null)">✕</button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading()" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p class="loading-text">Se încarcă postarea...</p>
+  </div>
+
+  <!-- Editor Form -->
+  <div *ngIf="!isLoading()" class="editor-form">
+
+    <!-- Basic Information Section -->
+    <div class="form-section">
+      <h2 class="section-title">Informații de bază</h2>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="title">
+            Titlu <span class="required">*</span>
+          </label>
+          <input
+            type="text"
+            id="title"
+            class="form-input"
+            [(ngModel)]="formData().title"
+            (ngModelChange)="onTitleChange()"
+            placeholder="Introdu titlul postării..."
+            maxlength="200"
+            [class.error]="validationErrors()['title']">
+          <div class="form-error" *ngIf="validationErrors()['title']">
+            {{ validationErrors()['title'] }}
+          </div>
+          <div class="form-help">Maxim 200 de caractere</div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="slug">
+            Slug URL <span class="required">*</span>
+          </label>
+          <div class="slug-input-group">
+            <span class="slug-prefix">/blog/</span>
+            <input
+              type="text"
+              id="slug"
+              class="form-input slug-input"
+              [(ngModel)]="formData().slug"
+              (ngModelChange)="onSlugChange()"
+              placeholder="slug-url-postare"
+              maxlength="250"
+              [class.error]="validationErrors()['slug']">
+            <button
+              type="button"
+              class="slug-generate"
+              (click)="generateSlugFromTitle()"
+              title="Generează din titlu">
+              🔄
+            </button>
+          </div>
+          <div class="form-error" *ngIf="validationErrors()['slug']">
+            {{ validationErrors()['slug'] }}
+          </div>
+          <div class="form-help">URL-ul postării. Se generează automat din titlu.</div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group half-width">
+          <label class="form-label" for="author">Autor</label>
+          <input
+            type="text"
+            id="author"
+            class="form-input"
+            [(ngModel)]="formData().author"
+            (ngModelChange)="onAuthorChange()"
+            placeholder="Numele autorului"
+            maxlength="100">
+        </div>
+        <div class="form-group half-width">
+          <label class="form-label" for="tags">Tag-uri</label>
+          <input
+            type="text"
+            id="tags"
+            class="form-input"
+            [(ngModel)]="formData().tags"
+            (ngModelChange)="onTagsChange()"
+            placeholder="tag1, tag2, tag3"
+            maxlength="500">
+          <div class="form-help">Separate prin virgulă</div>
+        </div>
+      </div>
+
+      <!-- Tags Preview -->
+      <div *ngIf="getTags().length > 0" class="tags-preview">
+        <span class="tags-label">Preview tag-uri:</span>
+        <span *ngFor="let tag of getTags(); trackBy: trackByTag" class="tag-preview">{{ tag }}</span>
+      </div>
+    </div>
+
+    <!-- Content Section -->
+    <div class="form-section">
+      <h2 class="section-title">Conținut</h2>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="summary">Rezumat</label>
+          <textarea
+            id="summary"
+            class="form-textarea"
+            [(ngModel)]="formData().summary"
+            (ngModelChange)="onSummaryChange()"
+            placeholder="Scurt rezumat al postării pentru previzualizare..."
+            maxlength="500"
+            rows="3"></textarea>
+          <div class="form-help">Maxim 500 de caractere. Folosit pentru previzualizări.</div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="content">
+            Conținut <span class="required">*</span>
+          </label>
+          <textarea
+            id="content"
+            class="form-textarea content-editor"
+            [(ngModel)]="formData().content"
+            (ngModelChange)="onContentChange()"
+            placeholder="Scrie conținutul postării aici..."
+            rows="15"
+            [class.error]="validationErrors()['content']"></textarea>
+          <div class="form-error" *ngIf="validationErrors()['content']">
+            {{ validationErrors()['content'] }}
+          </div>
+          <div class="content-stats">
+            <span>{{ getWordCount() }} cuvinte</span>
+            <span>{{ getCharacterCount() }} caractere</span>
+            <span>{{ getReadingTime() }} min citire</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Media Gallery Section -->
+    <div class="form-section">
+      <h2 class="section-title">Galerie imagini</h2>
+      <p class="section-description">
+        Încarcă până la {{ maxImages }} imagini pentru postare. Prima imagine va fi imaginea principală.
+      </p>
+
+      <!-- Image Upload Area -->
+      <div
+        class="image-upload-area"
+        [class.drag-over]="dragOver()"
+        [class.has-images]="images().length > 0"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onDrop($event)">
+
+        <div *ngIf="images().length === 0" class="upload-placeholder">
+          <div class="upload-icon">📁</div>
+          <p class="upload-text">
+            Trage și lasă imaginile aici sau
+            <label class="upload-link">
+              selectează fișiere
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                (change)="onFileSelect($event)"
+                style="display: none;">
+            </label>
+          </p>
+          <p class="upload-help">JPG, PNG, GIF, WebP - Maxim 5MB per imagine</p>
+        </div>
+
+        <div *ngIf="images().length > 0" class="upload-active">
+          <div class="images-header">
+            <span class="images-count">{{ getImageCountText() }}</span>
+            <label class="add-more-btn" *ngIf="images().length < maxImages">
+              + Adaugă mai multe
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                (change)="onFileSelect($event)"
+                style="display: none;">
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Images Grid -->
+      <div *ngIf="images().length > 0" class="images-grid">
+        <div
+          *ngFor="let image of images(); let i = index; trackBy: trackByImage"
+          class="image-item"
+          [class.primary]="image.isPrimary"
+          draggable="true"
+          (dragstart)="onImageDragStart($event, i)"
+          (dragover)="onImageDragOver($event)"
+          (drop)="onImageDrop($event, i)">
+
+          <div class="image-preview">
+            <img [src]="image.preview" [alt]="image.altText" class="preview-img">
+
+            <!-- Primary Badge -->
+            <div *ngIf="image.isPrimary" class="primary-badge">
+              ⭐ Principală
+            </div>
+
+            <!-- Image Actions -->
+            <div class="image-actions">
+              <button
+                *ngIf="!image.isPrimary"
+                class="action-btn set-primary"
+                (click)="setPrimaryImage(i)"
+                title="Setează ca imagine principală">
+                ⭐
+              </button>
+              <button
+                class="action-btn remove-image"
+                (click)="removeImage(i)"
+                title="Șterge imaginea">
+                🗑️
+              </button>
+            </div>
+          </div>
+
+          <!-- Alt Text Input -->
+          <div class="image-details">
+            <input
+              type="text"
+              class="alt-text-input"
+              [(ngModel)]="image.altText"
+              (ngModelChange)="updateImageAltText(i, $event)"
+              placeholder="Text alternativ pentru imagine..."
+              maxlength="100">
+          </div>
+        </div>
+      </div>
+
+      <!-- Upload Instructions -->
+      <div *ngIf="images().length > 0" class="upload-instructions">
+        <p><strong>💡 Sfaturi:</strong></p>
+        <ul>
+          <li>Trage imaginile pentru a le reordona</li>
+          <li>Prima imagine va fi imaginea principală a postării</li>
+          <li>Adaugă text alternativ pentru fiecare imagine</li>
+          <li>Imaginile sunt comprimate automat pentru web</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Preview Section -->
+    <div class="form-section" *ngIf="formData().title || formData().summary">
+      <h2 class="section-title">Previzualizare card</h2>
+      <div class="post-preview-card">
+        <div class="preview-header">
+          <h3 class="preview-title">{{ formData().title || 'Titlul postării' }}</h3>
+          <span class="preview-status">
+            {{ formData().isPublished ? 'Publicat' : 'Ciornă' }}
+          </span>
+        </div>
+        <div class="preview-meta">
+          <span>{{ formData().author }}</span>
+          <span>{{ getReadingTime() }} min citire</span>
+        </div>
+        <p class="preview-summary">
+          {{ formData().summary || 'Rezumatul postării va apărea aici...' }}
+        </p>
+        <div *ngIf="images().length > 0" class="preview-image">
+          <img [src]="images()[0].preview" alt="Preview">
+          <span *ngIf="images().length > 1" class="preview-image-count">
+            +{{ images().length - 1 }} imagini
+          </span>
+        </div>
+        <div *ngIf="getTags().length > 0" class="preview-tags">
+          <span *ngFor="let tag of getTags(); trackBy: trackByTag" class="preview-tag">{{ tag }}</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>

@@ -1,11 +1,39 @@
 {
   "Version": 1,
-  "Hash": "brPaMIcviv5EJi6su2Drr2qef+Ooj4Z59UCWav7/cdE=",
+  "Hash": "g82mvvM4GLj/3gJtf0+CcdeYgAfDGqae0uL1EW0aSNo=",
   "Source": "TSGwebsite",
   "BasePath": "_content/TSGwebsite",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
-  "Assets": []
+  "DiscoveryPatterns": [
+    {
+      "Name": "TSGwebsite\\wwwroot",
+      "Source": "TSGwebsite",
+      "ContentRoot": "C:\\Repo\\TSGwebsite\\Backend\\wwwroot\\",
+      "BasePath": "_content/TSGwebsite",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "C:\\Repo\\TSGwebsite\\Backend\\wwwroot\\uploads\\blog\\featured_20250717_114908_Captură de ecran 2025-02-17 190954.png",
+      "SourceId": "TSGwebsite",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Repo\\TSGwebsite\\Backend\\wwwroot\\",
+      "BasePath": "_content/TSGwebsite",
+      "RelativePath": "uploads/blog/featured_20250717_114908_Captură de ecran 2025-02-17 190954.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\uploads\\blog\\featured_20250717_114908_Captură de ecran 2025-02-17 190954.png"
+    }
+  ]
 }
