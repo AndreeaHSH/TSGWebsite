@@ -69,29 +69,21 @@
 /* Special Member Types */
 .member-card.founder {
   border: 2px solid var(--accent-yellow);
-  background: linear-gradient(135deg, #fff9e6 0%, var(--white) 100%);
-  box-shadow: var(--shadow-medium);
+  background: linear-gradient(145deg, var(--white), #fffbf0);
 }
 
 .member-card.coordinator {
   border: 2px solid #FF6D48;
-  background: linear-gradient(135deg, #fff2f0 0%, var(--white) 100%);
-  box-shadow: var(--shadow-medium);
+  background: linear-gradient(145deg, var(--white), #fff5f3);
 }
 
-.member-card.founder:hover,
-.member-card.coordinator:hover {
-  transform: translateY(-10px) scale(1.03);
-  box-shadow: 0 12px 30px rgba(255, 109, 72, 0.25);
-}
-
-/* Member Images */
+/* Member Image */
 .member-image {
+  position: relative;
+  margin-bottom: 1.5rem;
   display: flex;
   justify-content: center;
-  margin-bottom: 1rem;
-  animation: fadeInScale 0.6s ease-out;
-  animation-fill-mode: both;
+  align-items: center;
 }
 
 .profile-img {
@@ -99,40 +91,13 @@
   height: 60px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #f0f0f0;
+  border: 3px solid #FF6D48;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  background: linear-gradient(135deg, var(--light-gray), #e0e8f0);
 }
 
 .member-card:hover .profile-img {
   transform: scale(1.1);
-  border-color: #FF6D48;
-  box-shadow: 0 4px 15px rgba(255, 109, 72, 0.3);
-}
-
-.member-card.founder:hover .profile-img,
-.member-card.coordinator:hover .profile-img {
-  transform: scale(1.15);
-  border-color: var(--accent-yellow);
-  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
-}
-
-/* Loading state for images */
-.profile-img:not([src]),
-.profile-img[src=""] {
-  background: linear-gradient(45deg, #f0f0f0 25%, transparent 25%),
-              linear-gradient(-45deg, #f0f0f0 25%, transparent 25%),
-              linear-gradient(45deg, transparent 75%, #f0f0f0 75%),
-              linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
-  background-size: 20px 20px;
-  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-  animation: loading 1.5s infinite linear;
-}
-
-@keyframes loading {
-  0% { background-position: 0 0, 0 10px, 10px -10px, -10px 0px; }
-  100% { background-position: 20px 20px, 20px 30px, 30px 10px, 10px 20px; }
+  border-color: #0d3276;
 }
 
 /* Member Info */

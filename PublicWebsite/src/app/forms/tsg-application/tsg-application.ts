@@ -1,7 +1,7 @@
-// src/app/forms/tsg-application/tsg-application.ts
+// PublicWebsite/src/app/forms/tsg-application/tsg-application.ts
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { Subject, takeUntil } from 'rxjs';
@@ -20,18 +20,29 @@ import { VolunteerService } from '../../services/volunteer';
         style({ opacity: 0, transform: 'translateY(30px)' }),
         animate('0.6s ease-out')
       ])
+    ]),
+    trigger('successNotification', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'scale(0.8) translateY(-20px)' }),
+        animate('0.4s ease-out', style({ opacity: 1, transform: 'scale(1) translateY(0)' }))
+      ]),
+      transition(':leave', [
+        animate('0.3s ease-in', style({ opacity: 0, transform: 'scale(0.8) translateY(-20px)' }))
+      ])
     ])
   ]
 })
 export class TsgApplicationComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private volunteerService = inject(VolunteerService);
+  private router = inject(Router);
   private destroy$ = new Subject<void>();
 
   applicationForm!: FormGroup;
   isSubmitting = false;
   submitMessage = '';
   selectedFile: File | null = null;
+  showSuccessNotification = false;
 
   facultyOptions = [
     { value: 'design-produs-mediu', label: 'Design de produs și mediu' },
@@ -88,6 +99,9 @@ export class TsgApplicationComponent implements OnInit, OnDestroy {
   ];
 
   ngOnInit(): void {
+    // Scroll to top when component initializes
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
     this.initializeForm();
   }
 
@@ -132,120 +146,133 @@ export class TsgApplicationComponent implements OnInit, OnDestroy {
       // Documents
       portfolioUrl: ['', Validators.pattern(/^https?:\/\/.+/)],
 
-      // Agreements
-      dataProcessingAgreement: [false, Validators.requiredTrue],
-      termsAgreement: [false, Validators.requiredTrue]
+      // Terms
+      termsAgreement: [false, Validators.requiredTrue],
+      gdprAgreement: [false, Validators.requiredTrue]
     });
   }
 
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      const file = input.files[0];
-
-      // Validate file type
-      const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-      if (!allowedTypes.includes(file.type)) {
-        alert('Tip de fișier neacceptat. Vă rugăm să încărcați un fișier PDF, DOC sau DOCX.');
-        input.value = '';
-        return;
-      }
-
-      // Validate file size (5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        alert('Fișierul este prea mare. Dimensiunea maximă permisă este 5MB.');
-        input.value = '';
-        return;
-      }
-
-      this.selectedFile = file;
-    }
-  }
-
-  isFieldInvalid(fieldName: string): boolean {
-    const field = this.applicationForm.get(fieldName);
-    return !!(field?.invalid && field?.touched);
-  }
-
-  getFieldError(fieldName: string): string {
-    const field = this.applicationForm.get(fieldName);
-
-    if (field?.errors && field.touched) {
-      if (field.errors['required']) {
-        return 'Acest câmp este obligatoriu';
-      }
-      if (field.errors['email']) {
-        return 'Adresa de email nu este validă';
-      }
-      if (field.errors['minlength']) {
-        const requiredLength = field.errors['minlength'].requiredLength;
-        return `Minim ${requiredLength} caractere necesare`;
-      }
-      if (field.errors['pattern']) {
-        if (fieldName === 'phone') {
-          return 'Numărul de telefon nu este valid';
-        }
-        if (fieldName === 'portfolioUrl') {
-          return 'URL-ul nu este valid (trebuie să înceapă cu http:// sau https://)';
-        }
-      }
-    }
-    return '';
-  }
-
-  async onSubmit(): Promise<void> {
+  onSubmit(): void {
     if (this.applicationForm.valid && !this.isSubmitting) {
       this.isSubmitting = true;
       this.submitMessage = '';
 
-      try {
-        const formData = new FormData();
+      const formData = this.prepareFormData();
 
-        // Add form fields
-        Object.keys(this.applicationForm.value).forEach(key => {
-          const value = this.applicationForm.value[key];
-          if (value !== null && value !== undefined && value !== '') {
-            formData.append(key, value.toString());
+      this.volunteerService.submitApplication(formData)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (response) => {
+            this.handleSubmissionSuccess();
+          },
+          error: (error) => {
+            this.handleSubmissionError(error);
           }
         });
-
-        // Add CV file if selected
-        if (this.selectedFile) {
-          formData.append('cvFile', this.selectedFile);
-        }
-
-        await this.volunteerService.submitApplication(formData).pipe(
-          takeUntil(this.destroy$)
-        ).toPromise();
-
-        this.submitMessage = 'Aplicația a fost trimisă cu succes! Te vom contacta în cel mai scurt timp.';
-        this.applicationForm.reset();
-        this.selectedFile = null;
-
-        // Reset file input
-        const fileInput = document.getElementById('cv-file') as HTMLInputElement;
-        if (fileInput) {
-          fileInput.value = '';
-        }
-
-      } catch (error) {
-        console.error('Error submitting application:', error);
-        this.submitMessage = 'A apărut o eroare la trimiterea aplicației. Te rugăm să încerci din nou.';
-      } finally {
-        this.isSubmitting = false;
-      }
     } else {
-      this.markFormGroupTouched();
+      this.markAllFieldsAsTouched();
     }
   }
 
-  private markFormGroupTouched(): void {
+  private handleSubmissionSuccess(): void {
+    this.isSubmitting = false;
+    this.showSuccessNotification = true;
+
+    // Scroll to top to show notification
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Hide notification and redirect after 4 seconds
+    setTimeout(() => {
+      this.showSuccessNotification = false;
+      setTimeout(() => {
+        this.router.navigate(['/']);
+      }, 300); // Small delay for exit animation
+    }, 4000);
+  }
+
+  private handleSubmissionError(error: any): void {
+    this.isSubmitting = false;
+    console.error('Submission error:', error);
+    this.submitMessage = 'A apărut o eroare la trimiterea aplicației. Te rugăm să încerci din nou.';
+
+    // Scroll to error message
+    setTimeout(() => {
+      const errorElement = document.querySelector('.submit-message.error');
+      if (errorElement) {
+        errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 100);
+  }
+
+  private prepareFormData(): FormData {
+    const formData = new FormData();
+    const formValues = this.applicationForm.value;
+
+    // Add all form fields to FormData
+    Object.keys(formValues).forEach(key => {
+      if (formValues[key] !== null && formValues[key] !== undefined) {
+        formData.append(key, formValues[key]);
+      }
+    });
+
+    // Add file if selected
+    if (this.selectedFile) {
+      formData.append('cv', this.selectedFile);
+    }
+
+    return formData;
+  }
+
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      // Validate file type and size
+      const allowedTypes = ['application/pdf'];
+      const maxSize = 5 * 1024 * 1024; // 5MB
+
+      if (!allowedTypes.includes(file.type)) {
+        this.submitMessage = 'Te rugăm să încarci un fișier PDF.';
+        event.target.value = '';
+        return;
+      }
+
+      if (file.size > maxSize) {
+        this.submitMessage = 'Fișierul este prea mare. Dimensiunea maximă este 5MB.';
+        event.target.value = '';
+        return;
+      }
+
+      this.selectedFile = file;
+      this.submitMessage = '';
+    }
+  }
+
+  closeSuccessNotification(): void {
+    this.showSuccessNotification = false;
+    setTimeout(() => {
+      this.router.navigate(['/']);
+    }, 300);
+  }
+
+  isFieldInvalid(fieldName: string): boolean {
+    const field = this.applicationForm.get(fieldName);
+    return !!(field && field.invalid && (field.dirty || field.touched));
+  }
+
+  getFieldError(fieldName: string): string {
+    const field = this.applicationForm.get(fieldName);
+    if (field?.errors) {
+      if (field.errors['required']) return 'Acest câmp este obligatoriu.';
+      if (field.errors['email']) return 'Te rugăm să introduci o adresă de email validă.';
+      if (field.errors['minlength']) return `Minimum ${field.errors['minlength'].requiredLength} caractere.`;
+      if (field.errors['pattern']) return 'Format invalid.';
+    }
+    return '';
+  }
+
+  private markAllFieldsAsTouched(): void {
     Object.keys(this.applicationForm.controls).forEach(key => {
       this.applicationForm.get(key)?.markAsTouched();
     });
-  }
-
-  trackByValue(index: number, item: any): any {
-    return item.value;
   }
 }

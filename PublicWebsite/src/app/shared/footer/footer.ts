@@ -39,11 +39,13 @@ export class FooterComponent {
     }
   ];
 
+  // FIXED: Updated navigation links to match app.routes.ts
   navigationLinks = [
     { label: 'Acasă', route: '/' },
-    { label: 'Echipa TSG', route: '/team' },
-    { label: 'Proiecte', route: '/projects' },
-    { label: 'Blog', route: '/blog' }
+    { label: 'Echipa TSG', route: '/echipa' },
+    { label: 'Proiecte', route: '/proiecte' },
+    { label: 'Blog', route: '/blog' },
+    { label: 'Aplică', route: '/aplica' }
   ];
 
   contactEmails = [

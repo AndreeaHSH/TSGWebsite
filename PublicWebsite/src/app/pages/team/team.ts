@@ -41,6 +41,7 @@ interface TeamMember {
   ]
 })
 export class TeamComponent implements OnInit {
+  showAlumni = false;
 
   activeMembers: TeamMember[] = [
     {
@@ -48,7 +49,7 @@ export class TeamComponent implements OnInit {
       name: 'Rareș Smeu',
       role: 'Coordonator TSG',
       linkedinUrl: 'https://www.linkedin.com/in/rares-smeu-21683216b/',
-      imageUrl: 'PublicWebsite/src/assets/images/team/rares.jpg',
+      imageUrl: 'assets/images/team/rares.jpg',
       isCoordinator: true,
       department: 'management'
     },
@@ -57,7 +58,7 @@ export class TeamComponent implements OnInit {
       name: 'Mihnea Huțuțui',
       role: 'Design Lead',
       linkedinUrl: 'https://www.linkedin.com/in/mihneahututui/',
-      imageUrl: '../../../assets/images/team/mihnea.jpg',
+      imageUrl: 'assets/images/team/mihnea.jpg',
       department: 'design'
     },
     {
@@ -209,66 +210,10 @@ export class TeamComponent implements OnInit {
       department: 'frontend'
     },
     {
-      id: 'daniel-podaru',
-      name: 'Daniel Podaru',
-      role: 'Frontend Developer',
-      linkedinUrl: '#',
-      imageUrl: 'assets/images/team/default-avatar.png',
-      department: 'frontend'
-    },
-    {
-      id: 'bogdan-musat',
-      name: 'Bogdan Mușat',
-      role: 'Backend Developer',
-      linkedinUrl: 'https://www.linkedin.com/in/eduard-bogdan-mu%C8%99at-286916234/',
-      imageUrl: 'assets/images/team/default-avatar.png',
-      department: 'backend'
-    },
-    {
-      id: 'ana-roman',
-      name: 'Ana Roman',
-      role: 'Coordonator/Comunicare & Firme',
-      linkedinUrl: 'https://www.linkedin.com/in/ana-roman-b3a4601b4/',
-      imageUrl: 'assets/images/team/default-avatar.png',
-      department: 'communication'
-    },
-    {
-      id: 'leon-hagiu',
-      name: 'Leon Hagiu',
-      role: 'Tutoriale',
-      linkedinUrl: 'https://www.linkedin.com/in/leon-hagiu-087353245/',
-      imageUrl: 'assets/images/team/default-avatar.png',
-      department: 'education'
-    },
-    {
-      id: 'ruxandra-dumitru',
-      name: 'Ruxandra Dumitru',
-      role: 'Graphic Designer',
-      linkedinUrl: 'https://www.linkedin.com/in/ruxandra-dumitru-5780b11b3/',
-      imageUrl: 'assets/images/team/default-avatar.png',
-      department: 'design'
-    },
-    {
-      id: 'marco-statescu',
-      name: 'Marco Stătescu',
-      role: 'Graphic Designer',
-      linkedinUrl: 'https://www.linkedin.com/in/marco-statescu-516967219/',
-      imageUrl: 'assets/images/team/default-avatar.png',
-      department: 'design'
-    },
-    {
-      id: 'robert-hadadea',
-      name: 'Robert Hădadea',
-      role: 'Coordonator TSG/Backend Developer',
-      linkedinUrl: 'https://www.linkedin.com/in/silviu-robert-h%C4%83dadea-8400ba196/',
-      imageUrl: 'assets/images/team/default-avatar.png',
-      department: 'management'
-    },
-    {
       id: 'andrei-pascale',
       name: 'Andrei Pascale',
       role: 'Mobile App Developer',
-      linkedinUrl: 'https://www.linkedin.com/in/george-andrei-pascale-81a261211/',
+      linkedinUrl: 'https://www.linkedin.com/in/george-andrei-pascale-81a262111/',
       imageUrl: 'assets/images/team/default-avatar.png',
       department: 'mobile'
     },
@@ -331,76 +276,102 @@ export class TeamComponent implements OnInit {
     {
       id: 'cristina-gavrila',
       name: 'Cristina Gavrilă',
-      role: 'Lead Mobile App',
-      linkedinUrl: 'https://www.linkedin.com/in/cristina-gabriela-gavril%C4%83-3490ba18a/',
+      role: 'Comunicare & Firme',
+      linkedinUrl: 'https://www.linkedin.com/in/cristina-gavril%C4%83-095073261/',
       imageUrl: 'assets/images/team/default-avatar.png',
-      department: 'mobile'
+      department: 'communication'
     },
     {
-      id: 'andrei-constantin',
-      name: 'Andrei Constantin',
-      role: 'Frontend Lead',
-      linkedinUrl: 'https://www.linkedin.com/in/andrei-a-constantin/',
+      id: 'daniel-podaru',
+      name: 'Daniel Podaru',
+      role: 'Frontend Developer',
+      linkedinUrl: '#',
       imageUrl: 'assets/images/team/default-avatar.png',
       department: 'frontend'
     },
     {
-      id: 'daniel-nwaeke',
-      name: 'Daniel Nwaeke',
-      role: 'Full Stack Developer',
-      linkedinUrl: 'https://www.linkedin.com/in/daniel-nwaeke-4807a61b0/',
+      id: 'bogdan-musat',
+      name: 'Bogdan Mușat',
+      role: 'Backend Developer',
+      linkedinUrl: 'https://www.linkedin.com/in/eduard-bogdan-mu%C8%99at-286916234/',
       imageUrl: 'assets/images/team/default-avatar.png',
-      department: 'fullstack'
+      department: 'backend'
     },
     {
-      id: 'alexia-avramescu',
-      name: 'Alexia Avramescu',
-      role: 'Mobile App Developer',
-      linkedinUrl: 'https://www.linkedin.com/in/alexia-avramescu-4542a52a2/',
+      id: 'ana-roman',
+      name: 'Ana Roman',
+      role: 'Coordonator/Comunicare & Firme',
+      linkedinUrl: 'https://www.linkedin.com/in/ana-roman-b3a4601b4/',
       imageUrl: 'assets/images/team/default-avatar.png',
-      department: 'mobile'
+      department: 'communication'
+    },
+    {
+      id: 'leon-hagiu',
+      name: 'Leon Hagiu',
+      role: 'Tutoriale',
+      linkedinUrl: 'https://www.linkedin.com/in/leon-hagiu-087353245/',
+      imageUrl: 'assets/images/team/default-avatar.png',
+      department: 'education'
+    },
+    {
+      id: 'ruxandra-dumitru',
+      name: 'Ruxandra Dumitru',
+      role: 'Graphic Designer',
+      linkedinUrl: 'https://www.linkedin.com/in/ruxandra-dumitru-5780b11b3/',
+      imageUrl: 'assets/images/team/default-avatar.png',
+      department: 'design'
+    },
+    {
+      id: 'marco-statescu',
+      name: 'Marco Stătescu',
+      role: 'Graphic Designer',
+      linkedinUrl: 'https://www.linkedin.com/in/marco-statescu-516967219/',
+      imageUrl: 'assets/images/team/default-avatar.png',
+      department: 'design'
+    },
+    {
+      id: 'robert-hadadea',
+      name: 'Robert Hădadea',
+      role: 'Coordonator TSG/Backend Developer',
+      linkedinUrl: 'https://www.linkedin.com/in/silviu-robert-h%C4%83dadea-8400ba196/',
+      imageUrl: 'assets/images/team/default-avatar.png',
+      department: 'management'
     }
+
   ];
 
-  showAlumni: boolean = false;
-
   ngOnInit(): void {
-    // Component initialization
+    // Component initialization logic here
   }
 
-  onMemberImageError(event: any): void {
-    // Fallback to default avatar if image fails to load
-    event.target.src = 'assets/images/team/default-avatar.png';
-  }
-
-  openLinkedInProfile(url: string): void {
-    if (url && url !== '#') {
-      window.open(url, '_blank', 'noopener,noreferrer');
-    }
+  toggleAlumniVisibility(): void {
+    this.showAlumni = !this.showAlumni;
   }
 
   getMemberCardClass(member: TeamMember): string {
     let classes = 'member-card';
 
-    if (member.isFounder) {
-      classes += ' founder';
-    } else if (member.isCoordinator) {
+    if (member.isCoordinator) {
       classes += ' coordinator';
     }
 
-    if (member.department) {
-      classes += ` ${member.department}`;
+    if (member.isFounder) {
+      classes += ' founder';
     }
 
     return classes;
   }
 
   getMemberDataRole(member: TeamMember): string {
-    return member.department || 'general';
+    return member.department || '';
   }
 
-  toggleAlumniVisibility(): void {
-    this.showAlumni = !this.showAlumni;
+  onMemberImageError(event: any): void {
+    event.target.src = 'assets/images/team/default-avatar.png';
+  }
+
+  openLinkedInProfile(url: string): void {
+    window.open(url, '_blank', 'noopener,noreferrer');
   }
 
   trackByMemberId(index: number, member: TeamMember): string {

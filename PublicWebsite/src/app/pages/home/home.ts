@@ -1,6 +1,7 @@
+// PublicWebsite/src/app/pages/home/home.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 
 interface VolunteerPosition {
@@ -8,7 +9,7 @@ interface VolunteerPosition {
   title: string;
   technologies?: string[];
   requirements: string[];
-  category: 'development' | 'design' | 'testing' | 'network' | 'hr';
+  category: string;
 }
 
 interface Project {
@@ -43,125 +44,101 @@ interface ContactMethod {
       state('in', style({ opacity: 1, transform: 'translateX(0)' })),
       transition('void => *', [
         style({ opacity: 0, transform: 'translateX(-30px)' }),
-        animate('0.8s ease-out')
+        animate('0.6s ease-out')
       ])
     ]),
     trigger('fadeInRight', [
       state('in', style({ opacity: 1, transform: 'translateX(0)' })),
       transition('void => *', [
         style({ opacity: 0, transform: 'translateX(30px)' }),
-        animate('0.8s ease-out')
+        animate('0.6s ease-out')
       ])
     ])
   ]
 })
 export class HomeComponent implements OnInit, OnDestroy {
 
+  constructor(private router: Router) {}
+
   volunteerPositions: VolunteerPosition[] = [
     {
-      id: 'frontend',
-      title: 'Front End Developer – Explorează Creativitatea Digitală!',
-      technologies: ['React', 'Vue', 'Angular'],
+      id: 'frontend-dev',
+      title: 'Frontend Developer',
+      technologies: ['React', 'Angular', 'Vue.js', 'TypeScript', 'SCSS'],
       requirements: [
-        'HTML, CSS și JavaScript (ES6+)',
-        'Preprocesatoare CSS (SASS, LESS)',
-        'Cunoștințe de bază Back End (.NET, SQL Server)'
+        'Cunoștințe de bază HTML, CSS, JavaScript',
+        'Experiență cu cel puțin un framework modern',
+        'Înțelegerea principiilor UI/UX',
+        'Dorința de a învăța tehnologii noi'
       ],
       category: 'development'
     },
     {
-      id: 'mobile',
-      title: 'Mobile Developer (Flutter) – Dă Viață Aplicațiilor Mobile!',
-      technologies: ['Flutter'],
+      id: 'backend-dev',
+      title: 'Backend Developer',
+      technologies: ['.NET Core', 'Node.js', 'Python', 'SQL Server', 'MongoDB'],
       requirements: [
-        'Cunoștințe solide în dezvoltarea de aplicații mobile cu Flutter',
-        'Experiență cu integrarea API-urilor și baze de date locale'
+        'Cunoștințe de programare în C#, JavaScript sau Python',
+        'Înțelegerea bazelor de date',
+        'Experiență cu API-uri REST',
+        'Cunoștințe de arhitectură software'
       ],
       category: 'development'
     },
     {
-      id: 'uiux',
-      title: 'Ui/Ux & Web Designer – Modelează Experiența Vizuală!',
-      technologies: ['Figma', 'WordPress'],
+      id: 'mobile-dev',
+      title: 'Mobile Developer',
+      technologies: ['React Native', 'Flutter', 'Swift', 'Kotlin'],
       requirements: [
-        'Experiență cu WordPress & Elementor (teme, plugins)',
-        'Design Ui/Ux folosind Figma/Adobe XD',
-        'Abilitatea de a crea prototip-uri și mockup-uri',
-        'Înțelegerea principiilor de responsive design'
+        'Experiență în dezvoltare mobile',
+        'Cunoștințe de UI/UX pentru mobile',
+        'Înțelegerea store-urilor de aplicații',
+        'Testare pe dispozitive multiple'
+      ],
+      category: 'development'
+    },
+    {
+      id: 'ui-ux-designer',
+      title: 'UI/UX Designer',
+      technologies: ['Figma', 'Adobe XD', 'Sketch', 'Prototyping'],
+      requirements: [
+        'Portfoliu de design UI/UX',
+        'Cunoștințe de design thinking',
+        'Experiență cu tools de design',
+        'Înțelegerea user experience'
       ],
       category: 'design'
     },
     {
-      id: 'tester',
-      title: 'Tester Automat/Manual – Asigură Calitatea Software-ului!',
-      technologies: [],
+      id: 'devops-engineer',
+      title: 'DevOps Engineer',
+      technologies: ['Docker', 'Kubernetes', 'CI/CD', 'Cloud'],
       requirements: [
-        'Cunoștințe în testare manuală și/sau automatizată',
-        'Experiență cu instrumente de testare (Selenium, JUnit, TestNG)',
-        'Cunoștințe de baze de date și SQL pentru verificarea integrității datelor'
-      ],
-      category: 'testing'
-    },
-    {
-      id: 'backend',
-      title: 'Back End Developer – Construiește Viitorul Digital!',
-      technologies: ['.NET', 'SQL Server'],
-      requirements: [
-        'Cunoștințe de bază în dezvoltarea de aplicații .NET (C#, ASP.NET)',
-        'Experiență cu SQL Server și scrierea de proceduri stocate',
-        'Cunoștințe fundamentale de Front End (HTML, CSS, JavaScript)',
-        'Cunoștințe de API-uri RESTful și integrări externe'
-      ],
-      category: 'development'
-    },
-    {
-      id: 'network',
-      title: 'Network Engineer – Conectează Lumea Digitală!',
-      technologies: ['Networking'],
-      requirements: [
-        'Configurarea și întreținerea rețelelor locale (LAN), VPN-uri și echipamente de rețea',
-        'Cunoștințe de bază în administrarea serverelor și bazelor de date',
-        'Înțelegerea protocoalelor de rețea (TCP/IP, HTTP, DNS, DHCP)',
-        'Abilitatea de a rezolva probleme legate de conectivitate și performanță a rețelei',
-        'Cunoștințe fundamentale de administrare a infrastructurii IT'
+        'Cunoștințe de infrastructură cloud',
+        'Experiență cu automatizarea deployment-ului',
+        'Monitoring și logging',
+        'Security best practices'
       ],
       category: 'network'
     },
     {
-      id: 'hr',
-      title: 'HR Specialist – Explorează Lumea Resurselor Umane!',
-      technologies: [],
+      id: 'qa-tester',
+      title: 'QA Tester',
       requirements: [
-        'Experiență în recrutare și selecție',
-        'Abilități excelente de comunicare și organizare'
+        'Atenție la detalii',
+        'Metodologii de testare',
+        'Documentarea bug-urilor',
+        'Testare manuală și automatizată'
       ],
-      category: 'hr'
+      category: 'testing'
     }
   ];
 
-  projects: Project[] = [
+  projectPreviews: Project[] = [
     {
-      id: 'student-app',
-      title: 'Aplicația de mobil Student@UNITBV',
-      description: 'Aplicația Student@UNITBV ajută studenții să își organizeze mai bine prioritățile de la facultate, aplicația dispunând de diferite feature-uri foarte utile. În cadrul acesteia, studenții își pot verifica orarul într-un format accesibil, notele, harta corpurilor de clădire, regulamentele, meniul zilnic de la cantină, știrile și evenimentele importante.',
-      type: 'project'
-    },
-    {
-      id: 'agsis',
-      title: 'Aplicația de cazare AGSIS',
-      description: 'Reprezintă proiectul de debut al echipei, proiect propus în cadrul programului „Noi dezvoltăm Universitatea". Aplicația a avut ca scop digitalizarea procesului de cazare în căminele studențești, prin realizarea unei fluidități mai bune a procesului.',
-      type: 'project'
-    },
-    {
-      id: 'cantina',
-      title: 'Aplicația de CANTINĂ',
-      description: 'Aplicația de cantină a fost creată cu scopul îmbunătățirii procesului de actualizare a meniului zilnic. Aceasta poate fi accesată atât din platforma Intranet a universității, unde studenții pot verifica meniul din ziua curentă, cât și din aplicația de mobil Student@UNITBV.',
-      type: 'project'
-    },
-    {
-      id: 'lichidare',
-      title: 'Lichidare',
-      description: 'Dacă nu știi la ce se referă acest proiect sau cum e sa trebuiască sa mergi fizic cu o hartie de lichidare pentru a fi semnată de către secretariatul facultății, secretariatul de departament, serviciul cămine, biroul Erasmus și bibliotecă, asta este datorită faptului ca am digitalizat și automatizat acest proces.',
+      id: 'aplicatie-note',
+      title: 'Aplicația de Note',
+      description: 'Echipa noastră a dezvoltat o aplicație inovatoare pentru organizarea și gestionarea notelor studențești, facilitând procesul de învățare.',
       type: 'project'
     },
     {
@@ -207,8 +184,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   onApplyClick(): void {
-    // Navigate to application form or handle application logic
-    console.log('Navigating to application form...');
+    // Navigate to application form - this will be called by the routerLink
+    // The navigation is already handled by routerLink="/aplica"
+    // This method can be used for analytics or other side effects
+    console.log('User clicked Apply button - navigating to application form');
   }
 
   onLearnMoreClick(): void {

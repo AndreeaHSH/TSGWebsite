@@ -1,3 +1,26 @@
+<!-- Success Notification Overlay -->
+<div *ngIf="showSuccessNotification"
+     class="success-notification-overlay"
+     [@successNotification]>
+  <div class="success-notification">
+    <div class="success-icon">
+      <i class="fas fa-check-circle"></i>
+    </div>
+    <h3 class="success-title">Aplicația a fost trimisă cu succes!</h3>
+    <p class="success-message">
+      Mulțumim pentru aplicație! Te vom contacta în cel mai scurt timp cu detalii despre următorii pași.
+    </p>
+    <div class="success-actions">
+      <button class="btn-primary" (click)="closeSuccessNotification()">
+        Întoarce-te la pagina principală
+      </button>
+    </div>
+    <div class="success-countdown">
+      Vei fi redirecționat automat în câteva secunde...
+    </div>
+  </div>
+</div>
+
 <main class="site-main">
   <section class="application-section">
     <div class="section-container">
@@ -50,7 +73,7 @@
             <div class="form-row">
               <div class="form-group">
                 <label for="email" class="form-label">
-                  Adresa de email<span class="required-asterisk">*</span>
+                  Email<span class="required-asterisk">*</span>
                 </label>
                 <input
                   type="email"
@@ -80,7 +103,7 @@
 
             <div class="form-group">
               <label for="birthDate" class="form-label">
-                Data nașterii<span class="required-asterisk">*</span>
+                Data de naștere<span class="required-asterisk">*</span>
               </label>
               <input
                 type="date"
@@ -98,28 +121,25 @@
           <fieldset class="form-section" [@slideInUp]>
             <legend class="section-legend">Informații Academice</legend>
 
-            <div class="form-group">
-              <label for="faculty" class="form-label">
-                Facultatea<span class="required-asterisk">*</span>
-              </label>
-              <select
-                id="faculty"
-                formControlName="faculty"
-                class="form-select"
-                [class.invalid]="isFieldInvalid('faculty')">
-                <option value="">Selectează facultatea</option>
-                <option
-                  *ngFor="let faculty of facultyOptions; trackBy: trackByValue"
-                  [value]="faculty.value">
-                  {{ faculty.label }}
-                </option>
-              </select>
-              <div *ngIf="isFieldInvalid('faculty')" class="error-message">
-                {{ getFieldError('faculty') }}
-              </div>
-            </div>
-
             <div class="form-row">
+              <div class="form-group">
+                <label for="faculty" class="form-label">
+                  Facultatea<span class="required-asterisk">*</span>
+                </label>
+                <select
+                  id="faculty"
+                  formControlName="faculty"
+                  class="form-select"
+                  [class.invalid]="isFieldInvalid('faculty')">
+                  <option value="">Selectează facultatea</option>
+                  <option *ngFor="let faculty of facultyOptions" [value]="faculty.value">
+                    {{ faculty.label }}
+                  </option>
+                </select>
+                <div *ngIf="isFieldInvalid('faculty')" class="error-message">
+                  {{ getFieldError('faculty') }}
+                </div>
+              </div>
               <div class="form-group">
                 <label for="specialization" class="form-label">
                   Specializarea<span class="required-asterisk">*</span>
@@ -135,6 +155,9 @@
                   {{ getFieldError('specialization') }}
                 </div>
               </div>
+            </div>
+
+            <div class="form-row">
               <div class="form-group">
                 <label for="studyYear" class="form-label">
                   Anul de studiu<span class="required-asterisk">*</span>
@@ -145,9 +168,7 @@
                   class="form-select"
                   [class.invalid]="isFieldInvalid('studyYear')">
                   <option value="">Selectează anul</option>
-                  <option
-                    *ngFor="let year of yearOptions; trackBy: trackByValue"
-                    [value]="year.value">
+                  <option *ngFor="let year of yearOptions" [value]="year.value">
                     {{ year.label }}
                   </option>
                 </select>
@@ -155,57 +176,57 @@
                   {{ getFieldError('studyYear') }}
                 </div>
               </div>
-            </div>
-
-            <div class="form-group">
-              <label for="studentId" class="form-label">Numărul de matricol</label>
-              <input
-                type="text"
-                id="studentId"
-                formControlName="studentId"
-                class="form-input"
-                placeholder="ex: 123456">
+              <div class="form-group">
+                <label for="studentId" class="form-label">
+                  Numărul matricol
+                </label>
+                <input
+                  type="text"
+                  id="studentId"
+                  formControlName="studentId"
+                  class="form-input"
+                  placeholder="ex: 123456">
+              </div>
             </div>
           </fieldset>
 
           <!-- Role Preferences -->
           <fieldset class="form-section" [@slideInUp]>
-            <legend class="section-legend">Preferințe de Rol</legend>
+            <legend class="section-legend">Preferințe Rol</legend>
 
-            <div class="form-group">
-              <label for="preferredRole" class="form-label">
-                Rolul preferat<span class="required-asterisk">*</span>
-              </label>
-              <select
-                id="preferredRole"
-                formControlName="preferredRole"
-                class="form-select"
-                [class.invalid]="isFieldInvalid('preferredRole')">
-                <option value="">Selectează rolul preferat</option>
-                <option
-                  *ngFor="let role of roleOptions; trackBy: trackByValue"
-                  [value]="role.value">
-                  {{ role.label }}
-                </option>
-              </select>
-              <div *ngIf="isFieldInvalid('preferredRole')" class="error-message">
-                {{ getFieldError('preferredRole') }}
+            <div class="form-row">
+              <div class="form-group">
+                <label for="preferredRole" class="form-label">
+                  Rolul preferat<span class="required-asterisk">*</span>
+                </label>
+                <select
+                  id="preferredRole"
+                  formControlName="preferredRole"
+                  class="form-select"
+                  [class.invalid]="isFieldInvalid('preferredRole')">
+                  <option value="">Selectează rolul preferat</option>
+                  <option *ngFor="let role of roleOptions" [value]="role.value">
+                    {{ role.label }}
+                  </option>
+                </select>
+                <div *ngIf="isFieldInvalid('preferredRole')" class="error-message">
+                  {{ getFieldError('preferredRole') }}
+                </div>
               </div>
-            </div>
-
-            <div class="form-group">
-              <label for="alternativeRole" class="form-label">Rol alternativ</label>
-              <select
-                id="alternativeRole"
-                formControlName="alternativeRole"
-                class="form-select">
-                <option value="">Selectează rol alternativ</option>
-                <option
-                  *ngFor="let role of roleOptions; trackBy: trackByValue"
-                  [value]="role.value">
-                  {{ role.label }}
-                </option>
-              </select>
+              <div class="form-group">
+                <label for="alternativeRole" class="form-label">
+                  Rol alternativ
+                </label>
+                <select
+                  id="alternativeRole"
+                  formControlName="alternativeRole"
+                  class="form-select">
+                  <option value="">Selectează rol alternativ</option>
+                  <option *ngFor="let role of roleOptions" [value]="role.value">
+                    {{ role.label }}
+                  </option>
+                </select>
+              </div>
             </div>
           </fieldset>
 
@@ -308,9 +329,7 @@
                 class="form-select"
                 [class.invalid]="isFieldInvalid('timeCommitment')">
                 <option value="">Selectează timpul disponibil</option>
-                <option
-                  *ngFor="let time of timeCommitmentOptions; trackBy: trackByValue"
-                  [value]="time.value">
+                <option *ngFor="let time of timeCommitmentOptions" [value]="time.value">
                   {{ time.label }}
                 </option>
               </select>
@@ -321,47 +340,39 @@
 
             <div class="form-group">
               <label for="schedule" class="form-label">Programul preferat</label>
-              <input
-                type="text"
+              <textarea
                 id="schedule"
                 formControlName="schedule"
-                class="form-input"
-                placeholder="ex: Luni-Vineri seara, Weekend-uri, Flexibil">
+                class="form-textarea"
+                rows="3"
+                placeholder="Descrie programul în care ești disponibil (zile, ore, etc.)">
+              </textarea>
             </div>
           </fieldset>
 
-          <!-- Documents -->
+          <!-- Documents and Portfolio -->
           <fieldset class="form-section" [@slideInUp]>
-            <legend class="section-legend">Documente și Portfolio</legend>
+            <legend class="section-legend">Documente și Portofoliu</legend>
 
             <div class="form-group">
-              <label for="portfolioUrl" class="form-label">Link către portfolio/GitHub</label>
+              <label for="portfolioUrl" class="form-label">Link către portofoliu/GitHub</label>
               <input
                 type="url"
                 id="portfolioUrl"
                 formControlName="portfolioUrl"
                 class="form-input"
-                placeholder="https://github.com/username sau https://portfolio.com"
-                [class.invalid]="isFieldInvalid('portfolioUrl')">
-              <div *ngIf="isFieldInvalid('portfolioUrl')" class="error-message">
-                {{ getFieldError('portfolioUrl') }}
-              </div>
+                placeholder="https://github.com/username sau link către portofoliu">
             </div>
 
             <div class="form-group">
-              <label for="cv-file" class="form-label">CV (opțional)</label>
+              <label for="cv" class="form-label">CV (PDF, max 5MB)</label>
               <div class="file-upload-area">
-                <i class="fas fa-upload" style="font-size: 2rem; color: #FF6D48; margin-bottom: 1rem;"></i>
                 <input
                   type="file"
-                  id="cv-file"
-                  class="form-input"
-                  accept=".pdf,.doc,.docx"
-                  (change)="onFileSelected($event)"
-                  style="margin-top: 1rem;">
-                <p style="margin-top: 0.5rem; color: #666; font-size: 0.9rem;">
-                  Acceptăm fișiere PDF, DOC, DOCX (max 5MB)
-                </p>
+                  id="cv"
+                  accept=".pdf"
+                  (change)="onFileSelected($event)">
+                <p>Selectează sau trage fișierul aici</p>
                 <div *ngIf="selectedFile" class="selected-file">
                   Fișier selectat: {{ selectedFile.name }}
                 </div>
@@ -369,50 +380,55 @@
             </div>
           </fieldset>
 
-          <!-- Agreements -->
+          <!-- Terms and Conditions -->
           <fieldset class="form-section" [@slideInUp]>
-            <legend class="section-legend">Acorduri și Consimțăminte</legend>
+            <legend class="section-legend">Termeni și Condiții</legend>
 
             <div class="checkbox-group">
               <div class="checkbox-item">
                 <input
                   type="checkbox"
-                  id="dataProcessingAgreement"
-                  formControlName="dataProcessingAgreement">
-                <label for="dataProcessingAgreement">
-                  <strong>Acord prelucrare date personale</strong><span class="required-asterisk">*</span><br>
-                  Sunt de acord cu prelucrarea datelor mele personale în conformitate cu GDPR pentru procesul de recrutare și activitățile TSG.
-                </label>
-              </div>
-              <div *ngIf="isFieldInvalid('dataProcessingAgreement')" class="error-message">
-                {{ getFieldError('dataProcessingAgreement') }}
-              </div>
-
-              <div class="checkbox-item">
-                <input
-                  type="checkbox"
                   id="termsAgreement"
-                  formControlName="termsAgreement">
-                <label for="termsAgreement">
-                  <strong>Acord termeni și condiții</strong><span class="required-asterisk">*</span><br>
-                  Sunt de acord cu termenii și condițiile de participare ca voluntar în TSG și mă angajez să respect regulamentul intern.
+                  formControlName="termsAgreement"
+                  [class.invalid]="isFieldInvalid('termsAgreement')">
+                <label for="termsAgreement" class="checkbox-label">
+                  Sunt de acord cu termenii și condițiile TSG<span class="required-asterisk">*</span>
                 </label>
               </div>
               <div *ngIf="isFieldInvalid('termsAgreement')" class="error-message">
                 {{ getFieldError('termsAgreement') }}
               </div>
             </div>
+
+            <div class="checkbox-group">
+              <div class="checkbox-item">
+                <input
+                  type="checkbox"
+                  id="gdprAgreement"
+                  formControlName="gdprAgreement"
+                  [class.invalid]="isFieldInvalid('gdprAgreement')">
+                <label for="gdprAgreement" class="checkbox-label">
+                  Consimț la prelucrarea datelor personale în conformitate cu GDPR<span class="required-asterisk">*</span>
+                </label>
+              </div>
+              <div *ngIf="isFieldInvalid('gdprAgreement')" class="error-message">
+                {{ getFieldError('gdprAgreement') }}
+              </div>
+            </div>
           </fieldset>
 
           <!-- Submit Section -->
-          <div class="form-submit-container" style="text-align: center; margin-top: 2rem;">
+          <div class="form-submit-section" [@slideInUp]>
             <button
               type="submit"
               class="form-submit"
               [disabled]="isSubmitting">
-              <i class="fas fa-paper-plane" style="margin-right: 0.5rem;"></i>
               {{ isSubmitting ? 'Se trimite...' : 'Trimite Aplicația' }}
             </button>
+
+            <p class="submit-note">
+              Prin trimiterea acestui formular, confirmați că toate informațiile furnizate sunt corecte și complete.
+            </p>
 
             <div *ngIf="submitMessage" class="submit-message"
                  [ngClass]="{'success': submitMessage.includes('succes'), 'error': submitMessage.includes('eroare')}">
