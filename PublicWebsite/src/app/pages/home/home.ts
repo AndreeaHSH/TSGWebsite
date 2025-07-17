@@ -1,7 +1,7 @@
 // PublicWebsite/src/app/pages/home/home.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 
 interface VolunteerPosition {
@@ -9,7 +9,7 @@ interface VolunteerPosition {
   title: string;
   technologies?: string[];
   requirements: string[];
-  category: string;
+  category: 'development' | 'design' | 'testing' | 'network' | 'hr';
 }
 
 interface Project {
@@ -44,101 +44,95 @@ interface ContactMethod {
       state('in', style({ opacity: 1, transform: 'translateX(0)' })),
       transition('void => *', [
         style({ opacity: 0, transform: 'translateX(-30px)' }),
-        animate('0.6s ease-out')
+        animate('0.8s ease-out')
       ])
     ]),
     trigger('fadeInRight', [
       state('in', style({ opacity: 1, transform: 'translateX(0)' })),
       transition('void => *', [
         style({ opacity: 0, transform: 'translateX(30px)' }),
-        animate('0.6s ease-out')
+        animate('0.8s ease-out')
       ])
     ])
   ]
 })
 export class HomeComponent implements OnInit, OnDestroy {
 
+  // Add Router to constructor
   constructor(private router: Router) {}
 
   volunteerPositions: VolunteerPosition[] = [
     {
-      id: 'frontend-dev',
-      title: 'Frontend Developer',
-      technologies: ['React', 'Angular', 'Vue.js', 'TypeScript', 'SCSS'],
+      id: 'frontend',
+      title: 'Front End Developer – Explorează Creativitatea Digitală!',
+      technologies: ['React', 'Vue', 'Angular'],
       requirements: [
-        'Cunoștințe de bază HTML, CSS, JavaScript',
-        'Experiență cu cel puțin un framework modern',
-        'Înțelegerea principiilor UI/UX',
-        'Dorința de a învăța tehnologii noi'
+        'HTML, CSS și JavaScript (ES6+)',
+        'Preprocesatoare CSS (SASS, LESS)',
+        'Cunoștințe de bază Back End (.NET, SQL Server)'
       ],
       category: 'development'
     },
     {
-      id: 'backend-dev',
-      title: 'Backend Developer',
-      technologies: ['.NET Core', 'Node.js', 'Python', 'SQL Server', 'MongoDB'],
+      id: 'mobile',
+      title: 'Mobile Developer (Flutter) – Dă Viață Aplicațiilor Mobile!',
+      technologies: ['Flutter'],
       requirements: [
-        'Cunoștințe de programare în C#, JavaScript sau Python',
-        'Înțelegerea bazelor de date',
-        'Experiență cu API-uri REST',
-        'Cunoștințe de arhitectură software'
+        'Cunoștințe solide în dezvoltarea de aplicații mobile cu Flutter',
+        'Experiență cu integrarea API-urilor și baze de date locale'
       ],
       category: 'development'
     },
     {
-      id: 'mobile-dev',
-      title: 'Mobile Developer',
-      technologies: ['React Native', 'Flutter', 'Swift', 'Kotlin'],
+      id: 'uiux',
+      title: 'Ui/Ux & Web Designer – Modelează Experiența Vizuală!',
+      technologies: ['Figma', 'WordPress'],
       requirements: [
-        'Experiență în dezvoltare mobile',
-        'Cunoștințe de UI/UX pentru mobile',
-        'Înțelegerea store-urilor de aplicații',
-        'Testare pe dispozitive multiple'
-      ],
-      category: 'development'
-    },
-    {
-      id: 'ui-ux-designer',
-      title: 'UI/UX Designer',
-      technologies: ['Figma', 'Adobe XD', 'Sketch', 'Prototyping'],
-      requirements: [
-        'Portfoliu de design UI/UX',
-        'Cunoștințe de design thinking',
-        'Experiență cu tools de design',
-        'Înțelegerea user experience'
+        'Experiență cu WordPress & Elementor (teme, plugins)',
+        'Design Ui/Ux folosind Figma/Adobe XD',
+        'Abilitatea de a crea prototip-uri și mockup-uri',
+        'Înțelegerea principiilor de responsive design'
       ],
       category: 'design'
     },
     {
-      id: 'devops-engineer',
-      title: 'DevOps Engineer',
-      technologies: ['Docker', 'Kubernetes', 'CI/CD', 'Cloud'],
+      id: 'tester',
+      title: 'Tester Automat/Manual – Asigură Calitatea Software-ului!',
+      technologies: ['Selenium', 'Postman'],
       requirements: [
-        'Cunoștințe de infrastructură cloud',
-        'Experiență cu automatizarea deployment-ului',
-        'Monitoring și logging',
-        'Security best practices'
+        'Cunoștințe în testarea manuală și automatizată',
+        'Experiență cu Selenium și Postman',
+        'Abilitatea de a identifica și raporta bug-uri'
+      ],
+      category: 'testing'
+    },
+    {
+      id: 'network',
+      title: 'Network & Infrastructure Specialist – Construiește Fundația Digitală!',
+      technologies: ['Cisco', 'Windows Server'],
+      requirements: [
+        'Cunoștințe în administrarea rețelelor și infrastructurii IT',
+        'Experiență cu echipamentele Cisco și Windows Server'
       ],
       category: 'network'
     },
     {
-      id: 'qa-tester',
-      title: 'QA Tester',
+      id: 'hr',
+      title: 'HR Specialist – Conectează Talentele cu Oportunitățile!',
       requirements: [
-        'Atenție la detalii',
-        'Metodologii de testare',
-        'Documentarea bug-urilor',
-        'Testare manuală și automatizată'
+        'Abilități excelente de comunicare și interpersonale',
+        'Experiență în recrutare și selecție de personal',
+        'Cunoștințe în dezvoltarea resursei umane'
       ],
-      category: 'testing'
+      category: 'hr'
     }
   ];
 
-  projectPreviews: Project[] = [
+  projects: Project[] = [
     {
-      id: 'aplicatie-note',
-      title: 'Aplicația de Note',
-      description: 'Echipa noastră a dezvoltat o aplicație inovatoare pentru organizarea și gestionarea notelor studențești, facilitând procesul de învățare.',
+      id: 'e-scoala',
+      title: 'E-Școala',
+      description: 'E-Școala este o platformă revoluționară destinată transformării digitale a educației, conectând studenții, profesorii și părinții într-un ecosistem educațional integrat.',
       type: 'project'
     },
     {
@@ -184,10 +178,17 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   onApplyClick(): void {
-    // Navigate to application form - this will be called by the routerLink
-    // The navigation is already handled by routerLink="/aplica"
-    // This method can be used for analytics or other side effects
-    console.log('User clicked Apply button - navigating to application form');
+    // Use programmatic navigation as backup
+    console.log('Navigating to application form...');
+
+    // Try to navigate programmatically
+    this.router.navigate(['/tsg-application']).catch(error => {
+      console.error('Navigation failed:', error);
+      // Fallback to the correct route if the primary one fails
+      this.router.navigate(['/aplica']).catch(fallbackError => {
+        console.error('Fallback navigation also failed:', fallbackError);
+      });
+    });
   }
 
   onLearnMoreClick(): void {

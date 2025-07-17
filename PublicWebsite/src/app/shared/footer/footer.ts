@@ -35,6 +35,7 @@ export class FooterComponent {
       platform: 'YouTube',
       url: 'https://www.youtube.com/channel/UC5PbsYmTh2kJuK9G9-GJfZQ',
       icon: 'fab fa-youtube',
+      imageIcon: 'assets/icons/youtube.png',
       ariaLabel: 'YouTube'
     }
   ];

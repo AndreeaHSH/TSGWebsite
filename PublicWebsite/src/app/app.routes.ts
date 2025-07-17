@@ -41,10 +41,19 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/projects/projects').then(m => m.ProjectsComponent),
     title: 'Proiecte - TSG'
   },
+
+  // FIXED: Changed from 'aplica' to 'tsg-application' to match the button's routerLink
   {
-    path: 'aplica',
+    path: 'tsg-application',
     loadComponent: () => import('./forms/tsg-application/tsg-application').then(m => m.TsgApplicationComponent),
     title: 'Aplică - TSG'
+  },
+
+  // Optional: Add redirect from old path to new path for backwards compatibility
+  {
+    path: 'aplica',
+    redirectTo: '/tsg-application',
+    pathMatch: 'full'
   },
 
   // Redirect any unknown routes to home

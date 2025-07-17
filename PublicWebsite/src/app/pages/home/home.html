@@ -9,10 +9,20 @@
           <p class="hero-subtitle">Transilvania Star Group caută Voluntari</p>
           <p class="hero-description">Completează formularul de mai jos!</p>
           <div class="hero-buttons">
-            <a routerLink="/aplica" class="btn btn-primary">
+            <!-- FIXED: Properly closed the anchor tag -->
+            <a routerLink="/tsg-application"
+               class="btn btn-primary"
+               (click)="onApplyClick()"
+               role="button"
+               aria-label="Completează formularul de aplicare">
               Completează Formularul
             </a>
-            <a href="#despre" class="btn btn-secondary" (click)="onLearnMoreClick()">
+            <!-- ADDED: Missing "Află Mai Multe" button -->
+            <a href="#despre"
+               class="btn btn-secondary"
+               (click)="onLearnMoreClick()"
+               role="button"
+               aria-label="Află mai multe despre program">
               Află Mai Multe
             </a>
           </div>
