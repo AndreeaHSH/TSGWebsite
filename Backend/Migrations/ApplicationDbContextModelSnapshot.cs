@@ -17,7 +17,7 @@ namespace TSGwebsite.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.7")
+                .HasAnnotation("ProductVersion", "8.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -77,25 +77,425 @@ namespace TSGwebsite.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Slug")
+                    b.ToTable("BlogPosts");
+                });
+
+            modelBuilder.Entity("TSGwebsite.Models.Member", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Department")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("GitHubUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("JoinedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("LinkedInUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("BlogPosts");
+                    b.ToTable("Members");
 
                     b.HasData(
                         new
                         {
                             Id = 1,
-                            Author = "TSG Team",
-                            Content = "Suntem încântați să lansăm noul nostru sistem de management pentru voluntari...",
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            IsPublished = true,
-                            PublishedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Slug = "bine-ai-venit-in-tsg",
-                            Summary = "Introducere în programul nostru de voluntariat și cum să începi.",
-                            Tags = "welcome,volunteer,community,tsg",
-                            Title = "Bine ai venit în TSG!",
-                            ViewCount = 0
+                            Department = "Management",
+                            Email = "augustin.matea@example.com",
+                            FirstName = "Augustin",
+                            IsActive = true,
+                            JoinedAt = new DateTime(2020, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Matea",
+                            Role = "Founder"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Department = "Management",
+                            Email = "daia.irimia@example.com",
+                            FirstName = "Daia",
+                            IsActive = true,
+                            JoinedAt = new DateTime(2020, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Irimia",
+                            Role = "Coordinator"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Department = "Frontend",
+                            Email = "andrei.constantin@example.com",
+                            FirstName = "Andrei",
+                            IsActive = true,
+                            JoinedAt = new DateTime(2021, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Constantin",
+                            Role = "Lead"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Department = "FullStack",
+                            Email = "daniel.nwaeke@example.com",
+                            FirstName = "Daniel",
+                            IsActive = true,
+                            JoinedAt = new DateTime(2021, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Nwaeke",
+                            Role = "Member"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Department = "Mobile",
+                            Email = "cristina.gavrila@example.com",
+                            FirstName = "Cristina",
+                            IsActive = true,
+                            JoinedAt = new DateTime(2021, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Gavrilă",
+                            Role = "Lead"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Department = "GraphicDesign",
+                            Email = "bianca.popescu@example.com",
+                            FirstName = "Bianca",
+                            IsActive = true,
+                            JoinedAt = new DateTime(2022, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Popescu",
+                            Role = "Member"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Department = "Backend",
+                            Email = "eduard.marinescu@example.com",
+                            FirstName = "Eduard",
+                            IsActive = true,
+                            JoinedAt = new DateTime(2022, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Marinescu",
+                            Role = "Lead"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Department = "Communication",
+                            Email = "iulia.ionescu@example.com",
+                            FirstName = "Iulia",
+                            IsActive = true,
+                            JoinedAt = new DateTime(2022, 6, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Ionescu",
+                            Role = "Member"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Department = "Networking",
+                            Email = "victor.stanciu@example.com",
+                            FirstName = "Victor",
+                            IsActive = true,
+                            JoinedAt = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Stanciu",
+                            Role = "Member"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Department = "Frontend",
+                            Email = "alexandra.terechoasa@example.com",
+                            FirstName = "Alexandra",
+                            IsActive = true,
+                            JoinedAt = new DateTime(2023, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            LastName = "Terechoasă",
+                            Role = "Member"
+                        });
+                });
+
+            modelBuilder.Entity("TSGwebsite.Models.Project", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("BeginnerMemberId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ExecutorMemberId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LiveUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("RepositoryUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("ResponsibleMemberId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BeginnerMemberId");
+
+                    b.HasIndex("ExecutorMemberId");
+
+                    b.HasIndex("ResponsibleMemberId");
+
+                    b.ToTable("Projects");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8526),
+                            Description = "Official website for Transilvania Star Group",
+                            ExecutorMemberId = 4,
+                            Name = "TSG Website",
+                            ResponsibleMemberId = 3,
+                            StartDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Status = "InProgress",
+                            UpdatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8523)
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8529),
+                            Description = "Portal for student management and services",
+                            ExecutorMemberId = 5,
+                            Name = "Student Portal",
+                            ResponsibleMemberId = 7,
+                            StartDate = new DateTime(2024, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Status = "Planning",
+                            UpdatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8527)
+                        },
+                        new
+                        {
+                            Id = 3,
+                            BeginnerMemberId = 10,
+                            CreatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8531),
+                            Description = "TSG mobile application for students",
+                            Name = "Mobile App",
+                            ResponsibleMemberId = 5,
+                            StartDate = new DateTime(2024, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Status = "InProgress",
+                            UpdatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8530)
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8533),
+                            Description = "Document management system for university",
+                            ExecutorMemberId = 4,
+                            Name = "Registratură",
+                            ResponsibleMemberId = 7,
+                            StartDate = new DateTime(2023, 9, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Status = "Testing",
+                            UpdatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8532)
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8535),
+                            Description = "Social media and communication strategy",
+                            Name = "Marketing Campaign",
+                            ResponsibleMemberId = 8,
+                            StartDate = new DateTime(2024, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Status = "InProgress",
+                            UpdatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8534)
+                        });
+                });
+
+            modelBuilder.Entity("TSGwebsite.Models.Report", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Achievements")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("Challenges")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("HoursWorked")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MemberId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Month")
+                        .HasColumnType("int");
+
+                    b.Property<string>("NextMonthPlans")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("WorkDescription")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("MemberId", "ProjectId", "Month", "Year")
+                        .IsUnique();
+
+                    b.ToTable("Reports");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Achievements = "Completed responsive design implementation",
+                            CreatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8626),
+                            HoursWorked = 40,
+                            MemberId = 3,
+                            Month = 7,
+                            ProjectId = 1,
+                            UpdatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8624),
+                            WorkDescription = "Developed new frontend components and improved UI/UX",
+                            Year = 2025
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Achievements = "Improved API performance by 30%",
+                            CreatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8628),
+                            HoursWorked = 35,
+                            MemberId = 4,
+                            Month = 7,
+                            ProjectId = 1,
+                            UpdatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8627),
+                            WorkDescription = "Backend API development and database optimization",
+                            Year = 2025
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Achievements = "Completed authentication module",
+                            CreatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8630),
+                            HoursWorked = 45,
+                            MemberId = 5,
+                            Month = 7,
+                            ProjectId = 3,
+                            UpdatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8629),
+                            WorkDescription = "Mobile app development using React Native",
+                            Year = 2025
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Achievements = "Completed project architecture documentation",
+                            CreatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8668),
+                            HoursWorked = 30,
+                            MemberId = 7,
+                            Month = 7,
+                            ProjectId = 2,
+                            UpdatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8667),
+                            WorkDescription = "Architecture planning and backend setup",
+                            Year = 2025
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Achievements = "Increased social media engagement by 50%",
+                            CreatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8670),
+                            HoursWorked = 25,
+                            MemberId = 8,
+                            Month = 7,
+                            ProjectId = 5,
+                            UpdatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8669),
+                            WorkDescription = "Content creation and social media management",
+                            Year = 2025
                         });
                 });
 
@@ -145,27 +545,7 @@ namespace TSGwebsite.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Email")
-                        .IsUnique();
-
-                    b.HasIndex("Username")
-                        .IsUnique();
-
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Email = "admin@tsg.com",
-                            FirstName = "TSG",
-                            IsActive = true,
-                            LastName = "Administrator",
-                            PasswordHash = "$2a$11$eFxXyH/9BDsmjKgMkjj0ze9jkZHr3FTH6pM1HXltzm/fU4NTK44rG",
-                            Role = 0,
-                            Username = "admin"
-                        });
                 });
 
             modelBuilder.Entity("TSGwebsite.Models.Volunteer", b =>
@@ -321,10 +701,67 @@ namespace TSGwebsite.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Email")
-                        .IsUnique();
-
                     b.ToTable("Volunteers");
+                });
+
+            modelBuilder.Entity("TSGwebsite.Models.Project", b =>
+                {
+                    b.HasOne("TSGwebsite.Models.Member", "BeginnerMember")
+                        .WithMany("BeginnerProjects")
+                        .HasForeignKey("BeginnerMemberId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("TSGwebsite.Models.Member", "ExecutorMember")
+                        .WithMany("ExecutorProjects")
+                        .HasForeignKey("ExecutorMemberId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("TSGwebsite.Models.Member", "ResponsibleMember")
+                        .WithMany("ResponsibleProjects")
+                        .HasForeignKey("ResponsibleMemberId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("BeginnerMember");
+
+                    b.Navigation("ExecutorMember");
+
+                    b.Navigation("ResponsibleMember");
+                });
+
+            modelBuilder.Entity("TSGwebsite.Models.Report", b =>
+                {
+                    b.HasOne("TSGwebsite.Models.Member", "Member")
+                        .WithMany("Reports")
+                        .HasForeignKey("MemberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TSGwebsite.Models.Project", "Project")
+                        .WithMany("Reports")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Member");
+
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("TSGwebsite.Models.Member", b =>
+                {
+                    b.Navigation("BeginnerProjects");
+
+                    b.Navigation("ExecutorProjects");
+
+                    b.Navigation("Reports");
+
+                    b.Navigation("ResponsibleProjects");
+                });
+
+            modelBuilder.Entity("TSGwebsite.Models.Project", b =>
+                {
+                    b.Navigation("Reports");
                 });
 #pragma warning restore 612, 618
         }

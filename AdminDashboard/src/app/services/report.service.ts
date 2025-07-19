@@ -80,9 +80,6 @@ export class ReportService {
 
   constructor(private http: HttpClient) {}
 
-  /**
-   * Get all reports with optional filters
-   */
   async getReports(filters?: ReportFilters): Promise<Report[]> {
     try {
       let params = new HttpParams();
@@ -102,7 +99,6 @@ export class ReportService {
         )
       );
 
-      // Convert date strings to Date objects
       return reports.map(report => ({
         ...report,
         createdAt: new Date(report.createdAt),
@@ -114,9 +110,6 @@ export class ReportService {
     }
   }
 
-  /**
-   * Get a single report by ID
-   */
   async getReport(id: number): Promise<Report> {
     try {
       const report = await firstValueFrom(
@@ -136,9 +129,6 @@ export class ReportService {
     }
   }
 
-  /**
-   * Create a new report
-   */
   async createReport(report: CreateReportDto): Promise<Report> {
     try {
       const newReport = await firstValueFrom(
@@ -158,9 +148,6 @@ export class ReportService {
     }
   }
 
-  /**
-   * Update an existing report
-   */
   async updateReport(id: number, report: UpdateReportDto): Promise<void> {
     try {
       await firstValueFrom(
@@ -174,9 +161,6 @@ export class ReportService {
     }
   }
 
-  /**
-   * Delete a report
-   */
   async deleteReport(id: number): Promise<void> {
     try {
       await firstValueFrom(
@@ -190,9 +174,6 @@ export class ReportService {
     }
   }
 
-  /**
-   * Get report statistics
-   */
   async getStatistics(year?: number, month?: number): Promise<ReportStatistics> {
     try {
       let params = new HttpParams();
@@ -216,71 +197,12 @@ export class ReportService {
     }
   }
 
-  /**
-   * Get reports by member ID
-   */
-  async getReportsByMember(memberId: number, year?: number): Promise<Report[]> {
-    const filters: ReportFilters = { memberId };
-    if (year) filters.year = year;
-    return this.getReports(filters);
-  }
-
-  /**
-   * Get reports by project ID
-   */
-  async getReportsByProject(projectId: number, year?: number): Promise<Report[]> {
-    const filters: ReportFilters = { projectId };
-    if (year) filters.year = year;
-    return this.getReports(filters);
-  }
-
-  /**
-   * Get reports by department
-   */
-  async getReportsByDepartment(department: string, year?: number): Promise<Report[]> {
-    const filters: ReportFilters = { department };
-    if (year) filters.year = year;
-    return this.getReports(filters);
-  }
-
-  /**
-   * Check if a report exists for a specific member, project, month, and year
-   */
-  async checkReportExists(memberId: number, projectId: number, month: number, year: number): Promise<boolean> {
-    try {
-      const reports = await this.getReports({ memberId, projectId, month, year });
-      return reports.length > 0;
-    } catch (error) {
-      console.error('Error checking report existence:', error);
-      return false;
-    }
-  }
-
-  /**
-   * Get available years for reports
-   */
-  async getAvailableYears(): Promise<number[]> {
-    try {
-      const reports = await this.getReports();
-      const years = [...new Set(reports.map(r => r.year))];
-      return years.sort((a, b) => b - a); // Sort descending
-    } catch (error) {
-      console.error('Error fetching available years:', error);
-      return [new Date().getFullYear()];
-    }
-  }
-
   private handleError = (error: HttpErrorResponse) => {
     let errorMessage = 'An unknown error occurred';
 
     if (error.error instanceof ErrorEvent) {
-      // Client-side error
       errorMessage = `Client Error: ${error.error.message}`;
     } else {
-      // Server-side error
-      errorMessage = `Server Error Code: ${error.status}\nMessage: ${error.message}`;
-
-      // Handle specific HTTP status codes
       switch (error.status) {
         case 400:
           errorMessage = error.error?.message || 'Bad request. Please check your input.';

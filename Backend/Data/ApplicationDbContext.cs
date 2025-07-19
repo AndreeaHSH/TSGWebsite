@@ -1,12 +1,18 @@
-// Data/ApplicationDbContext.cs - Add these DbSets and configurations
+// Backend/Data/ApplicationDbContext.cs
 using Microsoft.EntityFrameworkCore;
 using TSGwebsite.Models;
 
 namespace TSGwebsite.Data
 {
-    public partial class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : DbContext
     {
-        // Existing DbSets...
+        // ✅ ADD THIS CONSTRUCTOR - This is what was missing!
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+            : base(options)
+        {
+        }
+
+        // Your existing DbSets
         public DbSet<Volunteer> Volunteers { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<BlogPost> BlogPosts { get; set; }

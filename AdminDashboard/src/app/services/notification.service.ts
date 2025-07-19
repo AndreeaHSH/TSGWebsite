@@ -73,5 +73,35 @@ export class NotificationService {
 
     const currentNotifications = this.notifications.value;
     this.notifications.next([...currentNotifications, newNotification]);
+
+    // Auto remove notification after duration
+    if (notification.duration && notification.duration > 0) {
+      setTimeout(() => {
+        this.removeNotification(id);
+      }, notification.duration);
+    }
+  }
+
+  /**
+   * Remove a notification
+   */
+  removeNotification(id: string): void {
+    const currentNotifications = this.notifications.value;
+    const updatedNotifications = currentNotifications.filter(n => n.id !== id);
+    this.notifications.next(updatedNotifications);
+  }
+
+  /**
+   * Clear all notifications
+   */
+  clearAll(): void {
+    this.notifications.next([]);
+  }
+
+  /**
+   * Generate unique ID for notifications
+   */
+  private generateId(): string {
+    return Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
   }
 }

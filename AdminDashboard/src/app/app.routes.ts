@@ -1,4 +1,3 @@
-// AdminDashboard/src/app/app.routes.ts
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
@@ -38,12 +37,11 @@ export const routes: Routes = [
     title: 'Editează Postarea - TSG Admin'
   },
 
-  // Reports Route (commented out until implemented)
-  // {
-  //   path: 'raport',
-  //   loadComponent: () => import('./components/reports/reports.component').then(m => m.ReportsComponent),
-  //   title: 'Rapoarte - TSG Admin'
-  // },
+  {
+     path: 'raport',
+    loadComponent: () => import('./components/reports/reports.component').then(m => m.ReportsComponent),
+    title: 'Rapoarte - TSG Admin'
+  },
 
   // Authentication Route (commented out until implemented)
   // {

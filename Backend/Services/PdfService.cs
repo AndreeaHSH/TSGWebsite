@@ -1,5 +1,11 @@
-using iTextSharp.text;
-using iTextSharp.text.pdf;
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
+using iText.Layout.Properties;
+using iText.Layout.Borders;
+using iText.Kernel.Colors;
+using iText.Kernel.Font;
+using iText.IO.Font.Constants;
 using TSGwebsite.Models;
 using System.Text;
 
@@ -16,50 +22,58 @@ namespace TSGwebsite.Services
         {
             using (var memoryStream = new MemoryStream())
             {
-                // Create document
-                var document = new Document(PageSize.A4, 40, 40, 40, 40);
-                var writer = PdfWriter.GetInstance(document, memoryStream);
-                
-                document.Open();
+                // Create PDF writer and document
+                var writer = new PdfWriter(memoryStream);
+                var pdf = new PdfDocument(writer);
+                var document = new Document(pdf);
 
-                // Fonts
-                var titleFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 18, BaseColor.DARK_GRAY);
-                var headerFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 14, new BaseColor(255, 109, 72)); // TSG Orange
-                var labelFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 10, BaseColor.BLACK);
-                var valueFont = FontFactory.GetFont(FontFactory.HELVETICA, 10, BaseColor.BLACK);
-                var smallFont = FontFactory.GetFont(FontFactory.HELVETICA, 8, BaseColor.GRAY);
+                // Define fonts
+                var titleFont = PdfFontFactory.CreateFont(StandardFonts.HELVETICA_BOLD);
+                var headerFont = PdfFontFactory.CreateFont(StandardFonts.HELVETICA_BOLD);
+                var labelFont = PdfFontFactory.CreateFont(StandardFonts.HELVETICA_BOLD);
+                var valueFont = PdfFontFactory.CreateFont(StandardFonts.HELVETICA);
+                var smallFont = PdfFontFactory.CreateFont(StandardFonts.HELVETICA);
 
-                // Header with TSG branding
-                var headerTable = new PdfPTable(2) { WidthPercentage = 100 };
-                headerTable.SetWidths(new float[] { 1, 3 });
+                // Define colors
+                var tsgOrange = new DeviceRgb(255, 109, 72);
+                var darkGray = new DeviceRgb(64, 64, 64);
+                var lightGray = new DeviceRgb(240, 240, 240);
 
-                // TSG Logo placeholder (you can add actual logo later)
-                var logoCell = new PdfPCell(new Phrase("TSG", titleFont))
-                {
-                    Border = Rectangle.NO_BORDER,
-                    HorizontalAlignment = Element.ALIGN_CENTER,
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    BackgroundColor = new BaseColor(255, 109, 72),
-                    Padding = 10
-                };
+                // Header Section
+                var headerTable = new Table(2).UseAllAvailableWidth();
+                headerTable.SetWidth(UnitValue.CreatePercentValue(100));
+
+                // TSG Logo cell
+                var logoCell = new Cell()
+                    .Add(new Paragraph("TSG")
+                        .SetFont(titleFont)
+                        .SetFontSize(18)
+                        .SetFontColor(ColorConstants.WHITE)
+                        .SetTextAlignment(TextAlignment.CENTER))
+                    .SetBackgroundColor(tsgOrange)
+                    .SetBorder(Border.NO_BORDER)
+                    .SetPadding(10)
+                    .SetTextAlignment(TextAlignment.CENTER);
+
+                // Title cell
+                var titleCell = new Cell()
+                    .Add(new Paragraph("APLICAȚIE VOLUNTARIAT\nTRANSILVANIA STAR GROUP")
+                        .SetFont(titleFont)
+                        .SetFontSize(16)
+                        .SetFontColor(darkGray))
+                    .SetBorder(Border.NO_BORDER)
+                    .SetPadding(10)
+                    .SetVerticalAlignment(VerticalAlignment.MIDDLE);
+
                 headerTable.AddCell(logoCell);
-
-                var titleCell = new PdfPCell(new Phrase("APLICATIE VOLUNTARIAT\nTRANSILVANIA STAR GROUP", titleFont))
-                {
-                    Border = Rectangle.NO_BORDER,
-                    HorizontalAlignment = Element.ALIGN_LEFT,
-                    VerticalAlignment = Element.ALIGN_MIDDLE,
-                    Padding = 10
-                };
                 headerTable.AddCell(titleCell);
-
                 document.Add(headerTable);
-                document.Add(new Paragraph(" ")); // Space
+                
+                // Add space
+                document.Add(new Paragraph(" "));
 
                 // Application metadata
-                var metaTable = new PdfPTable(2) { WidthPercentage = 100 };
-                metaTable.SetWidths(new float[] { 1, 1 });
-
+                var metaTable = new Table(2).UseAllAvailableWidth();
                 metaTable.AddCell(CreateInfoCell("Data aplicației:", volunteer.SubmittedAt.ToString("dd/MM/yyyy HH:mm"), labelFont, valueFont));
                 metaTable.AddCell(CreateInfoCell("ID Aplicație:", volunteer.Id.ToString(), labelFont, valueFont));
                 metaTable.AddCell(CreateInfoCell("Status:", GetStatusText(volunteer.Status), labelFont, valueFont));
@@ -69,9 +83,8 @@ namespace TSGwebsite.Services
                 document.Add(new Paragraph(" "));
 
                 // Personal Information Section
-                AddSectionTitle(document, "INFORMAȚII PERSONALE", headerFont);
-                var personalTable = new PdfPTable(2) { WidthPercentage = 100 };
-                personalTable.SetWidths(new float[] { 1, 1 });
+                AddSectionTitle(document, "INFORMAȚII PERSONALE", headerFont, tsgOrange);
+                var personalTable = new Table(2).UseAllAvailableWidth();
 
                 personalTable.AddCell(CreateInfoCell("Nume:", volunteer.LastName, labelFont, valueFont));
                 personalTable.AddCell(CreateInfoCell("Prenume:", volunteer.FirstName, labelFont, valueFont));
@@ -84,9 +97,8 @@ namespace TSGwebsite.Services
                 document.Add(new Paragraph(" "));
 
                 // Academic Information Section
-                AddSectionTitle(document, "INFORMAȚII ACADEMICE", headerFont);
-                var academicTable = new PdfPTable(2) { WidthPercentage = 100 };
-                academicTable.SetWidths(new float[] { 1, 1 });
+                AddSectionTitle(document, "INFORMAȚII ACADEMICE", headerFont, tsgOrange);
+                var academicTable = new Table(2).UseAllAvailableWidth();
 
                 academicTable.AddCell(CreateInfoCell("Facultatea:", volunteer.Faculty, labelFont, valueFont));
                 academicTable.AddCell(CreateInfoCell("Specializarea:", volunteer.Specialization, labelFont, valueFont));
@@ -97,8 +109,8 @@ namespace TSGwebsite.Services
                 document.Add(new Paragraph(" "));
 
                 // Role Preferences Section
-                AddSectionTitle(document, "PREFERINȚE DE ROL", headerFont);
-                var roleTable = new PdfPTable(1) { WidthPercentage = 100 };
+                AddSectionTitle(document, "PREFERINȚE DE ROL", headerFont, tsgOrange);
+                var roleTable = new Table(1).UseAllAvailableWidth();
 
                 roleTable.AddCell(CreateInfoCell("Rolul preferat:", volunteer.PreferredRole, labelFont, valueFont));
                 roleTable.AddCell(CreateInfoCell("Rol alternativ:", volunteer.AlternativeRole ?? "Nu a fost specificat", labelFont, valueFont));
@@ -107,8 +119,8 @@ namespace TSGwebsite.Services
                 document.Add(new Paragraph(" "));
 
                 // Technical Skills Section
-                AddSectionTitle(document, "COMPETENȚE TEHNICE", headerFont);
-                var skillsTable = new PdfPTable(1) { WidthPercentage = 100 };
+                AddSectionTitle(document, "COMPETENȚE TEHNICE", headerFont, tsgOrange);
+                var skillsTable = new Table(1).UseAllAvailableWidth();
 
                 skillsTable.AddCell(CreateInfoCell("Limbaje de programare:", volunteer.ProgrammingLanguages ?? "Nu a fost specificat", labelFont, valueFont));
                 skillsTable.AddCell(CreateInfoCell("Framework-uri:", volunteer.Frameworks ?? "Nu a fost specificat", labelFont, valueFont));
@@ -118,8 +130,8 @@ namespace TSGwebsite.Services
                 document.Add(new Paragraph(" "));
 
                 // Experience and Motivation Section
-                AddSectionTitle(document, "EXPERIENȚĂ ȘI MOTIVAȚIE", headerFont);
-                var experienceTable = new PdfPTable(1) { WidthPercentage = 100 };
+                AddSectionTitle(document, "EXPERIENȚĂ ȘI MOTIVAȚIE", headerFont, tsgOrange);
+                var experienceTable = new Table(1).UseAllAvailableWidth();
 
                 experienceTable.AddCell(CreateLongTextCell("Experiența anterioară:", volunteer.Experience ?? "Nu a fost specificată", labelFont, valueFont));
                 experienceTable.AddCell(CreateLongTextCell("Motivația pentru TSG:", volunteer.Motivation, labelFont, valueFont));
@@ -129,9 +141,8 @@ namespace TSGwebsite.Services
                 document.Add(new Paragraph(" "));
 
                 // Availability Section
-                AddSectionTitle(document, "DISPONIBILITATE", headerFont);
-                var availabilityTable = new PdfPTable(2) { WidthPercentage = 100 };
-                availabilityTable.SetWidths(new float[] { 1, 1 });
+                AddSectionTitle(document, "DISPONIBILITATE", headerFont, tsgOrange);
+                var availabilityTable = new Table(2).UseAllAvailableWidth();
 
                 availabilityTable.AddCell(CreateInfoCell("Timpul dedicat:", volunteer.TimeCommitment, labelFont, valueFont));
                 availabilityTable.AddCell(CreateInfoCell("Program preferat:", volunteer.Schedule ?? "Nu a fost specificat", labelFont, valueFont));
@@ -140,8 +151,8 @@ namespace TSGwebsite.Services
                 document.Add(new Paragraph(" "));
 
                 // Documents and Portfolio Section
-                AddSectionTitle(document, "DOCUMENTE ȘI PORTOFOLIU", headerFont);
-                var documentsTable = new PdfPTable(1) { WidthPercentage = 100 };
+                AddSectionTitle(document, "DOCUMENTE ȘI PORTOFOLIU", headerFont, tsgOrange);
+                var documentsTable = new Table(1).UseAllAvailableWidth();
 
                 documentsTable.AddCell(CreateInfoCell("Portfolio/GitHub:", volunteer.PortfolioUrl ?? "Nu a fost specificat", labelFont, valueFont));
                 documentsTable.AddCell(CreateInfoCell("CV:", !string.IsNullOrEmpty(volunteer.CvFileName) ? 
@@ -152,8 +163,8 @@ namespace TSGwebsite.Services
                 document.Add(new Paragraph(" "));
 
                 // Agreements Section
-                AddSectionTitle(document, "ACORDURI ȘI CONSIMȚĂMINTE", headerFont);
-                var agreementsTable = new PdfPTable(1) { WidthPercentage = 100 };
+                AddSectionTitle(document, "ACORDURI ȘI CONSIMȚĂMINTE", headerFont, tsgOrange);
+                var agreementsTable = new Table(1).UseAllAvailableWidth();
 
                 agreementsTable.AddCell(CreateInfoCell("Acord prelucrare date:", volunteer.DataProcessingAgreement ? "✓ Acceptat" : "❌ Refuzat", labelFont, valueFont));
                 agreementsTable.AddCell(CreateInfoCell("Acord termeni și condiții:", volunteer.TermsAgreement ? "✓ Acceptat" : "❌ Refuzat", labelFont, valueFont));
@@ -164,8 +175,8 @@ namespace TSGwebsite.Services
                 // Admin Section (if applicable)
                 if (!string.IsNullOrEmpty(volunteer.ReviewNotes) || volunteer.ReviewedAt.HasValue)
                 {
-                    AddSectionTitle(document, "NOTIȚE ADMINISTRATIVE", headerFont);
-                    var adminTable = new PdfPTable(1) { WidthPercentage = 100 };
+                    AddSectionTitle(document, "NOTIȚE ADMINISTRATIVE", headerFont, tsgOrange);
+                    var adminTable = new Table(1).UseAllAvailableWidth();
 
                     if (volunteer.ReviewedAt.HasValue)
                         adminTable.AddCell(CreateInfoCell("Data revizuirii:", volunteer.ReviewedAt.Value.ToString("dd/MM/yyyy HH:mm"), labelFont, valueFont));
@@ -178,10 +189,11 @@ namespace TSGwebsite.Services
 
                 // Footer
                 document.Add(new Paragraph(" "));
-                var footer = new Paragraph($"Document generat automat • {DateTime.Now:dd/MM/yyyy HH:mm} • Transilvania Star Group", smallFont)
-                {
-                    Alignment = Element.ALIGN_CENTER
-                };
+                var footer = new Paragraph($"Document generat automat • {DateTime.Now:dd/MM/yyyy HH:mm} • Transilvania Star Group")
+                    .SetFont(smallFont)
+                    .SetFontSize(8)
+                    .SetFontColor(ColorConstants.GRAY)
+                    .SetTextAlignment(TextAlignment.CENTER);
                 document.Add(footer);
 
                 document.Close();
@@ -189,44 +201,48 @@ namespace TSGwebsite.Services
             }
         }
 
-        private void AddSectionTitle(Document document, string title, Font font)
+        private void AddSectionTitle(Document document, string title, PdfFont font, DeviceRgb color)
         {
-            var titleParagraph = new Paragraph(title, font)
-            {
-                SpacingBefore = 10f,
-                SpacingAfter = 10f
-            };
+            var titleParagraph = new Paragraph(title)
+                .SetFont(font)
+                .SetFontSize(14)
+                .SetFontColor(color)
+                .SetMarginTop(10)
+                .SetMarginBottom(10);
             document.Add(titleParagraph);
         }
 
-        private PdfPCell CreateInfoCell(string label, string value, Font labelFont, Font valueFont)
+        private Cell CreateInfoCell(string label, string value, PdfFont labelFont, PdfFont valueFont)
         {
-            var cell = new PdfPCell();
-            cell.Border = Rectangle.BOTTOM_BORDER;
-            cell.BorderColor = BaseColor.LIGHT_GRAY;
-            cell.Padding = 8f;
+            var cell = new Cell()
+                .SetBorderBottom(new SolidBorder(ColorConstants.LIGHT_GRAY, 1))
+                .SetBorderTop(Border.NO_BORDER)
+                .SetBorderLeft(Border.NO_BORDER)
+                .SetBorderRight(Border.NO_BORDER)
+                .SetPadding(8);
 
-            var paragraph = new Paragraph();
-            paragraph.Add(new Chunk(label + "\n", labelFont));
-            paragraph.Add(new Chunk(value, valueFont));
+            var paragraph = new Paragraph()
+                .Add(new Text(label + "\n").SetFont(labelFont).SetFontSize(10))
+                .Add(new Text(value).SetFont(valueFont).SetFontSize(10));
             
-            cell.AddElement(paragraph);
+            cell.Add(paragraph);
             return cell;
         }
 
-        private PdfPCell CreateLongTextCell(string label, string value, Font labelFont, Font valueFont)
+        private Cell CreateLongTextCell(string label, string value, PdfFont labelFont, PdfFont valueFont)
         {
-            var cell = new PdfPCell();
-            cell.Border = Rectangle.BOTTOM_BORDER;
-            cell.BorderColor = BaseColor.LIGHT_GRAY;
-            cell.Padding = 8f;
-            cell.Colspan = 2; // Span across both columns
+            var cell = new Cell()
+                .SetBorderBottom(new SolidBorder(ColorConstants.LIGHT_GRAY, 1))
+                .SetBorderTop(Border.NO_BORDER)
+                .SetBorderLeft(Border.NO_BORDER)
+                .SetBorderRight(Border.NO_BORDER)
+                .SetPadding(8);
 
-            var paragraph = new Paragraph();
-            paragraph.Add(new Chunk(label + "\n", labelFont));
-            paragraph.Add(new Chunk(value, valueFont));
+            var paragraph = new Paragraph()
+                .Add(new Text(label + "\n").SetFont(labelFont).SetFontSize(10))
+                .Add(new Text(value).SetFont(valueFont).SetFontSize(10));
             
-            cell.AddElement(paragraph);
+            cell.Add(paragraph);
             return cell;
         }
 

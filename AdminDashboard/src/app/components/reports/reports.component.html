@@ -200,6 +200,10 @@
                 <p class="member-email">{{ member.email }}</p>
                 <div class="member-stats">
                   <span class="stat">
+                    <i class="fas fa-file-alt"></i>
+                    {{ getReportsByMember(member.id).length }} rapoarte
+                  </span>
+                  <span class="stat">
                     <i class="fas fa-clock"></i>
                     {{ getTotalHoursByMember(member.id) }} ore
                   </span>
@@ -659,6 +663,12 @@
             <p>{{ selectedReportDetail.workDescription }}</p>
           </div>
 
+        <div class="report-sections">
+          <div class="report-section">
+            <h5><i class="fas fa-tasks"></i> Descriere muncă</h5>
+            <p>{{ selectedReportDetail.workDescription }}</p>
+          </div>
+
           <div class="report-section" *ngIf="selectedReportDetail.achievements">
             <h5><i class="fas fa-trophy"></i> Realizări</h5>
             <p>{{ selectedReportDetail.achievements }}</p>
@@ -692,8 +702,4 @@
       </div>
     </div>
   </div>
-</div>="fas fa-file-alt"></i>
-                    {{ getReportsByMember(member.id).length }} rapoarte
-                  </span>
-                  <span class="stat">
-                    <i class
+</div>

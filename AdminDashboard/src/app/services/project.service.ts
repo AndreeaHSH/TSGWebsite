@@ -35,8 +35,8 @@ export interface CreateProjectDto {
   name: string;
   description: string;
   status: ProjectStatus;
-  startDate: string; // ISO date string
-  endDate?: string; // ISO date string
+  startDate: string;
+  endDate?: string;
   repositoryUrl?: string;
   liveUrl?: string;
   responsibleMemberId: number;
@@ -48,8 +48,8 @@ export interface UpdateProjectDto {
   name: string;
   description: string;
   status: ProjectStatus;
-  startDate: string; // ISO date string
-  endDate?: string; // ISO date string
+  startDate: string;
+  endDate?: string;
   repositoryUrl?: string;
   liveUrl?: string;
   responsibleMemberId: number;
@@ -65,9 +65,6 @@ export class ProjectService {
 
   constructor(private http: HttpClient) {}
 
-  /**
-   * Get all projects
-   */
   async getProjects(): Promise<Project[]> {
     try {
       const projects = await firstValueFrom(
@@ -89,9 +86,6 @@ export class ProjectService {
     }
   }
 
-  /**
-   * Get a single project by ID
-   */
   async getProject(id: number): Promise<Project> {
     try {
       const project = await firstValueFrom(
@@ -113,9 +107,6 @@ export class ProjectService {
     }
   }
 
-  /**
-   * Create a new project
-   */
   async createProject(project: CreateProjectDto): Promise<Project> {
     try {
       const newProject = await firstValueFrom(
@@ -137,9 +128,6 @@ export class ProjectService {
     }
   }
 
-  /**
-   * Update an existing project
-   */
   async updateProject(id: number, project: UpdateProjectDto): Promise<void> {
     try {
       await firstValueFrom(
@@ -153,9 +141,6 @@ export class ProjectService {
     }
   }
 
-  /**
-   * Delete a project
-   */
   async deleteProject(id: number): Promise<void> {
     try {
       await firstValueFrom(
@@ -169,40 +154,6 @@ export class ProjectService {
     }
   }
 
-  /**
-   * Get projects by status
-   */
-  async getProjectsByStatus(status: ProjectStatus): Promise<Project[]> {
-    const projects = await this.getProjects();
-    return projects.filter(p => p.status === status);
-  }
-
-  /**
-   * Get active projects (not completed or cancelled)
-   */
-  async getActiveProjects(): Promise<Project[]> {
-    const projects = await this.getProjects();
-    return projects.filter(p =>
-      p.status !== ProjectStatus.Completed &&
-      p.status !== ProjectStatus.Cancelled
-    );
-  }
-
-  /**
-   * Get projects by member (any role)
-   */
-  async getProjectsByMember(memberId: number): Promise<Project[]> {
-    const projects = await this.getProjects();
-    return projects.filter(p =>
-      p.responsibleMemberId === memberId ||
-      p.executorMemberId === memberId ||
-      p.beginnerMemberId === memberId
-    );
-  }
-
-  /**
-   * Get project status options for forms
-   */
   getProjectStatusOptions(): Array<{key: ProjectStatus, value: string}> {
     return [
       { key: ProjectStatus.Planning, value: 'Planificare' },
@@ -220,8 +171,6 @@ export class ProjectService {
     if (error.error instanceof ErrorEvent) {
       errorMessage = `Client Error: ${error.error.message}`;
     } else {
-      errorMessage = `Server Error Code: ${error.status}\nMessage: ${error.message}`;
-
       switch (error.status) {
         case 400:
           errorMessage = error.error?.message || 'Bad request. Please check your input.';

@@ -69,31 +69,6 @@ export interface UpdateMemberDto {
   imageUrl?: string;
 }
 
-export interface MemberStatistics {
-  totalActiveMembers: number;
-  totalInactiveMembers: number;
-  departmentStatistics: Array<{
-    department: string;
-    departmentDisplayName: string;
-    count: number;
-    percentage: number;
-  }>;
-  roleStatistics: Array<{
-    role: string;
-    roleDisplayName: string;
-    count: number;
-    percentage: number;
-  }>;
-  recentJoins: Member[];
-}
-
-export interface MemberSearchFilters {
-  query?: string;
-  department?: Department;
-  role?: MemberRole;
-  isActive?: boolean;
-}
-
 @Injectable({
   providedIn: 'root'
 })
@@ -102,9 +77,6 @@ export class MemberService {
 
   constructor(private http: HttpClient) {}
 
-  /**
-   * Get all members with optional filters
-   */
   async getMembers(department?: Department, isActive?: boolean): Promise<Member[]> {
     try {
       let params = new HttpParams();
@@ -133,9 +105,6 @@ export class MemberService {
     }
   }
 
-  /**
-   * Get a single member by ID
-   */
   async getMember(id: number): Promise<Member> {
     try {
       const member = await firstValueFrom(
@@ -154,9 +123,6 @@ export class MemberService {
     }
   }
 
-  /**
-   * Create a new member
-   */
   async createMember(member: CreateMemberDto): Promise<Member> {
     try {
       const newMember = await firstValueFrom(
@@ -175,9 +141,6 @@ export class MemberService {
     }
   }
 
-  /**
-   * Update an existing member
-   */
   async updateMember(id: number, member: UpdateMemberDto): Promise<void> {
     try {
       await firstValueFrom(
@@ -191,9 +154,6 @@ export class MemberService {
     }
   }
 
-  /**
-   * Delete a member (soft delete)
-   */
   async deleteMember(id: number): Promise<{ message: string }> {
     try {
       return await firstValueFrom(
@@ -207,9 +167,6 @@ export class MemberService {
     }
   }
 
-  /**
-   * Get members grouped by department
-   */
   async getMembersByDepartment(): Promise<MembersByDepartment[]> {
     try {
       const departments = await firstValueFrom(
@@ -231,174 +188,6 @@ export class MemberService {
     }
   }
 
-  /**
-   * Get member statistics
-   */
-  async getMemberStatistics(): Promise<MemberStatistics> {
-    try {
-      const stats = await firstValueFrom(
-        this.http.get<MemberStatistics>(`${this.apiUrl}/statistics`).pipe(
-          catchError(this.handleError)
-        )
-      );
-
-      return {
-        ...stats,
-        recentJoins: stats.recentJoins.map(member => ({
-          ...member,
-          joinedAt: new Date(member.joinedAt)
-        }))
-      };
-    } catch (error) {
-      console.error('Error fetching member statistics:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Search members with filters
-   */
-  async searchMembers(filters: MemberSearchFilters): Promise<Member[]> {
-    try {
-      let params = new HttpParams();
-
-      if (filters.query) {
-        params = params.set('query', filters.query);
-      }
-
-      if (filters.department) {
-        params = params.set('department', filters.department);
-      }
-
-      if (filters.role) {
-        params = params.set('role', filters.role);
-      }
-
-      if (filters.isActive !== undefined) {
-        params = params.set('isActive', filters.isActive.toString());
-      }
-
-      const members = await firstValueFrom(
-        this.http.get<Member[]>(`${this.apiUrl}/search`, { params }).pipe(
-          catchError(this.handleError)
-        )
-      );
-
-      return members.map(member => ({
-        ...member,
-        joinedAt: new Date(member.joinedAt)
-      }));
-    } catch (error) {
-      console.error('Error searching members:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Activate a member
-   */
-  async activateMember(id: number): Promise<{ message: string }> {
-    try {
-      return await firstValueFrom(
-        this.http.put<{ message: string }>(`${this.apiUrl}/${id}/activate`, {}).pipe(
-          catchError(this.handleError)
-        )
-      );
-    } catch (error) {
-      console.error('Error activating member:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Deactivate a member
-   */
-  async deactivateMember(id: number): Promise<{ message: string }> {
-    try {
-      return await firstValueFrom(
-        this.http.put<{ message: string }>(`${this.apiUrl}/${id}/deactivate`, {}).pipe(
-          catchError(this.handleError)
-        )
-      );
-    } catch (error) {
-      console.error('Error deactivating member:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Get leads (Lead, Coordinator, Founder roles)
-   */
-  async getLeads(): Promise<Member[]> {
-    try {
-      const leads = await firstValueFrom(
-        this.http.get<Member[]>(`${this.apiUrl}/leads`).pipe(
-          catchError(this.handleError)
-        )
-      );
-
-      return leads.map(member => ({
-        ...member,
-        joinedAt: new Date(member.joinedAt)
-      }));
-    } catch (error) {
-      console.error('Error fetching leads:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Get available members for project assignment
-   */
-  async getAvailableMembers(): Promise<Member[]> {
-    try {
-      const members = await firstValueFrom(
-        this.http.get<Member[]>(`${this.apiUrl}/available-for-projects`).pipe(
-          catchError(this.handleError)
-        )
-      );
-
-      return members.map(member => ({
-        ...member,
-        joinedAt: new Date(member.joinedAt)
-      }));
-    } catch (error) {
-      console.error('Error fetching available members:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Get department options for forms
-   */
-  getDepartmentOptions(): Array<{key: Department, value: string}> {
-    return [
-      { key: Department.Frontend, value: 'Frontend' },
-      { key: Department.Backend, value: 'Backend' },
-      { key: Department.Mobile, value: 'Mobile' },
-      { key: Department.Communication, value: 'Communication' },
-      { key: Department.Networking, value: 'Networking' },
-      { key: Department.GraphicDesign, value: 'Graphic Design' },
-      { key: Department.FullStack, value: 'Full Stack' },
-      { key: Department.Management, value: 'Management' }
-    ];
-  }
-
-  /**
-   * Get role options for forms
-   */
-  getRoleOptions(): Array<{key: MemberRole, value: string}> {
-    return [
-      { key: MemberRole.Member, value: 'Member' },
-      { key: MemberRole.Lead, value: 'Lead' },
-      { key: MemberRole.Coordinator, value: 'Coordinator' },
-      { key: MemberRole.Founder, value: 'Founder' }
-    ];
-  }
-
-  /**
-   * Get display name for department
-   */
   getDepartmentDisplayName(department: Department | string): string {
     const deptNames: { [key: string]: string } = {
       'Frontend': 'Frontend',
@@ -413,22 +202,6 @@ export class MemberService {
     return deptNames[department] || department;
   }
 
-  /**
-   * Get display name for role
-   */
-  getRoleDisplayName(role: MemberRole | string): string {
-    const roleNames: { [key: string]: string } = {
-      'Member': 'Member',
-      'Lead': 'Lead',
-      'Coordinator': 'Coordinator',
-      'Founder': 'Founder'
-    };
-    return roleNames[role] || role;
-  }
-
-  /**
-   * Get department color for UI
-   */
   getDepartmentColor(department: Department | string): string {
     const colors: { [key: string]: string } = {
       'Frontend': '#61dafb',
@@ -449,8 +222,6 @@ export class MemberService {
     if (error.error instanceof ErrorEvent) {
       errorMessage = `Client Error: ${error.error.message}`;
     } else {
-      errorMessage = `Server Error Code: ${error.status}\nMessage: ${error.message}`;
-
       switch (error.status) {
         case 400:
           errorMessage = error.error?.message || 'Bad request. Please check your input.';

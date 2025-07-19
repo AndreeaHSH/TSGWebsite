@@ -40,7 +40,7 @@ export class SidebarComponent {
       label: 'Raport',
       route: '/raport',
       icon: '📊',
-      isEnabled: false,
+      isEnabled: true,
       description: 'Statistici și rapoarte (în curând)'
     }
   ];
