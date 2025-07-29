@@ -1,7 +1,5 @@
-<!-- AdminDashboard/src/app/components/blog/blog-editor/blog-editor.component.html -->
 <div class="blog-editor-container">
 
-  <!-- Header Section -->
   <div class="editor-header">
     <div class="header-content">
       <h1 class="page-title">
@@ -44,23 +42,19 @@
     </div>
   </div>
 
-  <!-- Error Message -->
   <div *ngIf="error()" class="error-message">
     <span class="error-icon">⚠️</span>
     <span class="error-text">{{ error() }}</span>
     <button class="error-close" (click)="error.set(null)">✕</button>
   </div>
 
-  <!-- Loading State -->
   <div *ngIf="isLoading()" class="loading-container">
     <div class="loading-spinner"></div>
     <p class="loading-text">Se încarcă postarea...</p>
   </div>
 
-  <!-- Editor Form -->
   <div *ngIf="!isLoading()" class="editor-form">
 
-    <!-- Basic Information Section -->
     <div class="form-section">
       <h2 class="section-title">Informații de bază</h2>
 
@@ -142,14 +136,12 @@
         </div>
       </div>
 
-      <!-- Tags Preview -->
       <div *ngIf="getTags().length > 0" class="tags-preview">
         <span class="tags-label">Preview tag-uri:</span>
         <span *ngFor="let tag of getTags(); trackBy: trackByTag" class="tag-preview">{{ tag }}</span>
       </div>
     </div>
 
-    <!-- Content Section -->
     <div class="form-section">
       <h2 class="section-title">Conținut</h2>
 
@@ -193,14 +185,12 @@
       </div>
     </div>
 
-    <!-- Media Gallery Section -->
     <div class="form-section">
       <h2 class="section-title">Galerie imagini</h2>
       <p class="section-description">
         Încarcă până la {{ maxImages }} imagini pentru postare. Prima imagine va fi imaginea principală.
       </p>
 
-      <!-- Image Upload Area -->
       <div
         class="image-upload-area"
         [class.drag-over]="dragOver()"
@@ -242,7 +232,6 @@
         </div>
       </div>
 
-      <!-- Images Grid -->
       <div *ngIf="images().length > 0" class="images-grid">
         <div
           *ngFor="let image of images(); let i = index; trackBy: trackByImage"
@@ -256,12 +245,10 @@
           <div class="image-preview">
             <img [src]="image.preview" [alt]="image.altText" class="preview-img">
 
-            <!-- Primary Badge -->
-            <div *ngIf="image.isPrimary" class="primary-badge">
+             <div *ngIf="image.isPrimary" class="primary-badge">
               ⭐ Principală
             </div>
 
-            <!-- Image Actions -->
             <div class="image-actions">
               <button
                 *ngIf="!image.isPrimary"
@@ -279,7 +266,6 @@
             </div>
           </div>
 
-          <!-- Alt Text Input -->
           <div class="image-details">
             <input
               type="text"
@@ -292,7 +278,6 @@
         </div>
       </div>
 
-      <!-- Upload Instructions -->
       <div *ngIf="images().length > 0" class="upload-instructions">
         <p><strong>💡 Sfaturi:</strong></p>
         <ul>

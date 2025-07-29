@@ -49,9 +49,9 @@
           <span class="member-count">{{ dept.memberCount }} membri</span>
         </div>
 
-        <div class="members-list" *ngIf="dept.members.length > 0; else noMembers">
+        <div class="members-list" *ngIf="(dept.Members || dept.members || []).length > 0; else noMembers">
           <div
-            *ngFor="let member of dept.members; trackBy: trackByMember"
+            *ngFor="let member of (dept.Members || dept.members || []); trackBy: trackByMember"
             class="member-item"
             [class.inactive]="!member.isActive">
             <div class="member-info">

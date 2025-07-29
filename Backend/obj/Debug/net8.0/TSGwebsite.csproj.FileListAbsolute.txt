@@ -180,9 +180,6 @@ C:\Repo\TSGwebsite\Backend\bin\Debug\net8.0\runtimes\win-arm\native\Microsoft.Da
 C:\Repo\TSGwebsite\Backend\bin\Debug\net8.0\runtimes\win-arm64\native\Microsoft.Data.SqlClient.SNI.dll
 C:\Repo\TSGwebsite\Backend\bin\Debug\net8.0\runtimes\win-x64\native\Microsoft.Data.SqlClient.SNI.dll
 C:\Repo\TSGwebsite\Backend\bin\Debug\net8.0\runtimes\win-x86\native\Microsoft.Data.SqlClient.SNI.dll
-C:\Repo\TSGwebsite\Backend\bin\Debug\net8.0\runtimes\win\lib\net6.0\Microsoft.Win32.SystemEvents.dll
-C:\Repo\TSGwebsite\Backend\bin\Debug\net8.0\runtimes\unix\lib\net6.0\System.Drawing.Common.dll
-C:\Repo\TSGwebsite\Backend\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Drawing.Common.dll
 C:\Repo\TSGwebsite\Backend\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Runtime.Caching.dll
 C:\Repo\TSGwebsite\Backend\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Security.Cryptography.ProtectedData.dll
 C:\Repo\TSGwebsite\Backend\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
@@ -208,3 +205,9 @@ C:\Repo\TSGwebsite\Backend\obj\Debug\net8.0\refint\TSGwebsite.dll
 C:\Repo\TSGwebsite\Backend\obj\Debug\net8.0\TSGwebsite.pdb
 C:\Repo\TSGwebsite\Backend\obj\Debug\net8.0\TSGwebsite.genruntimeconfig.cache
 C:\Repo\TSGwebsite\Backend\obj\Debug\net8.0\ref\TSGwebsite.dll
+C:\Repo\TSGwebsite\Backend\bin\Debug\net8.0\EPPlus.dll
+C:\Repo\TSGwebsite\Backend\bin\Debug\net8.0\EPPlus.Interfaces.dll
+C:\Repo\TSGwebsite\Backend\bin\Debug\net8.0\EPPlus.System.Drawing.dll
+C:\Repo\TSGwebsite\Backend\bin\Debug\net8.0\Microsoft.IO.RecyclableMemoryStream.dll
+C:\Repo\TSGwebsite\Backend\bin\Debug\net8.0\runtimes\win\lib\net7.0\Microsoft.Win32.SystemEvents.dll
+C:\Repo\TSGwebsite\Backend\bin\Debug\net8.0\runtimes\win\lib\net7.0\System.Drawing.Common.dll

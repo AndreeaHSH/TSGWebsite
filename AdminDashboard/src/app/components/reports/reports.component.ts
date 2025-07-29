@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 // Interfaces
@@ -59,7 +60,8 @@ export interface Report {
 export interface DepartmentData {
   department: string;
   departmentDisplayName: string;
-  members: Member[];
+  Members: Member[];
+  members?: Member[];
   memberCount: number;
 }
 
@@ -194,22 +196,28 @@ export class ReportsComponent implements OnInit {
 
   private async loadDepartmentData() {
     try {
-      const response = await this.http.get<DepartmentData[]>(
-        `${environment.apiUrl}/api/members/by-department`
-      ).toPromise();
+      const response = await firstValueFrom(
+        this.http.get<DepartmentData[]>(`${environment.apiUrl}/api/members/by-department`)
+      );
+
+      // Debug log to see the actual response structure
+      console.log('Department data response:', response);
+
       this.departmentData = response || [];
-      this.allMembers = this.departmentData.flatMap(dept => dept.members);
+      // Fix: Use 'Members' (capital M) as returned by backend
+      this.allMembers = this.departmentData.flatMap(dept => dept.Members || dept.members || []);
     } catch (error) {
       console.error('Error loading department data:', error);
       this.departmentData = [];
+      this.allMembers = [];
     }
   }
 
   private async loadProjects() {
     try {
-      const response = await this.http.get<Project[]>(
-        `${environment.apiUrl}/api/projects`
-      ).toPromise();
+      const response = await firstValueFrom(
+        this.http.get<Project[]>(`${environment.apiUrl}/api/projects`)
+      );
       this.projects = response || [];
 
       this.projects.forEach(project => {
@@ -235,7 +243,9 @@ export class ReportsComponent implements OnInit {
         url += `&department=${this.selectedDepartment}`;
       }
 
-      const response = await this.http.get<Report[]>(url).toPromise();
+      const response = await firstValueFrom(
+        this.http.get<Report[]>(url)
+      );
       this.reports = response || [];
       this.cdr.detectChanges();
     } catch (error) {
@@ -300,15 +310,13 @@ export class ReportsComponent implements OnInit {
       const formData = this.memberForm.value;
 
       if (this.editingMember) {
-        await this.http.put(
-          `${environment.apiUrl}/api/members/${this.editingMember.id}`,
-          formData
-        ).toPromise();
+        await firstValueFrom(
+          this.http.put(`${environment.apiUrl}/api/members/${this.editingMember.id}`, formData)
+        );
       } else {
-        await this.http.post(
-          `${environment.apiUrl}/api/members`,
-          formData
-        ).toPromise();
+        await firstValueFrom(
+          this.http.post(`${environment.apiUrl}/api/members`, formData)
+        );
       }
 
       await this.loadDepartmentData();
@@ -325,10 +333,9 @@ export class ReportsComponent implements OnInit {
   async toggleMemberStatus(member: Member) {
     try {
       const action = member.isActive ? 'deactivate' : 'activate';
-      await this.http.put(
-        `${environment.apiUrl}/api/members/${member.id}/${action}`,
-        {}
-      ).toPromise();
+      await firstValueFrom(
+        this.http.put(`${environment.apiUrl}/api/members/${member.id}/${action}`, {})
+      );
 
       await this.loadDepartmentData();
       this.cdr.detectChanges();
@@ -392,15 +399,13 @@ export class ReportsComponent implements OnInit {
       };
 
       if (this.editingProject) {
-        await this.http.put(
-          `${environment.apiUrl}/api/projects/${this.editingProject.id}`,
-          projectData
-        ).toPromise();
+        await firstValueFrom(
+          this.http.put(`${environment.apiUrl}/api/projects/${this.editingProject.id}`, projectData)
+        );
       } else {
-        await this.http.post(
-          `${environment.apiUrl}/api/projects`,
-          projectData
-        ).toPromise();
+        await firstValueFrom(
+          this.http.post(`${environment.apiUrl}/api/projects`, projectData)
+        );
       }
 
       await this.loadProjects();
@@ -420,9 +425,9 @@ export class ReportsComponent implements OnInit {
     }
 
     try {
-      await this.http.delete(
-        `${environment.apiUrl}/api/projects/${project.id}`
-      ).toPromise();
+      await firstValueFrom(
+        this.http.delete(`${environment.apiUrl}/api/projects/${project.id}`)
+      );
 
       await this.loadProjects();
       this.cdr.detectChanges();
@@ -486,15 +491,13 @@ export class ReportsComponent implements OnInit {
       const formData = this.reportForm.value;
 
       if (this.editingReport) {
-        await this.http.put(
-          `${environment.apiUrl}/api/reports/${this.editingReport.id}`,
-          formData
-        ).toPromise();
+        await firstValueFrom(
+          this.http.put(`${environment.apiUrl}/api/reports/${this.editingReport.id}`, formData)
+        );
       } else {
-        await this.http.post(
-          `${environment.apiUrl}/api/reports`,
-          formData
-        ).toPromise();
+        await firstValueFrom(
+          this.http.post(`${environment.apiUrl}/api/reports`, formData)
+        );
       }
 
       if (this.activeView === 'reports') {
@@ -537,9 +540,9 @@ export class ReportsComponent implements OnInit {
     }
 
     try {
-      await this.http.delete(
-        `${environment.apiUrl}/api/reports/${report.id}`
-      ).toPromise();
+      await firstValueFrom(
+        this.http.delete(`${environment.apiUrl}/api/reports/${report.id}`)
+      );
 
       await this.loadReports();
       this.cdr.detectChanges();
@@ -561,7 +564,9 @@ export class ReportsComponent implements OnInit {
         url += `&department=${this.selectedDepartment}`;
       }
 
-      const response = await this.http.get(url, { responseType: 'blob' }).toPromise();
+      const response = await firstValueFrom(
+        this.http.get(url, { responseType: 'blob' })
+      );
 
       if (response) {
         const blob = new Blob([response], {

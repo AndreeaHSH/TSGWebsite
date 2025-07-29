@@ -1,4 +1,3 @@
-// AdminDashboard/src/app/components/blog/blog-editor/blog-editor.component.ts
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -21,11 +20,11 @@ interface ImageFile {
   styleUrls: ['./blog-editor.component.scss']
 })
 export class BlogEditorComponent implements OnInit {
-  // Mode detection
+
   isEditMode = signal(false);
   postId = signal<number | null>(null);
 
-  // Form data
+
   formData = signal({
     title: '',
     slug: '',
@@ -36,12 +35,12 @@ export class BlogEditorComponent implements OnInit {
     isPublished: false
   });
 
-  // Image handling
+
   images = signal<ImageFile[]>([]);
   maxImages = 5;
   dragOver = signal(false);
 
-  // UI state
+
   isLoading = signal(false);
   isSaving = signal(false);
   error = signal<string | null>(null);
@@ -49,7 +48,7 @@ export class BlogEditorComponent implements OnInit {
   lastSaved = signal<Date | null>(null);
   hasUnsavedChanges = signal(false);
 
-  // Validation
+
   validationErrors = signal<{ [key: string]: string }>({});
 
   constructor(
@@ -59,18 +58,17 @@ export class BlogEditorComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Check if we're in edit mode
+
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.isEditMode.set(true);
       this.postId.set(parseInt(id, 10));
       this.loadPost();
     } else {
-      // Generate initial slug from title
       this.generateSlugFromTitle();
     }
 
-    // Set up auto-save (every 30 seconds)
+
     if (this.autoSaveEnabled()) {
       setInterval(() => {
         if (this.hasUnsavedChanges() && this.isEditMode()) {
@@ -100,14 +98,14 @@ export class BlogEditorComponent implements OnInit {
         isPublished: post.isPublished
       });
 
-      // Load existing images
+
       if (post.blogImages && post.blogImages.length > 0) {
         const imageFiles: ImageFile[] = post.blogImages.map((url, index) => ({
-          file: new File([], ''), // Placeholder file for existing images
+          file: new File([], ''),
           preview: url,
           altText: `Image ${index + 1}`,
-          id: index + 1, // Placeholder ID
-          isPrimary: index === 0 // First image is primary
+          id: index + 1,
+          isPrimary: index === 0
         }));
         this.images.set(imageFiles);
       }
@@ -204,7 +202,6 @@ export class BlogEditorComponent implements OnInit {
     return Object.keys(this.validationErrors()).length === 0;
   }
 
-  // Image handling methods
   onFileSelect(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files) {
@@ -240,14 +237,12 @@ export class BlogEditorComponent implements OnInit {
       return;
     }
 
-    // Validate files
     const validation = this.blogService.validateMultipleImages(files);
     if (!validation.isValid) {
       this.error.set(validation.errors.join('\n'));
       return;
     }
 
-    // Process files
     const newImages: ImageFile[] = [];
     files.forEach((file, index) => {
       const reader = new FileReader();
@@ -257,10 +252,9 @@ export class BlogEditorComponent implements OnInit {
           file,
           preview,
           altText: `${file.name}`,
-          isPrimary: currentImages.length === 0 && index === 0 // First image of empty list is primary
+          isPrimary: currentImages.length === 0 && index === 0
         });
 
-        // Update images when all files are processed
         if (newImages.length === files.length) {
           this.images.update(current => [...current, ...newImages]);
           this.hasUnsavedChanges.set(true);
@@ -275,7 +269,6 @@ export class BlogEditorComponent implements OnInit {
     const currentImages = this.images();
     const removedImage = currentImages[index];
 
-    // If removing primary image, make next image primary
     if (removedImage.isPrimary && currentImages.length > 1) {
       const nextIndex = index === 0 ? 1 : 0;
       currentImages[nextIndex].isPrimary = true;
@@ -302,7 +295,6 @@ export class BlogEditorComponent implements OnInit {
     this.hasUnsavedChanges.set(true);
   }
 
-  // Drag and drop reordering
   onImageDragStart(event: DragEvent, index: number): void {
     if (event.dataTransfer) {
       event.dataTransfer.setData('text/plain', index.toString());
@@ -321,10 +313,8 @@ export class BlogEditorComponent implements OnInit {
       const currentImages = this.images();
       const draggedImage = currentImages[dragIndex];
 
-      // Remove from old position
       currentImages.splice(dragIndex, 1);
 
-      // Insert at new position
       const adjustedDropIndex = dragIndex < dropIndex ? dropIndex - 1 : dropIndex;
       currentImages.splice(adjustedDropIndex, 0, draggedImage);
 
@@ -333,7 +323,6 @@ export class BlogEditorComponent implements OnInit {
     }
   }
 
-  // Save methods
   async saveDraft(): Promise<void> {
     await this.save(false);
   }
@@ -363,7 +352,6 @@ export class BlogEditorComponent implements OnInit {
           imageAltTexts: images.filter(img => img.file.size > 0).map(img => img.altText)
         };
 
-        // Set primary image if we have images
         const primaryImage = images.find(img => img.isPrimary);
         if (primaryImage && primaryImage.file.size > 0) {
           updateData.featuredImageFile = primaryImage.file;
@@ -378,7 +366,6 @@ export class BlogEditorComponent implements OnInit {
           imageAltTexts: images.map(img => img.altText)
         };
 
-        // Set primary image if we have images
         const primaryImage = images.find(img => img.isPrimary);
         if (primaryImage) {
           createData.featuredImageFile = primaryImage.file;
@@ -386,17 +373,16 @@ export class BlogEditorComponent implements OnInit {
 
         const result = await this.blogService.createPost(createData);
 
-        // Switch to edit mode after creation
+
         this.isEditMode.set(true);
         this.postId.set(result.id);
-        // Use Location service instead of router.replaceState
+
         window.history.replaceState(null, '', `/blog/edit/${result.id}`);
       }
 
       this.hasUnsavedChanges.set(false);
       this.lastSaved.set(new Date());
 
-      // Navigate back to list after successful save
       this.router.navigate(['/blog']);
 
     } catch (error) {
@@ -432,17 +418,14 @@ export class BlogEditorComponent implements OnInit {
     }
   }
 
-  // TrackBy function for images
   trackByImage(index: number, item: ImageFile): string {
     return item.preview;
   }
 
-  // TrackBy function for tags
   trackByTag(index: number, item: string): string {
     return item;
   }
 
-  // Utility methods
   getReadingTime(): number {
     return this.blogService.calculateReadingTime(this.formData().content);
   }

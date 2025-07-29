@@ -1,9 +1,7 @@
-// AdminDashboard/src/app/components/blog/blog-management/blog-management.component.scss
 
-// Container and Layout
 .blog-management-container {
   padding: 2rem;
-  background: #f8f9fa !important; /* FORCE LIGHT BACKGROUND */
+  background: #f8f9fa !important;
   min-height: 100vh;
   animation: fadeIn 0.5s ease-in-out;
 }
@@ -13,7 +11,6 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-// Header Section
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -78,9 +75,8 @@
   }
 }
 
-// Filters Section
 .filters-section {
-  background: white !important; /* FORCE WHITE BACKGROUND */
+  background: white !important;
   border-radius: 15px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
@@ -117,8 +113,8 @@
   border-radius: 25px;
   font-size: 1rem;
   transition: all 0.3s ease;
-  background: white !important; /* FORCE WHITE BACKGROUND */
-  color: #333 !important; /* FORCE DARK TEXT */
+  background: white !important;
+  color: #333 !important;
 
   &:focus {
     outline: none;
@@ -156,8 +152,8 @@
   border: 2px solid #e0e0e0;
   border-radius: 8px;
   font-size: 0.9rem;
-  background: white !important; /* FORCE WHITE BACKGROUND */
-  color: #333 !important; /* FORCE DARK TEXT */
+  background: white !important;
+  color: #333 !important;
   cursor: pointer;
   transition: all 0.3s ease;
   min-width: 120px;
@@ -168,9 +164,8 @@
   }
 }
 
-// Stats Section
 .posts-stats {
-  background: white !important; /* FORCE WHITE BACKGROUND */
+  background: white !important;
   border-radius: 15px;
   padding: 1rem 1.5rem;
   margin-bottom: 1.5rem;
@@ -213,7 +208,6 @@
   font-size: 1.1rem;
 }
 
-// Posts Grid
 .posts-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
@@ -224,7 +218,6 @@
   }
 }
 
-// Empty State
 .empty-state {
   grid-column: 1 / -1;
   display: flex;
@@ -233,7 +226,7 @@
   justify-content: center;
   padding: 4rem 2rem;
   text-align: center;
-  background: white !important; /* FORCE WHITE BACKGROUND */
+  background: white !important;
   border-radius: 15px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
@@ -273,16 +266,15 @@
   }
 }
 
-// Post Cards
 .post-card {
-  background: white !important; /* FORCE WHITE BACKGROUND WITH !important */
+  background: white !important;
   border-radius: 15px;
   overflow: hidden;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
-  color: #333 !important; /* FORCE DARK TEXT */
+  color: #333 !important;
 
   &:hover {
     transform: translateY(-5px) scale(1.02);
@@ -297,7 +289,7 @@
   align-items: flex-start;
   gap: 1rem;
   border-bottom: 1px solid #f0f0f0;
-  background: white !important; /* FORCE WHITE BACKGROUND */
+  background: white !important;
 }
 
 .post-info {
@@ -308,7 +300,7 @@
   font-size: 1.3rem;
   font-weight: bold;
   margin: 0 0 0.5rem 0;
-  color: #333 !important; /* FORCE DARK TEXT */
+  color: #333 !important;
   line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -321,17 +313,17 @@
   flex-direction: column;
   gap: 0.25rem;
   font-size: 0.85rem;
-  color: #666 !important; /* FORCE GRAY TEXT */
+  color: #666 !important;
 }
 
 .post-author {
   font-weight: 600;
-  color: #FF6D48 !important; /* FORCE ORANGE TEXT */
+  color: #FF6D48 !important;
 }
 
 .post-date, .reading-time {
   opacity: 0.8;
-  color: #666 !important; /* FORCE GRAY TEXT */
+  color: #666 !important;
 }
 
 .card-actions {
@@ -355,11 +347,11 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: white !important; /* FORCE WHITE BACKGROUND */
+  background: white !important;
 }
 
 .post-summary {
-  color: #555 !important; /* FORCE DARK GRAY TEXT */
+  color: #555 !important;
   line-height: 1.6;
   margin: 0 0 1rem 0;
   flex: 1;
@@ -399,7 +391,7 @@
 .no-image-state {
   margin: 1rem 0;
   border-radius: 8px;
-  background: #f8f9fa !important; /* FORCE LIGHT BACKGROUND */
+  background: #f8f9fa !important;
   border: 2px dashed #dee2e6;
   display: flex;
   align-items: center;
@@ -455,7 +447,7 @@
   align-items: center;
   gap: 0.25rem;
   font-size: 0.8rem;
-  color: #666 !important; /* FORCE GRAY TEXT */
+  color: #666 !important;
 }
 
 .stat-icon {
@@ -468,7 +460,7 @@
 
 .card-footer {
   padding: 1rem 1.5rem;
-  background: #fafafa !important; /* FORCE LIGHT BACKGROUND */
+  background: #fafafa !important;
   border-top: 1px solid #f0f0f0;
   margin-top: auto;
 }
@@ -480,8 +472,8 @@
 }
 
 .action-btn {
-  background: white !important; /* FORCE WHITE BACKGROUND */
-  color: #666 !important; /* FORCE GRAY TEXT */
+  background: white !important;
+  color: #666 !important;
   border: 1px solid #ddd;
   padding: 0.5rem 1rem;
   border-radius: 8px;
@@ -534,7 +526,6 @@
   animation: spin 1s linear infinite;
 }
 
-// Modal Styles
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -555,14 +546,14 @@
 }
 
 .confirmation-modal {
-  background: white !important; /* FORCE WHITE BACKGROUND */
+  background: white !important;
   border-radius: 15px;
   width: 90%;
   max-width: 500px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   animation: modalSlideUp 0.3s ease;
   overflow: hidden;
-  color: #333 !important; /* FORCE DARK TEXT */
+  color: #333 !important;
 }
 
 @keyframes modalSlideUp {
@@ -626,7 +617,7 @@
 .warning-text {
   font-size: 1.1rem;
   margin: 0 0 1rem 0;
-  color: #333 !important; /* FORCE DARK TEXT */
+  color: #333 !important;
   line-height: 1.5;
 
   strong {
@@ -636,7 +627,7 @@
 
 .warning-subtitle {
   font-size: 0.9rem;
-  color: #666 !important; /* FORCE GRAY TEXT */
+  color: #666 !important;
   margin: 0;
   font-style: italic;
 }
@@ -645,7 +636,7 @@
   display: flex;
   gap: 1rem;
   padding: 1.5rem;
-  background: #f8f9fa !important; /* FORCE LIGHT BACKGROUND */
+  background: #f8f9fa !important;
   border-top: 1px solid #e9ecef;
 }
 
@@ -689,7 +680,6 @@
   }
 }
 
-// Responsive Design
 @media (max-width: 768px) {
   .blog-management-container {
     padding: 1rem;
@@ -740,5 +730,3 @@
     flex-direction: column;
   }
 }
-
-

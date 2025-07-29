@@ -1,6 +1,3 @@
-// AdminDashboard/src/app/components/blog/blog-editor/blog-editor.component.scss
-
-// Container and Layout
 .blog-editor-container {
   padding: 2rem;
   background: #f8f9fa;
@@ -13,7 +10,6 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-// Header Section
 .editor-header {
   display: flex;
   justify-content: space-between;
@@ -134,7 +130,6 @@
   }
 }
 
-// Error Message
 .error-message {
   background: #fee;
   border: 1px solid #fcc;
@@ -173,7 +168,6 @@
   }
 }
 
-// Loading State
 .loading-container {
   display: flex;
   flex-direction: column;
@@ -202,7 +196,6 @@
   font-size: 1.1rem;
 }
 
-// Form Sections
 .editor-form {
   display: flex;
   flex-direction: column;
@@ -231,7 +224,6 @@
   line-height: 1.5;
 }
 
-// Form Elements
 .form-row {
   display: flex;
   gap: 1rem;
@@ -332,7 +324,6 @@
   font-style: italic;
 }
 
-// Slug Input Group
 .slug-input-group {
   display: flex;
   align-items: center;
@@ -378,7 +369,6 @@
   }
 }
 
-// Tags Preview
 .tags-preview {
   display: flex;
   flex-wrap: wrap;
@@ -405,7 +395,6 @@
   font-weight: 500;
 }
 
-// Content Stats
 .content-stats {
   display: flex;
   gap: 1rem;
@@ -421,7 +410,6 @@
   }
 }
 
-// Image Upload Area
 .image-upload-area {
   border: 3px dashed #dee2e6;
   border-radius: 15px;
@@ -509,7 +497,6 @@
   }
 }
 
-// Images Grid
 .images-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -625,7 +612,6 @@
   }
 }
 
-// Upload Instructions
 .upload-instructions {
   background: #e3f2fd;
   border: 1px solid #bbdefb;
@@ -650,7 +636,6 @@
   }
 }
 
-// Preview Section
 .post-preview-card {
   border: 2px solid #e0e0e0;
   border-radius: 15px;
@@ -744,7 +729,6 @@
   font-weight: 500;
 }
 
-// Responsive Design
 @media (max-width: 768px) {
   .blog-editor-container {
     padding: 1rem;

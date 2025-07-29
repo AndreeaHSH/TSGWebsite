@@ -1,7 +1,5 @@
-<!-- AdminDashboard/src/app/components/blog/blog-management/blog-management.component.html -->
 <div class="blog-management-container">
 
-  <!-- Header Section -->
   <div class="page-header">
     <div class="header-content">
       <h1 class="page-title">Management Blog</h1>
@@ -16,7 +14,6 @@
     </button>
   </div>
 
-  <!-- Filters and Search Section -->
   <div class="filters-section">
     <div class="search-container">
       <div class="search-box">
@@ -67,7 +64,6 @@
         </select>
       </div>
 
-      <!-- Clear Filters Button -->
       <button
         *ngIf="hasActiveFilters()"
         class="clear-filters-btn"
@@ -78,28 +74,23 @@
     </div>
   </div>
 
-  <!-- Results Summary -->
   <div class="results-summary" *ngIf="!isLoading()">
     <span class="results-count">{{ getResultsSummaryText() }}</span>
   </div>
 
-  <!-- Error Message -->
   <div *ngIf="error()" class="error-message">
     <span class="error-icon">⚠️</span>
     <span class="error-text">{{ error() }}</span>
     <button class="retry-btn" (click)="retryLoad()">Încearcă din nou</button>
   </div>
 
-  <!-- Loading State -->
   <div *ngIf="isLoading()" class="loading-container">
     <div class="loading-spinner"></div>
     <p class="loading-text">Se încarcă postările...</p>
   </div>
 
-  <!-- Blog Posts Grid -->
   <div *ngIf="!isLoading() && !error()" class="posts-grid">
 
-    <!-- Empty State -->
     <div *ngIf="filteredPosts().length === 0" class="empty-state">
       <div class="empty-icon">📝</div>
       <h3 class="empty-title">{{ getEmptyStateTitle() }}</h3>
@@ -112,10 +103,8 @@
       </button>
     </div>
 
-    <!-- Blog Posts Cards -->
     <div *ngFor="let post of filteredPosts(); trackBy: trackByPost" class="post-card">
 
-      <!-- Card Header -->
       <div class="card-header">
         <div class="post-info">
           <h3 class="post-title">{{ post.title }}</h3>
@@ -135,11 +124,9 @@
         </div>
       </div>
 
-      <!-- Card Content -->
       <div class="card-content">
         <p class="post-summary">{{ truncateSummary(post.summary) }}</p>
 
-        <!-- Featured Image Preview -->
         <div *ngIf="post.featuredImage" class="featured-image-preview">
           <img [src]="post.featuredImage" [alt]="post.title" class="preview-image">
           <div class="image-count-overlay" *ngIf="post.imageCount > 1">
@@ -147,7 +134,6 @@
           </div>
         </div>
 
-        <!-- No Image State -->
         <div *ngIf="!post.featuredImage" class="no-image-state">
           <div class="no-image-placeholder">
             <span class="no-image-icon">🖼️</span>
@@ -155,7 +141,6 @@
           </div>
         </div>
 
-        <!-- Tags -->
         <div *ngIf="getTags(post.tags).length > 0" class="tags-container">
           <span
             *ngFor="let tag of getTags(post.tags); trackBy: trackByTag"
@@ -164,7 +149,6 @@
           </span>
         </div>
 
-        <!-- Stats -->
         <div class="post-stats">
           <div class="stat">
             <span class="stat-icon">👁️</span>
@@ -213,7 +197,6 @@
     </div>
   </div>
 
-  <!-- Delete Confirmation Modal -->
   <div *ngIf="isDeleteConfirmOpen()" class="modal-overlay" (click)="closeDeleteConfirmation()">
     <div class="confirmation-modal" (click)="$event.stopPropagation()">
       <div class="modal-header">

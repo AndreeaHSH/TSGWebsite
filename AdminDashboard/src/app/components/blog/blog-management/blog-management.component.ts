@@ -1,4 +1,3 @@
-// AdminDashboard/src/app/components/blog/blog-management/blog-management.component.ts
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -13,13 +12,11 @@ import { BlogService, BlogPost, BlogFilters } from '../../../services/blog/blog.
   styleUrls: ['./blog-management.component.scss']
 })
 export class BlogManagementComponent implements OnInit {
-  // State signals
   blogPosts = signal<BlogPost[]>([]);
   filteredPosts = signal<BlogPost[]>([]);
   isLoading = signal(false);
   error = signal<string | null>(null);
 
-  // Filter and search state
   filters: BlogFilters = {
     search: '',
     status: 'all',
@@ -27,7 +24,6 @@ export class BlogManagementComponent implements OnInit {
     sortOrder: 'desc'
   };
 
-  // UI state
   isDeleteConfirmOpen = signal(false);
   postToDelete = signal<BlogPost | null>(null);
   isDeleting = signal(false);
@@ -88,7 +84,7 @@ export class BlogManagementComponent implements OnInit {
 
     try {
       await this.blogService.deletePost(post.id);
-      await this.loadBlogPosts(); // Reload the list
+      await this.loadBlogPosts();
       this.closeDeleteConfirmation();
     } catch (error) {
       console.error('Error deleting post:', error);
@@ -99,26 +95,23 @@ export class BlogManagementComponent implements OnInit {
   }
 
   async togglePublishStatus(post: BlogPost): Promise<void> {
-    // Add post ID to publishing set to show loading state
     const currentPublishing = this.publishingPosts();
     currentPublishing.add(post.id);
     this.publishingPosts.set(new Set(currentPublishing));
 
     try {
       await this.blogService.togglePublishStatus(post.id);
-      await this.loadBlogPosts(); // Reload to get updated data
+      await this.loadBlogPosts();
     } catch (error) {
       console.error('Error updating publish status:', error);
       this.error.set('Nu am putut actualiza statusul postării. Vă rugăm să încercați din nou.');
     } finally {
-      // Remove post ID from publishing set
       const updatedPublishing = this.publishingPosts();
       updatedPublishing.delete(post.id);
       this.publishingPosts.set(new Set(updatedPublishing));
     }
   }
 
-  // TrackBy functions for performance
   trackByPost(index: number, item: BlogPost): number {
     return item.id;
   }
@@ -153,32 +146,27 @@ export class BlogManagementComponent implements OnInit {
     return `${imageCount} imagini`;
   }
 
-  // Utility method for truncating summary
   truncateSummary(summary: string, maxLength: number = 150): string {
     if (summary.length <= maxLength) return summary;
     return summary.substring(0, maxLength) + '...';
   }
 
-  // Get reading time display text
   getReadingTimeText(minutes: number): string {
     if (minutes === 1) return '1 min citire';
     return `${minutes} min citire`;
   }
 
-  // Get view count display text
   getViewCountText(viewCount: number): string {
     if (viewCount === 0) return 'Fără vizualizări';
     if (viewCount === 1) return '1 vizualizare';
     return `${viewCount} vizualizări`;
   }
 
-  // Handle retry after error
   async retryLoad(): Promise<void> {
     this.error.set(null);
     await this.loadBlogPosts();
   }
 
-  // Clear search and filters
   clearFilters(): void {
     this.filters = {
       search: '',
@@ -189,7 +177,6 @@ export class BlogManagementComponent implements OnInit {
     this.onFilterChange();
   }
 
-  // Check if filters are applied
   hasActiveFilters(): boolean {
     return !!(this.filters.search ||
              this.filters.status !== 'all' ||
@@ -197,7 +184,6 @@ export class BlogManagementComponent implements OnInit {
              this.filters.sortOrder !== 'desc');
   }
 
-  // Get results summary text
   getResultsSummaryText(): string {
     const total = this.blogPosts().length;
     const filtered = this.filteredPosts().length;
@@ -211,7 +197,6 @@ export class BlogManagementComponent implements OnInit {
     return `${filtered} din ${total} postări găsite`;
   }
 
-  // Get empty state message based on filters
   getEmptyStateMessage(): string {
     if (this.hasActiveFilters()) {
       return 'Nu am găsit postări care să corespundă filtrelor selectate.';
@@ -219,7 +204,6 @@ export class BlogManagementComponent implements OnInit {
     return 'Nu există încă postări în blog. Creează prima postare!';
   }
 
-  // Get empty state title
   getEmptyStateTitle(): string {
     if (this.hasActiveFilters()) {
       return 'Nu s-au găsit rezultate';
@@ -227,7 +211,6 @@ export class BlogManagementComponent implements OnInit {
     return 'Nu există postări';
   }
 
-  // Check if should show create button in empty state
   shouldShowCreateInEmptyState(): boolean {
     return !this.hasActiveFilters();
   }

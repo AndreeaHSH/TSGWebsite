@@ -177,15 +177,15 @@ namespace TSGwebsite.Controllers
                     return BadRequest("Email already exists");
                 }
 
-                // Parse enums
-                if (!Enum.TryParse<Department>(memberDto.Department, out var department))
+                // Parse enums - Fixed validation
+                if (!Enum.TryParse<Department>(memberDto.Department, true, out var department))
                 {
-                    return BadRequest("Invalid department");
+                    return BadRequest($"Invalid department: {memberDto.Department}. Valid values: Frontend, Backend, Mobile, Communication, Networking, GraphicDesign, FullStack, Management");
                 }
 
-                if (!Enum.TryParse<MemberRole>(memberDto.Role, out var role))
+                if (!Enum.TryParse<MemberRole>(memberDto.Role, true, out var role))
                 {
-                    return BadRequest("Invalid role");
+                    return BadRequest($"Invalid role: {memberDto.Role}. Valid values: Member, Lead, Coordinator, Founder");
                 }
 
                 var member = new Member
@@ -254,6 +254,12 @@ namespace TSGwebsite.Controllers
                 if (string.IsNullOrWhiteSpace(memberDto.Email))
                     return BadRequest("Email is required");
 
+                if (string.IsNullOrWhiteSpace(memberDto.Department))
+                    return BadRequest("Department is required");
+
+                if (string.IsNullOrWhiteSpace(memberDto.Role))
+                    return BadRequest("Role is required");
+
                 // Check if email already exists (excluding current member)
                 if (await _context.Members.AnyAsync(m => m.Email == memberDto.Email && m.Id != id))
                 {
@@ -261,14 +267,14 @@ namespace TSGwebsite.Controllers
                 }
 
                 // Parse enums
-                if (!Enum.TryParse<Department>(memberDto.Department, out var department))
+                if (!Enum.TryParse<Department>(memberDto.Department, true, out var department))
                 {
-                    return BadRequest("Invalid department");
+                    return BadRequest($"Invalid department: {memberDto.Department}");
                 }
 
-                if (!Enum.TryParse<MemberRole>(memberDto.Role, out var role))
+                if (!Enum.TryParse<MemberRole>(memberDto.Role, true, out var role))
                 {
-                    return BadRequest("Invalid role");
+                    return BadRequest($"Invalid role: {memberDto.Role}");
                 }
 
                 member.FirstName = memberDto.FirstName;
@@ -408,15 +414,15 @@ namespace TSGwebsite.Controllers
         }
     }
 
-    // DTOs
+    // DTOs - Corrected to expect strings
     public class CreateMemberDto
     {
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string? Phone { get; set; }
-        public string Department { get; set; } = string.Empty;
-        public string Role { get; set; } = string.Empty;
+        public string Department { get; set; } = string.Empty; // String, not enum
+        public string Role { get; set; } = string.Empty;       // String, not enum
         public string? LinkedInUrl { get; set; }
         public string? GitHubUrl { get; set; }
         public string? ImageUrl { get; set; }
@@ -428,8 +434,8 @@ namespace TSGwebsite.Controllers
         public string LastName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string? Phone { get; set; }
-        public string Department { get; set; } = string.Empty;
-        public string Role { get; set; } = string.Empty;
+        public string Department { get; set; } = string.Empty; // String, not enum
+        public string Role { get; set; } = string.Empty;       // String, not enum
         public bool IsActive { get; set; }
         public string? LinkedInUrl { get; set; }
         public string? GitHubUrl { get; set; }
