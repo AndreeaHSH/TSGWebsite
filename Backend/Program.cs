@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TSGwebsite.Data;
-using TSGwebsite.Services; // Add this using statement
+using TSGwebsite.Services;
+using OfficeOpenXml;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +39,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     app.UseDeveloperExceptionPage();
 }
+
+ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
 // Use CORS before other middleware
 app.UseCors("AllowAngularApp");

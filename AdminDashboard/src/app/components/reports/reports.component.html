@@ -1,33 +1,25 @@
-<!-- AdminDashboard/src/app/components/reports/reports.component.html -->
 <div class="reports-container">
-
-  <!-- Header Section -->
-  <div class="reports-header">
-    <div class="header-content">
-      <h1 class="page-title">
-        <span class="title-icon">📊</span>
-        Rapoarte și Statistici
-      </h1>
-      <p class="page-description">
-        Gestionează rapoartele de activitate și vizualizează statisticile echipei
-      </p>
-    </div>
-
-    <div class="header-actions">
+  <!-- Header -->
+  <div class="header">
+    <h1>Rapoarte și Proiecte</h1>
+    <div class="view-tabs">
       <button
-        class="btn btn-primary"
-        (click)="openReportModal()"
-        title="Adaugă raport nou">
-        <span class="btn-icon">➕</span>
-        Raport nou
+        class="tab-button"
+        [class.active]="activeView === 'departments'"
+        (click)="setActiveView('departments')">
+        Departamente
       </button>
-
       <button
-        class="btn btn-secondary"
-        (click)="exportReports()"
-        title="Exportă rapoarte">
-        <span class="btn-icon">📥</span>
-        Export
+        class="tab-button"
+        [class.active]="activeView === 'projects'"
+        (click)="setActiveView('projects')">
+        Proiecte
+      </button>
+      <button
+        class="tab-button"
+        [class.active]="activeView === 'reports'"
+        (click)="setActiveView('reports')">
+        Rapoarte
       </button>
     </div>
   </div>
@@ -35,285 +27,777 @@
   <!-- Loading State -->
   <div *ngIf="isLoading" class="loading-container">
     <div class="loading-spinner"></div>
-    <p>Se încarcă rapoartele...</p>
+    <p>Se încarcă datele...</p>
   </div>
 
-  <!-- Main Content (when not loading) -->
-  <div *ngIf="!isLoading" class="reports-content">
-
-    <!-- Navigation Tabs -->
-    <div class="nav-tabs">
-      <button
-        class="tab-button"
-        [class.active]="activeTab === 'overview'"
-        (click)="setActiveTab('overview')">
-        <i class="fas fa-chart-line"></i>
-        Prezentare generală
-      </button>
-
-      <button
-        class="tab-button"
-        [class.active]="activeTab === 'reports'"
-        (click)="setActiveTab('reports')">
-        <i class="fas fa-list"></i>
-        Rapoarte detaliate
-      </button>
-
-      <button
-        class="tab-button"
-        [class.active]="activeTab === 'statistics'"
-        (click)="setActiveTab('statistics')">
-        <i class="fas fa-chart-pie"></i>
-        Statistici
+  <!-- Departments View -->
+  <div *ngIf="activeView === 'departments' && !isLoading" class="departments-view">
+    <div class="departments-header">
+      <h2>Managementul Departamentelor</h2>
+      <button class="btn btn-primary" (click)="openMemberModal()">
+        ➕ Adaugă Membru Nou
       </button>
     </div>
 
-    <!-- Tab Content -->
-    <div class="tab-content">
-
-      <!-- Overview Tab -->
-      <div *ngIf="activeTab === 'overview'" class="section">
-        <div class="overview-cards">
-          <div class="stat-card" *ngIf="statistics">
-            <div class="card-icon">📋</div>
-            <div class="card-content">
-              <h3>{{ statistics.summary.totalReports }}</h3>
-              <p>Rapoarte totale</p>
-            </div>
-          </div>
-
-          <div class="stat-card" *ngIf="statistics">
-            <div class="card-icon">⏰</div>
-            <div class="card-content">
-              <h3>{{ statistics.summary.totalHours }}</h3>
-              <p>Ore lucrate</p>
-            </div>
-          </div>
-
-          <div class="stat-card" *ngIf="statistics">
-            <div class="card-icon">👥</div>
-            <div class="card-content">
-              <h3>{{ statistics.summary.activeMembers }}</h3>
-              <p>Membri activi</p>
-            </div>
-          </div>
-
-          <div class="stat-card" *ngIf="statistics">
-            <div class="card-icon">🚀</div>
-            <div class="card-content">
-              <h3>{{ statistics.summary.activeProjects }}</h3>
-              <p>Proiecte active</p>
-            </div>
-          </div>
+    <div class="departments-grid">
+      <div
+        *ngFor="let dept of departmentData; trackBy: trackByDepartment"
+        class="department-card"
+        [style.border-left-color]="getDepartmentColor(dept.department)">
+        <div class="department-header">
+          <h3>{{ dept.departmentDisplayName }}</h3>
+          <span class="member-count">{{ dept.memberCount }} membri</span>
         </div>
-      </div>
 
-      <!-- Reports Tab -->
-      <div *ngIf="activeTab === 'reports'" class="section">
-
-        <!-- Filters Section -->
-        <div class="filters-section">
-          <h3>Filtre</h3>
-          <div class="filters-grid">
-            <div class="filter-group">
-              <label for="year-filter">An</label>
-              <select id="year-filter" [(ngModel)]="filters.year" (change)="applyFilters()">
-                <option [value]="2023">2023</option>
-                <option [value]="2024">2024</option>
-                <option [value]="2025">2025</option>
-              </select>
+        <div class="members-list" *ngIf="dept.members.length > 0; else noMembers">
+          <div
+            *ngFor="let member of dept.members; trackBy: trackByMember"
+            class="member-item"
+            [class.inactive]="!member.isActive">
+            <div class="member-info">
+              <div class="member-avatar" [style.background]="getDepartmentColor(dept.department)">
+                {{ member.firstName.charAt(0) }}{{ member.lastName.charAt(0) }}
+              </div>
+              <div class="member-details">
+                <h4>{{ member.fullName }}</h4>
+                <p class="member-role">{{ getRoleDisplay(member.role) }}</p>
+                <p class="member-email">{{ member.email }}</p>
+                <div class="member-projects">
+                  <span *ngFor="let project of getMemberProjects(member)" class="project-tag">
+                    {{ project.name }}
+                  </span>
+                </div>
+              </div>
             </div>
 
-            <div class="filter-group">
-              <label for="month-filter">Luna</label>
-              <select id="month-filter" [(ngModel)]="filters.month" (change)="applyFilters()">
-                <option [value]="undefined">Toate lunile</option>
-                <option *ngFor="let month of months" [value]="month.value">
-                  {{ month.name }}
-                </option>
-              </select>
-            </div>
-
-            <div class="filter-group">
-              <label for="department-filter">Departament</label>
-              <select id="department-filter" [(ngModel)]="filters.department" (change)="applyFilters()">
-                <option [value]="undefined">Toate departamentele</option>
-                <option *ngFor="let dept of departments" [value]="dept">
-                  {{ dept }}
-                </option>
-              </select>
-            </div>
-
-            <div class="filter-actions">
-              <button class="btn btn-secondary" (click)="resetFilters()">
-                Resetează filtrele
+            <div class="member-actions">
+              <button
+                class="btn btn-sm btn-outline"
+                (click)="openReportModal(member)"
+                [disabled]="!member.isActive">
+                Adaugă Raport
+              </button>
+              <button
+                class="btn btn-sm btn-outline"
+                (click)="openMemberModal(member)">
+                Editează
+              </button>
+              <button
+                class="btn btn-sm"
+                [class.btn-danger]="member.isActive"
+                [class.btn-success]="!member.isActive"
+                (click)="toggleMemberStatus(member)">
+                {{ member.isActive ? 'Dezactivează' : 'Activează' }}
               </button>
             </div>
           </div>
         </div>
 
-        <!-- Reports Table -->
-        <div class="reports-table-container">
-          <div class="table-header">
-            <div class="col col-member" (click)="sortReports('memberName')">
-              Membru <i class="fas fa-sort"></i>
-            </div>
-            <div class="col col-department">
-              Departament
-            </div>
-            <div class="col col-project" (click)="sortReports('projectName')">
-              Proiect <i class="fas fa-sort"></i>
-            </div>
-            <div class="col col-period" (click)="sortReports('month')">
-              Perioadă <i class="fas fa-sort"></i>
-            </div>
-            <div class="col col-hours" (click)="sortReports('hoursWorked')">
-              Ore <i class="fas fa-sort"></i>
-            </div>
-            <div class="col col-actions">Acțiuni</div>
+        <ng-template #noMembers>
+          <div class="no-members">
+            <p>Nu există membri în acest departament</p>
+            <button class="btn btn-outline btn-sm" (click)="openMemberModal(undefined, dept.department)">
+              Adaugă primul membru
+            </button>
           </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
 
-          <div *ngFor="let report of filteredReports" class="table-row">
-            <div class="col col-member">
-              <div class="member-info">
-                <strong>{{ report.memberName }}</strong>
+  <!-- Projects View -->
+  <div *ngIf="activeView === 'projects' && !isLoading" class="projects-view">
+    <div class="projects-header">
+      <h2>Managementul Proiectelor</h2>
+      <button class="btn btn-primary" (click)="openProjectModal()">
+        ➕ Adaugă Proiect Nou
+      </button>
+    </div>
+
+    <div class="projects-grid" *ngIf="projects.length > 0; else noProjects">
+      <div
+        *ngFor="let project of projects; trackBy: trackByProject"
+        class="project-card">
+        <div class="project-header">
+          <h3>{{ project.name }}</h3>
+          <span
+            class="status-badge"
+            [style.background-color]="getStatusColor(project.status)">
+            {{ getStatusDisplay(project.status) }}
+          </span>
+        </div>
+
+        <p class="project-description">{{ project.description }}</p>
+
+        <div class="project-team">
+          <div class="team-member" *ngIf="project.responsibleMember">
+            <strong>Responsabil:</strong>
+            <span class="member-name">{{ project.responsibleMember.fullName }}</span>
+            <span class="member-dept">({{ getDepartmentDisplay(project.responsibleMember.department) }})</span>
+          </div>
+          <div class="team-member" *ngIf="project.executorMember">
+            <strong>Executor:</strong>
+            <span class="member-name">{{ project.executorMember.fullName }}</span>
+            <span class="member-dept">({{ getDepartmentDisplay(project.executorMember.department) }})</span>
+          </div>
+          <div class="team-member" *ngIf="project.beginnerMember">
+            <strong>Începător:</strong>
+            <span class="member-name">{{ project.beginnerMember.fullName }}</span>
+            <span class="member-dept">({{ getDepartmentDisplay(project.beginnerMember.department) }})</span>
+          </div>
+        </div>
+
+        <div class="project-dates">
+          <div class="date-item">
+            <strong>Început:</strong> {{ project.startDate | date:'dd/MM/yyyy' }}
+          </div>
+          <div class="date-item" *ngIf="project.endDate">
+            <strong>Sfârșit:</strong> {{ project.endDate | date:'dd/MM/yyyy' }}
+          </div>
+        </div>
+
+        <div class="project-links" *ngIf="project.repositoryUrl || project.liveUrl">
+          <a *ngIf="project.repositoryUrl" [href]="project.repositoryUrl" target="_blank" class="link-button">
+            🔗 Repository
+          </a>
+          <a *ngIf="project.liveUrl" [href]="project.liveUrl" target="_blank" class="link-button">
+            🔗 Live Demo
+          </a>
+        </div>
+
+        <div class="project-actions">
+          <button
+            class="btn btn-outline btn-sm"
+            (click)="openProjectModal(project)">
+            Editează
+          </button>
+          <button
+            class="btn btn-danger btn-sm"
+            (click)="deleteProject(project)">
+            Șterge
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #noProjects>
+      <div class="no-data">
+        <h3>Nu există proiecte</h3>
+        <p>Adaugă primul proiect pentru a începe.</p>
+        <button class="btn btn-primary" (click)="openProjectModal()">
+          Creează primul proiect
+        </button>
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- Reports View -->
+  <div *ngIf="activeView === 'reports' && !isLoading" class="reports-view">
+    <div class="reports-header">
+      <h2>Rapoarte Lunare</h2>
+
+      <!-- Filters -->
+      <div class="filters">
+        <div class="filter-group">
+          <label>Anul:</label>
+          <select [(ngModel)]="selectedYear" (change)="loadReports()">
+            <option [value]="year" *ngFor="let year of availableYears">{{ year }}</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Luna:</label>
+          <select [(ngModel)]="selectedMonth" (change)="loadReports()">
+            <option value="">Toate lunile</option>
+            <option [value]="month.value" *ngFor="let month of months">
+              {{ month.name }}
+            </option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Departament:</label>
+          <select [(ngModel)]="selectedDepartment" (change)="loadReports()">
+            <option value="">Toate departamentele</option>
+            <option [value]="dept.key" *ngFor="let dept of departments">
+              {{ dept.display }}
+            </option>
+          </select>
+        </div>
+
+        <button class="btn btn-outline" (click)="resetFilters()">
+          Reset Filtre
+        </button>
+
+        <button class="btn btn-success" (click)="exportReports()" [disabled]="reports.length === 0">
+          ⬇️ Export Excel
+        </button>
+      </div>
+    </div>
+
+    <!-- Reports Stats -->
+    <div class="reports-stats" *ngIf="reports.length > 0">
+      <div class="stat-card">
+        <h4>Total Rapoarte</h4>
+        <span class="stat-value">{{ reports.length }}</span>
+      </div>
+      <div class="stat-card">
+        <h4>Total Ore</h4>
+        <span class="stat-value">{{ getTotalHours() }}</span>
+      </div>
+      <div class="stat-card">
+        <h4>Membri Activi</h4>
+        <span class="stat-value">{{ getActiveMembersCount() }}</span>
+      </div>
+      <div class="stat-card">
+        <h4>Proiecte Active</h4>
+        <span class="stat-value">{{ getActiveProjectsCount() }}</span>
+      </div>
+    </div>
+
+    <!-- Reports Table -->
+    <div class="reports-table-container">
+      <table class="reports-table" *ngIf="reports.length > 0; else noReports">
+        <thead>
+          <tr>
+            <th>Membru</th>
+            <th>Departament</th>
+            <th>Proiect</th>
+            <th>Perioada</th>
+            <th>Ore</th>
+            <th>Descriere</th>
+            <th>Data Creării</th>
+            <th>Acțiuni</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let report of reports; trackBy: trackByReport">
+            <td>
+              <div class="member-cell">
+                <div class="member-avatar-sm" [style.background]="getDepartmentColor(report.memberDepartment)">
+                  {{ getMemberInitials(report.memberName) }}
+                </div>
+                <span>{{ report.memberName }}</span>
               </div>
-            </div>
-            <div class="col col-department">
-              <span
-                class="department-badge"
-                [style.background-color]="getDepartmentColor(report.memberDepartment)">
-                {{ getDepartmentDisplayName(report.memberDepartment) }}
+            </td>
+            <td>
+              <span class="department-badge" [style.background]="getDepartmentColor(report.memberDepartment)">
+                {{ getDepartmentDisplay(report.memberDepartment) }}
               </span>
-            </div>
-            <div class="col col-project">
-              {{ report.projectName }}
-            </div>
-            <div class="col col-period">
-              {{ getMonthName(report.month) }} {{ report.year }}
-            </div>
-            <div class="col col-hours">
+            </td>
+            <td>{{ report.projectName }}</td>
+            <td>{{ getMonthName(report.month) }} {{ report.year }}</td>
+            <td>
               <span class="hours-badge">{{ report.hoursWorked }}h</span>
-            </div>
-            <div class="col col-actions">
-              <button class="btn btn-sm btn-info" (click)="openReportDetail(report)">
-                <i class="fas fa-eye"></i>
-              </button>
-              <button class="btn btn-sm btn-secondary" (click)="openReportModal(report)">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="btn btn-sm btn-danger" (click)="deleteReport(report.id)">
-                <i class="fas fa-trash"></i>
-              </button>
-            </div>
-          </div>
-        </div>
+            </td>
+            <td>
+              <div class="work-description" [title]="report.workDescription">
+                {{ report.workDescription | slice:0:100 }}
+                <span *ngIf="report.workDescription.length > 100">...</span>
+              </div>
+            </td>
+            <td>{{ report.createdAt | date:'dd/MM/yyyy' }}</td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn btn-sm btn-outline" (click)="viewReportDetails(report)" title="Vezi detalii">
+                  👁
+                </button>
+                <button class="btn btn-sm btn-outline" (click)="editReport(report)" title="Editează">
+                  ✏️
+                </button>
+                <button class="btn btn-sm btn-danger" (click)="deleteReport(report)" title="Șterge">
+                  🗑
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
-        <div *ngIf="filteredReports.length === 0" class="no-data">
-          <i class="fas fa-inbox"></i>
-          <p>Nu există rapoarte pentru criteriile selectate.</p>
+      <ng-template #noReports>
+        <div class="no-reports">
+          📄
+          <h3>Nu există rapoarte</h3>
+          <p>Nu au fost găsite rapoarte pentru filtrele selectate.</p>
+          <button class="btn btn-primary" (click)="setActiveView('departments')">
+            Adaugă primul raport
+          </button>
         </div>
+      </ng-template>
+    </div>
+  </div>
+
+  <!-- Member Modal -->
+  <div class="modal-overlay" *ngIf="showMemberModal" (click)="closeMemberModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ editingMember ? 'Editează Membru' : 'Adaugă Membru Nou' }}</h2>
+        <button class="close-button" (click)="closeMemberModal()">×</button>
       </div>
 
-      <!-- Statistics Tab -->
-      <div *ngIf="activeTab === 'statistics'" class="section">
-        <div class="statistics-content">
-          <h3>Statistici detaliate</h3>
-
-          <!-- Department Statistics -->
-          <div *ngIf="hasDepartmentStats" class="stats-section">
-            <h4>Statistici pe departamente</h4>
-            <div class="department-stats">
-              <div *ngFor="let dept of departmentStats" class="dept-stat-card">
-                <h5>{{ dept.department }}</h5>
-                <div class="dept-stats">
-                  <span>{{ dept.reportCount }} rapoarte</span>
-                  <span>{{ dept.totalHours }} ore</span>
-                  <span>{{ dept.memberCount }} membri</span>
-                </div>
-              </div>
-            </div>
+      <form [formGroup]="memberForm" (ngSubmit)="saveMember()" class="modal-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="firstName">Prenume *</label>
+            <input
+              id="firstName"
+              type="text"
+              formControlName="firstName"
+              class="form-control"
+              [class.error]="memberForm.get('firstName')?.invalid && memberForm.get('firstName')?.touched">
           </div>
 
-          <!-- Project Statistics -->
-          <div *ngIf="hasProjectStats" class="stats-section">
-            <h4>Statistici pe proiecte</h4>
-            <div class="project-stats">
-              <div *ngFor="let proj of projectStats" class="project-stat-card">
-                <h5>{{ proj.projectName }}</h5>
-                <div class="project-stats">
-                  <span>{{ proj.reportCount }} rapoarte</span>
-                  <span>{{ proj.totalHours }} ore</span>
-                  <span>{{ proj.contributorCount }} contributori</span>
-                </div>
-              </div>
+          <div class="form-group">
+            <label for="lastName">Nume *</label>
+            <input
+              id="lastName"
+              type="text"
+              formControlName="lastName"
+              class="form-control"
+              [class.error]="memberForm.get('lastName')?.invalid && memberForm.get('lastName')?.touched">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email *</label>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            class="form-control"
+            [class.error]="memberForm.get('email')?.invalid && memberForm.get('email')?.touched">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="phone">Telefon</label>
+            <input
+              id="phone"
+              type="tel"
+              formControlName="phone"
+              class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label for="department">Departament *</label>
+            <select
+              id="department"
+              formControlName="department"
+              class="form-control"
+              [class.error]="memberForm.get('department')?.invalid && memberForm.get('department')?.touched">
+              <option value="">Selectează departament</option>
+              <option [value]="dept.key" *ngFor="let dept of departments">
+                {{ dept.display }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="role">Rol *</label>
+            <select
+              id="role"
+              formControlName="role"
+              class="form-control"
+              [class.error]="memberForm.get('role')?.invalid && memberForm.get('role')?.touched">
+              <option value="">Selectează rol</option>
+              <option value="Member">Membru</option>
+              <option value="Lead">Lead</option>
+              <option value="Coordinator">Coordonator</option>
+              <option value="Founder">Fondator</option>
+            </select>
+          </div>
+
+          <div class="form-group" *ngIf="editingMember">
+            <label for="isActive">Status</label>
+            <select
+              id="isActive"
+              formControlName="isActive"
+              class="form-control">
+              <option [value]="true">Activ</option>
+              <option [value]="false">Inactiv</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="linkedInUrl">LinkedIn URL</label>
+            <input
+              id="linkedInUrl"
+              type="url"
+              formControlName="linkedInUrl"
+              class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label for="gitHubUrl">GitHub URL</label>
+            <input
+              id="gitHubUrl"
+              type="url"
+              formControlName="gitHubUrl"
+              class="form-control">
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-outline" (click)="closeMemberModal()">
+            Anulează
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="memberForm.invalid || isSubmitting">
+            <span *ngIf="isSubmitting" class="loading-spinner-sm"></span>
+            {{ editingMember ? 'Actualizează' : 'Creează' }} Membru
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Project Modal -->
+  <div class="modal-overlay" *ngIf="showProjectModal" (click)="closeProjectModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ editingProject ? 'Editează Proiect' : 'Adaugă Proiect Nou' }}</h2>
+        <button class="close-button" (click)="closeProjectModal()">×</button>
+      </div>
+
+      <form [formGroup]="projectForm" (ngSubmit)="saveProject()" class="modal-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="projectName">Nume Proiect *</label>
+            <input
+              id="projectName"
+              type="text"
+              formControlName="name"
+              class="form-control"
+              [class.error]="projectForm.get('name')?.invalid && projectForm.get('name')?.touched">
+          </div>
+
+          <div class="form-group">
+            <label for="projectStatus">Status *</label>
+            <select
+              id="projectStatus"
+              formControlName="status"
+              class="form-control">
+              <option value="Planning">În planificare</option>
+              <option value="InProgress">În desfășurare</option>
+              <option value="Testing">În testare</option>
+              <option value="Completed">Finalizat</option>
+              <option value="OnHold">În așteptare</option>
+              <option value="Cancelled">Anulat</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="projectDescription">Descriere *</label>
+          <textarea
+            id="projectDescription"
+            formControlName="description"
+            rows="3"
+            class="form-control"
+            [class.error]="projectForm.get('description')?.invalid && projectForm.get('description')?.touched"></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="startDate">Data Început *</label>
+            <input
+              id="startDate"
+              type="date"
+              formControlName="startDate"
+              class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label for="endDate">Data Sfârșit</label>
+            <input
+              id="endDate"
+              type="date"
+              formControlName="endDate"
+              class="form-control">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="repositoryUrl">URL Repository</label>
+            <input
+              id="repositoryUrl"
+              type="url"
+              formControlName="repositoryUrl"
+              class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label for="liveUrl">URL Live Demo</label>
+            <input
+              id="liveUrl"
+              type="url"
+              formControlName="liveUrl"
+              class="form-control">
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3>Asignare Membri</h3>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="responsibleMember">Responsabil *</label>
+              <select
+                id="responsibleMember"
+                formControlName="responsibleMemberId"
+                class="form-control">
+                <option value="">Selectează responsabil</option>
+                <optgroup [label]="dept.departmentDisplayName" *ngFor="let dept of departmentData">
+                  <option [value]="member.id" *ngFor="let member of dept.members">
+                    {{ member.fullName }}
+                  </option>
+                </optgroup>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="executorMember">Executor</label>
+              <select
+                id="executorMember"
+                formControlName="executorMemberId"
+                class="form-control">
+                <option value="">Selectează executor</option>
+                <optgroup [label]="dept.departmentDisplayName" *ngFor="let dept of departmentData">
+                  <option [value]="member.id" *ngFor="let member of dept.members">
+                    {{ member.fullName }}
+                  </option>
+                </optgroup>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="beginnerMember">Începător</label>
+              <select
+                id="beginnerMember"
+                formControlName="beginnerMemberId"
+                class="form-control">
+                <option value="">Selectează începător</option>
+                <optgroup [label]="dept.departmentDisplayName" *ngFor="let dept of departmentData">
+                  <option [value]="member.id" *ngFor="let member of dept.members">
+                    {{ member.fullName }}
+                  </option>
+                </optgroup>
+              </select>
             </div>
           </div>
         </div>
-      </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-outline" (click)="closeProjectModal()">
+            Anulează
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="projectForm.invalid || isSubmitting">
+            <span *ngIf="isSubmitting" class="loading-spinner-sm"></span>
+            {{ editingProject ? 'Actualizează' : 'Creează' }} Proiect
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 
   <!-- Report Modal -->
-  <div *ngIf="showReportModal" class="modal-overlay" (click)="closeReportModal()">
+  <div class="modal-overlay" *ngIf="showReportModal" (click)="closeReportModal()">
     <div class="modal-content" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h3>{{ editingReport ? 'Editează raport' : 'Raport nou' }}</h3>
-        <button class="close-btn" (click)="closeReportModal()">×</button>
+        <h2>{{ editingReport ? 'Editează Raport' : 'Adaugă Raport' }} pentru {{ selectedMember?.fullName }}</h2>
+        <button class="close-button" (click)="closeReportModal()">×</button>
       </div>
 
-      <div class="modal-body">
-        <form (ngSubmit)="saveReport()">
+      <form [formGroup]="reportForm" (ngSubmit)="saveReport()" class="modal-form">
+        <div class="form-row">
           <div class="form-group">
-            <label for="workDescription">Descrierea muncii</label>
-            <textarea
-              id="workDescription"
-              [(ngModel)]="reportForm.workDescription"
-              name="workDescription"
-              rows="4"
-              required>
-            </textarea>
+            <label for="reportProject">Proiect *</label>
+            <select
+              id="reportProject"
+              formControlName="projectId"
+              class="form-control"
+              [class.error]="reportForm.get('projectId')?.invalid && reportForm.get('projectId')?.touched">
+              <option value="">Selectează proiect</option>
+              <option [value]="project.id" *ngFor="let project of getMemberProjects(selectedMember)">
+                {{ project.name }}
+              </option>
+            </select>
           </div>
 
           <div class="form-group">
-            <label for="hoursWorked">Ore lucrate</label>
-            <input
-              type="number"
-              id="hoursWorked"
-              [(ngModel)]="reportForm.hoursWorked"
-              name="hoursWorked"
-              required>
+            <label for="reportMonth">Luna *</label>
+            <select
+              id="reportMonth"
+              formControlName="month"
+              class="form-control">
+              <option [value]="month.value" *ngFor="let month of months">
+                {{ month.name }}
+              </option>
+            </select>
           </div>
 
           <div class="form-group">
-            <label for="achievements">Realizări</label>
-            <textarea
-              id="achievements"
-              [(ngModel)]="reportForm.achievements"
-              name="achievements"
-              rows="3">
-            </textarea>
+            <label for="reportYear">Anul *</label>
+            <select
+              id="reportYear"
+              formControlName="year"
+              class="form-control">
+              <option [value]="year" *ngFor="let year of availableYears">{{ year }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="hoursWorked">Ore Lucrate *</label>
+          <input
+            id="hoursWorked"
+            type="number"
+            formControlName="hoursWorked"
+            min="0"
+            max="200"
+            class="form-control"
+            [class.error]="reportForm.get('hoursWorked')?.invalid && reportForm.get('hoursWorked')?.touched">
+        </div>
+
+        <div class="form-group">
+          <label for="workDescription">Descrierea Muncii Efectuate *</label>
+          <textarea
+            id="workDescription"
+            formControlName="workDescription"
+            rows="4"
+            placeholder="Descrieți detaliat activitățile și taskurile îndeplinite în această lună..."
+            class="form-control"
+            [class.error]="reportForm.get('workDescription')?.invalid && reportForm.get('workDescription')?.touched"></textarea>
+          <small class="form-help">
+            Caractere: {{ reportForm.get('workDescription')?.value?.length || 0 }}/2000
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label for="achievements">Realizări și Succese</label>
+          <textarea
+            id="achievements"
+            formControlName="achievements"
+            rows="3"
+            placeholder="Menționați principalele realizări, milestone-uri atinse, probleme rezolvate..."
+            class="form-control"></textarea>
+          <small class="form-help">
+            Caractere: {{ reportForm.get('achievements')?.value?.length || 0 }}/1000
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label for="challenges">Provocări și Dificultăți</label>
+          <textarea
+            id="challenges"
+            formControlName="challenges"
+            rows="3"
+            placeholder="Descrieți dificultățile întâmpinate, blocajele, zonele care necesită îmbunătățire..."
+            class="form-control"></textarea>
+          <small class="form-help">
+            Caractere: {{ reportForm.get('challenges')?.value?.length || 0 }}/1000
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label for="nextMonthPlans">Planuri pentru Luna Următoare</label>
+          <textarea
+            id="nextMonthPlans"
+            formControlName="nextMonthPlans"
+            rows="3"
+            placeholder="Descrieți obiectivele, taskurile planificate și direcțiile de dezvoltare pentru luna următoare..."
+            class="form-control"></textarea>
+          <small class="form-help">
+            Caractere: {{ reportForm.get('nextMonthPlans')?.value?.length || 0 }}/1000
+          </small>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-outline" (click)="closeReportModal()">
+            Anulează
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="reportForm.invalid || isSubmitting">
+            <span *ngIf="isSubmitting" class="loading-spinner-sm"></span>
+            {{ editingReport ? 'Actualizează' : 'Salvează' }} Raport
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Report Details Modal -->
+  <div class="modal-overlay" *ngIf="showReportDetailsModal" (click)="closeReportDetailsModal()">
+    <div class="modal-content large-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Detalii Raport - {{ viewingReport?.memberName }}</h2>
+        <button class="close-button" (click)="closeReportDetailsModal()">×</button>
+      </div>
+
+      <div class="report-details" *ngIf="viewingReport">
+        <div class="report-info">
+          <div class="info-row">
+            <strong>Membru:</strong> {{ viewingReport.memberName }}
+          </div>
+          <div class="info-row">
+            <strong>Departament:</strong> {{ getDepartmentDisplay(viewingReport.memberDepartment) }}
+          </div>
+          <div class="info-row">
+            <strong>Proiect:</strong> {{ viewingReport.projectName }}
+          </div>
+          <div class="info-row">
+            <strong>Perioada:</strong> {{ getMonthName(viewingReport.month) }} {{ viewingReport.year }}
+          </div>
+          <div class="info-row">
+            <strong>Ore lucrate:</strong> {{ viewingReport.hoursWorked }} ore
+          </div>
+          <div class="info-row">
+            <strong>Data creării:</strong> {{ viewingReport.createdAt | date:'dd/MM/yyyy HH:mm' }}
+          </div>
+        </div>
+
+        <div class="report-content">
+          <div class="content-section">
+            <h4>Descrierea Muncii</h4>
+            <p>{{ viewingReport.workDescription }}</p>
           </div>
 
-          <div class="form-group">
-            <label for="challenges">Provocări</label>
-            <textarea
-              id="challenges"
-              [(ngModel)]="reportForm.challenges"
-              name="challenges"
-              rows="3">
-            </textarea>
+          <div class="content-section" *ngIf="viewingReport.achievements">
+            <h4>Realizări și Succese</h4>
+            <p>{{ viewingReport.achievements }}</p>
           </div>
 
-          <div class="form-actions">
-            <button type="button" class="btn btn-secondary" (click)="closeReportModal()">
-              Anulează
-            </button>
-            <button type="submit" class="btn btn-primary">
-              {{ editingReport ? 'Actualizează' : 'Creează' }}
-            </button>
+          <div class="content-section" *ngIf="viewingReport.challenges">
+            <h4>Provocări și Dificultăți</h4>
+            <p>{{ viewingReport.challenges }}</p>
           </div>
-        </form>
+
+          <div class="content-section" *ngIf="viewingReport.nextMonthPlans">
+            <h4>Planuri pentru Luna Următoare</h4>
+            <p>{{ viewingReport.nextMonthPlans }}</p>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn btn-outline" (click)="editReport(viewingReport)">
+            Editează Raport
+          </button>
+          <button class="btn btn-outline" (click)="closeReportDetailsModal()">
+            Închide
+          </button>
+        </div>
       </div>
     </div>
   </div>

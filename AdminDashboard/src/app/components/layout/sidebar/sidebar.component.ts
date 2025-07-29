@@ -1,4 +1,3 @@
-// AdminDashboard/src/app/components/layout/sidebar/sidebar.component.ts
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
@@ -40,7 +39,7 @@ export class SidebarComponent {
       label: 'Raport',
       route: '/raport',
       icon: '📊',
-      isEnabled: true, 
+      isEnabled: true,
       description: 'Statistici și rapoarte'
     }
   ];

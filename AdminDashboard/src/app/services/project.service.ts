@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { firstValueFrom, catchError, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { Member } from './member.service';
 
 export interface Project {
   id: number;
@@ -13,30 +14,44 @@ export interface Project {
   repositoryUrl?: string;
   liveUrl?: string;
   responsibleMemberId: number;
-  responsibleMemberName: string;
   executorMemberId?: number;
-  executorMemberName?: string;
   beginnerMemberId?: number;
-  beginnerMemberName?: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export enum ProjectStatus {
-  Planning = 'Planning',
-  InProgress = 'InProgress',
-  Testing = 'Testing',
-  Completed = 'Completed',
-  OnHold = 'OnHold',
-  Cancelled = 'Cancelled'
+export interface ProjectWithMembers extends Project {
+  responsibleMember: Member;
+  executorMember?: Member;
+  beginnerMember?: Member;
+  reportCount: number;
+  lastReportDate?: Date;
+}
+
+export interface ProjectSummary {
+  totalProjects: number;
+  activeProjects: number;
+  completedProjects: number;
+  projectsByStatus: Array<{
+    status: string;
+    count: number;
+  }>;
+  recentActivity: Array<{
+    projectName: string;
+    memberName: string;
+    month: number;
+    year: number;
+    hoursWorked: number;
+    createdAt: Date;
+  }>;
 }
 
 export interface CreateProjectDto {
   name: string;
   description: string;
   status: ProjectStatus;
-  startDate: string;
-  endDate?: string;
+  startDate: Date;
+  endDate?: Date;
   repositoryUrl?: string;
   liveUrl?: string;
   responsibleMemberId: number;
@@ -48,13 +63,22 @@ export interface UpdateProjectDto {
   name: string;
   description: string;
   status: ProjectStatus;
-  startDate: string;
-  endDate?: string;
+  startDate: Date;
+  endDate?: Date;
   repositoryUrl?: string;
   liveUrl?: string;
   responsibleMemberId: number;
   executorMemberId?: number;
   beginnerMemberId?: number;
+}
+
+export enum ProjectStatus {
+  Planning = 0,
+  InProgress = 1,
+  Testing = 2,
+  Completed = 3,
+  OnHold = 4,
+  Cancelled = 5
 }
 
 @Injectable({
@@ -67,74 +91,58 @@ export class ProjectService {
 
   async getProjects(): Promise<Project[]> {
     try {
-      const projects = await firstValueFrom(
-        this.http.get<Project[]>(this.apiUrl).pipe(
-          catchError(this.handleError)
-        )
+      const response$ = this.http.get<Project[]>(this.apiUrl).pipe(
+        catchError(this.handleError)
       );
-
-      return projects.map(project => ({
-        ...project,
-        startDate: new Date(project.startDate),
-        endDate: project.endDate ? new Date(project.endDate) : undefined,
-        createdAt: new Date(project.createdAt),
-        updatedAt: new Date(project.updatedAt)
-      }));
+      return await firstValueFrom(response$);
     } catch (error) {
-      console.error('Error fetching projects:', error);
+      console.error('Error getting projects:', error);
       throw error;
     }
   }
 
-  async getProject(id: number): Promise<Project> {
+  async getProjectsWithMembers(): Promise<ProjectWithMembers[]> {
     try {
-      const project = await firstValueFrom(
-        this.http.get<Project>(`${this.apiUrl}/${id}`).pipe(
-          catchError(this.handleError)
-        )
+      const response$ = this.http.get<ProjectWithMembers[]>(this.apiUrl).pipe(
+        catchError(this.handleError)
       );
-
-      return {
-        ...project,
-        startDate: new Date(project.startDate),
-        endDate: project.endDate ? new Date(project.endDate) : undefined,
-        createdAt: new Date(project.createdAt),
-        updatedAt: new Date(project.updatedAt)
-      };
+      return await firstValueFrom(response$);
     } catch (error) {
-      console.error('Error fetching project:', error);
+      console.error('Error getting projects with members:', error);
       throw error;
     }
   }
 
-  async createProject(project: CreateProjectDto): Promise<Project> {
+  async getProject(id: number): Promise<ProjectWithMembers> {
     try {
-      const newProject = await firstValueFrom(
-        this.http.post<Project>(this.apiUrl, project).pipe(
-          catchError(this.handleError)
-        )
+      const response$ = this.http.get<ProjectWithMembers>(`${this.apiUrl}/${id}`).pipe(
+        catchError(this.handleError)
       );
+      return await firstValueFrom(response$);
+    } catch (error) {
+      console.error('Error getting project:', error);
+      throw error;
+    }
+  }
 
-      return {
-        ...newProject,
-        startDate: new Date(newProject.startDate),
-        endDate: newProject.endDate ? new Date(newProject.endDate) : undefined,
-        createdAt: new Date(newProject.createdAt),
-        updatedAt: new Date(newProject.updatedAt)
-      };
+  async createProject(projectData: CreateProjectDto): Promise<Project> {
+    try {
+      const response$ = this.http.post<Project>(this.apiUrl, projectData).pipe(
+        catchError(this.handleError)
+      );
+      return await firstValueFrom(response$);
     } catch (error) {
       console.error('Error creating project:', error);
       throw error;
     }
   }
 
-  async updateProject(id: number, project: UpdateProjectDto): Promise<void> {
+  async updateProject(id: number, projectData: UpdateProjectDto): Promise<void> {
     try {
-      await firstValueFrom(
-        this.http.put<void>(`${this.apiUrl}/${id}`, project).pipe(
-          catchError(this.handleError)
-        )
+      const response$ = this.http.put<void>(`${this.apiUrl}/${id}`, projectData).pipe(
+        catchError(this.handleError)
       );
+      await firstValueFrom(response$);
     } catch (error) {
       console.error('Error updating project:', error);
       throw error;
@@ -143,56 +151,113 @@ export class ProjectService {
 
   async deleteProject(id: number): Promise<void> {
     try {
-      await firstValueFrom(
-        this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
-          catchError(this.handleError)
-        )
+      const response$ = this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
+        catchError(this.handleError)
       );
+      await firstValueFrom(response$);
     } catch (error) {
       console.error('Error deleting project:', error);
       throw error;
     }
   }
 
-  getProjectStatusOptions(): Array<{key: ProjectStatus, value: string}> {
-    return [
-      { key: ProjectStatus.Planning, value: 'Planificare' },
-      { key: ProjectStatus.InProgress, value: 'În progres' },
-      { key: ProjectStatus.Testing, value: 'Testare' },
-      { key: ProjectStatus.Completed, value: 'Finalizat' },
-      { key: ProjectStatus.OnHold, value: 'Suspendat' },
-      { key: ProjectStatus.Cancelled, value: 'Anulat' }
-    ];
+  async getProjectsSummary(): Promise<ProjectSummary> {
+    try {
+      const response$ = this.http.get<ProjectSummary>(`${this.apiUrl}/summary`).pipe(
+        catchError(this.handleError)
+      );
+      return await firstValueFrom(response$);
+    } catch (error) {
+      console.error('Error getting projects summary:', error);
+      throw error;
+    }
+  }
+
+  // Helper methods
+  getStatusDisplayName(status: ProjectStatus): string {
+    const statusNames: { [key in ProjectStatus]: string } = {
+      [ProjectStatus.Planning]: 'În planificare',
+      [ProjectStatus.InProgress]: 'În desfășurare',
+      [ProjectStatus.Testing]: 'În testare',
+      [ProjectStatus.Completed]: 'Finalizat',
+      [ProjectStatus.OnHold]: 'În așteptare',
+      [ProjectStatus.Cancelled]: 'Anulat'
+    };
+    return statusNames[status] || 'Necunoscut';
+  }
+
+  getStatusColor(status: ProjectStatus): string {
+    const statusColors: { [key in ProjectStatus]: string } = {
+      [ProjectStatus.Planning]: '#6B7280',
+      [ProjectStatus.InProgress]: '#059669',
+      [ProjectStatus.Testing]: '#0891B2',
+      [ProjectStatus.Completed]: '#10B981',
+      [ProjectStatus.OnHold]: '#F59E0B',
+      [ProjectStatus.Cancelled]: '#EF4444'
+    };
+    return statusColors[status] || '#6B7280';
+  }
+
+  isProjectActive(status: ProjectStatus): boolean {
+    return status === ProjectStatus.InProgress || status === ProjectStatus.Testing;
+  }
+
+  isProjectCompleted(status: ProjectStatus): boolean {
+    return status === ProjectStatus.Completed;
+  }
+
+  getProjectProgress(project: Project): number {
+    switch (project.status) {
+      case ProjectStatus.Planning:
+        return 10;
+      case ProjectStatus.InProgress:
+        return 50;
+      case ProjectStatus.Testing:
+        return 80;
+      case ProjectStatus.Completed:
+        return 100;
+      case ProjectStatus.OnHold:
+        return 30;
+      case ProjectStatus.Cancelled:
+        return 0;
+      default:
+        return 0;
+    }
   }
 
   private handleError = (error: HttpErrorResponse) => {
-    let errorMessage = 'An unknown error occurred';
+    let errorMessage = 'A apărut o eroare necunoscută';
 
     if (error.error instanceof ErrorEvent) {
-      errorMessage = `Client Error: ${error.error.message}`;
+      // Client-side error
+      errorMessage = `Eroare: ${error.error.message}`;
     } else {
+      // Server-side error
       switch (error.status) {
         case 400:
-          errorMessage = error.error?.message || 'Bad request. Please check your input.';
+          errorMessage = error.error?.message || 'Datele introduse sunt invalide';
           break;
         case 401:
-          errorMessage = 'Unauthorized. Please log in again.';
+          errorMessage = 'Nu sunteți autentificat';
           break;
         case 403:
-          errorMessage = 'Forbidden. You do not have permission to perform this action.';
+          errorMessage = 'Nu aveți permisiunea să accesați această resursă';
           break;
         case 404:
-          errorMessage = 'Project not found.';
+          errorMessage = 'Proiectul nu a fost găsit';
           break;
         case 409:
-          errorMessage = error.error?.message || 'Conflict. A project with this name already exists.';
+          errorMessage = 'Conflicț de date - proiectul există deja';
           break;
         case 500:
-          errorMessage = 'Internal server error. Please try again later.';
+          errorMessage = 'Eroare de server - încercați din nou mai târziu';
           break;
+        default:
+          errorMessage = `Cod eroare: ${error.status} - ${error.message}`;
       }
     }
 
+    console.error('Project service error:', errorMessage, error);
     return throwError(() => new Error(errorMessage));
   };
 }
