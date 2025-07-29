@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TSGwebsite.Migrations
 {
     /// <inheritdoc />
-    public partial class AddReportingSystem : Migration
+    public partial class AddReportingSystemFixed : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -88,20 +88,17 @@ namespace TSGwebsite.Migrations
                         name: "FK_Projects_Members_BeginnerMemberId",
                         column: x => x.BeginnerMemberId,
                         principalTable: "Members",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Projects_Members_ExecutorMemberId",
                         column: x => x.ExecutorMemberId,
                         principalTable: "Members",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.SetNull);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Projects_Members_ResponsibleMemberId",
                         column: x => x.ResponsibleMemberId,
                         principalTable: "Members",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -129,14 +126,12 @@ namespace TSGwebsite.Migrations
                         name: "FK_Reports_Members_MemberId",
                         column: x => x.MemberId,
                         principalTable: "Members",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Reports_Projects_ProjectId",
                         column: x => x.ProjectId,
                         principalTable: "Projects",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.InsertData(
@@ -161,11 +156,11 @@ namespace TSGwebsite.Migrations
                 columns: new[] { "Id", "BeginnerMemberId", "CreatedAt", "Description", "EndDate", "ExecutorMemberId", "LiveUrl", "Name", "RepositoryUrl", "ResponsibleMemberId", "StartDate", "Status", "UpdatedAt" },
                 values: new object[,]
                 {
-                    { 1, null, new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8526), "Official website for Transilvania Star Group", null, 4, null, "TSG Website", null, 3, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "InProgress", new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8523) },
-                    { 2, null, new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8529), "Portal for student management and services", null, 5, null, "Student Portal", null, 7, new DateTime(2024, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Planning", new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8527) },
-                    { 3, 10, new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8531), "TSG mobile application for students", null, null, null, "Mobile App", null, 5, new DateTime(2024, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "InProgress", new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8530) },
-                    { 4, null, new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8533), "Document management system for university", null, 4, null, "Registratură", null, 7, new DateTime(2023, 9, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Testing", new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8532) },
-                    { 5, null, new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8535), "Social media and communication strategy", null, null, null, "Marketing Campaign", null, 8, new DateTime(2024, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "InProgress", new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8534) }
+                    { 1, null, new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3531), "Official website for Transilvania Star Group", null, 4, null, "TSG Website", null, 3, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "InProgress", new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3529) },
+                    { 2, null, new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3534), "Portal for student management and services", null, 5, null, "Student Portal", null, 7, new DateTime(2024, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Planning", new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3533) },
+                    { 3, 10, new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3536), "TSG mobile application for students", null, null, null, "Mobile App", null, 5, new DateTime(2024, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "InProgress", new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3535) },
+                    { 4, null, new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3538), "Document management system for university", null, 4, null, "Registratură", null, 7, new DateTime(2023, 9, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Testing", new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3537) },
+                    { 5, null, new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3540), "Social media and communication strategy", null, null, null, "Marketing Campaign", null, 8, new DateTime(2024, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "InProgress", new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3539) }
                 });
 
             migrationBuilder.InsertData(
@@ -173,11 +168,11 @@ namespace TSGwebsite.Migrations
                 columns: new[] { "Id", "Achievements", "Challenges", "CreatedAt", "HoursWorked", "MemberId", "Month", "NextMonthPlans", "ProjectId", "UpdatedAt", "WorkDescription", "Year" },
                 values: new object[,]
                 {
-                    { 1, "Completed responsive design implementation", null, new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8626), 40, 3, 7, null, 1, new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8624), "Developed new frontend components and improved UI/UX", 2025 },
-                    { 2, "Improved API performance by 30%", null, new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8628), 35, 4, 7, null, 1, new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8627), "Backend API development and database optimization", 2025 },
-                    { 3, "Completed authentication module", null, new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8630), 45, 5, 7, null, 3, new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8629), "Mobile app development using React Native", 2025 },
-                    { 4, "Completed project architecture documentation", null, new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8668), 30, 7, 7, null, 2, new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8667), "Architecture planning and backend setup", 2025 },
-                    { 5, "Increased social media engagement by 50%", null, new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8670), 25, 8, 7, null, 5, new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8669), "Content creation and social media management", 2025 }
+                    { 1, "Completed responsive design implementation", null, new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3661), 40, 3, 7, null, 1, new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3659), "Developed new frontend components and improved UI/UX", 2025 },
+                    { 2, "Improved API performance by 30%", null, new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3664), 35, 4, 7, null, 1, new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3662), "Backend API development and database optimization", 2025 },
+                    { 3, "Completed authentication module", null, new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3665), 45, 5, 7, null, 3, new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3664), "Mobile app development using React Native", 2025 },
+                    { 4, "Completed project architecture documentation", null, new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3667), 30, 7, 7, null, 2, new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3666), "Architecture planning and backend setup", 2025 },
+                    { 5, "Increased social media engagement by 50%", null, new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3669), 25, 8, 7, null, 5, new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3668), "Content creation and social media management", 2025 }
                 });
 
             migrationBuilder.CreateIndex(

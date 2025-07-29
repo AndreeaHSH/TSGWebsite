@@ -1,23 +1,20 @@
-/* AdminDashboard/src/app/components/reports/reports.component.scss */
+// AdminDashboard/src/app/components/reports/reports.component.scss
 
 // Variables
-$primary-color: #FF6D48;
-$primary-hover: #e55a3c;
+$primary-color: #ff6b47;
 $secondary-color: #2c3e50;
-$success-color: #28a745;
-$warning-color: #ffc107;
-$danger-color: #dc3545;
-$info-color: #17a2b8;
-$light-gray: #f8f9fa;
-$medium-gray: #e9ecef;
-$dark-gray: #6c757d;
-$border-color: #ced4da;
+$success-color: #4CAF50;
+$info-color: #2196F3;
+$warning-color: #FF9800;
+$danger-color: #f44336;
 $white: #ffffff;
-$box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-$box-shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.15);
-$transition: all 0.3s ease;
+$light-gray: #f8f9fa;
+$gray: #6c757d;
+$dark-gray: #495057;
+$border-color: #e0e6ed;
+$shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 $border-radius: 8px;
-$border-radius-lg: 12px;
+$transition: all 0.3s ease;
 
 // Mixins
 @mixin flex-center {
@@ -34,86 +31,47 @@ $border-radius-lg: 12px;
 
 @mixin card-style {
   background: $white;
-  border-radius: $border-radius-lg;
-  box-shadow: $box-shadow;
-  transition: $transition;
-}
-
-@mixin button-style($bg-color, $hover-color) {
-  background: $bg-color;
-  color: $white;
-  border: none;
-  padding: 0.75rem 1.5rem;
   border-radius: $border-radius;
-  font-weight: 500;
-  cursor: pointer;
-  transition: $transition;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  text-decoration: none;
-
-  &:hover:not(:disabled) {
-    background: $hover-color;
-    transform: translateY(-2px);
-  }
-
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
-  }
-}
-
-@mixin form-control-style {
-  width: 100%;
-  padding: 0.75rem;
+  box-shadow: $shadow;
   border: 1px solid $border-color;
-  border-radius: $border-radius;
-  font-size: 0.9rem;
-  transition: $transition;
-
-  &:focus {
-    outline: none;
-    border-color: $primary-color;
-    box-shadow: 0 0 0 0.2rem rgba(255, 109, 72, 0.25);
-  }
-
-  &.is-invalid {
-    border-color: $danger-color;
-  }
 }
 
 @mixin gradient-background($color1, $color2) {
-  background: linear-gradient(135deg, $color1, $color2);
+  background: linear-gradient(135deg, $color1 0%, $color2 100%);
 }
 
-// Main Container
+// Main container
 .reports-container {
   padding: 2rem;
   background: $light-gray;
   min-height: 100vh;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
   // Header Section
   .reports-header {
     @include flex-between;
     margin-bottom: 2rem;
     @include card-style;
-    padding: 1.5rem;
+    padding: 2rem;
 
-    .page-title {
-      font-size: 2rem;
-      font-weight: 600;
-      color: $secondary-color;
-      margin: 0;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
+    .header-content {
+      .page-title {
+        margin: 0 0 0.5rem 0;
+        color: $secondary-color;
+        font-size: 2rem;
+        font-weight: 700;
+        @include flex-center;
+        justify-content: flex-start;
+        gap: 0.75rem;
 
-      i {
-        color: $primary-color;
-        font-size: 1.8rem;
+        .title-icon {
+          font-size: 2.2rem;
+        }
+      }
+
+      .page-description {
+        margin: 0;
+        color: $gray;
+        font-size: 1.1rem;
       }
     }
 
@@ -127,10 +85,11 @@ $border-radius-lg: 12px;
   .loading-container {
     @include flex-center;
     flex-direction: column;
-    padding: 4rem;
     @include card-style;
+    padding: 4rem 2rem;
+    text-align: center;
 
-    .spinner {
+    .loading-spinner {
       width: 50px;
       height: 50px;
       border: 3px solid #f3f3f3;
@@ -241,6 +200,47 @@ $border-radius-lg: 12px;
     }
   }
 
+  // Overview Cards
+  .overview-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    padding: 2rem;
+
+    .stat-card {
+      @include card-style;
+      padding: 2rem;
+      text-align: center;
+      transition: $transition;
+
+      &:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      .card-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+      }
+
+      .card-content {
+        h3 {
+          margin: 0 0 0.5rem 0;
+          font-size: 2.5rem;
+          font-weight: 700;
+          color: $primary-color;
+        }
+
+        p {
+          margin: 0;
+          color: $gray;
+          font-size: 1.1rem;
+          font-weight: 500;
+        }
+      }
+    }
+  }
+
   // Filters Section
   .filters-section {
     @include card-style;
@@ -261,504 +261,32 @@ $border-radius-lg: 12px;
       align-items: end;
 
       .filter-group {
-        display: flex;
-        flex-direction: column;
-
         label {
-          font-weight: 500;
+          display: block;
           margin-bottom: 0.5rem;
-          color: #495057;
-          font-size: 0.9rem;
-        }
-      }
-    }
-  }
-
-  .reports-filters {
-    @include card-style;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-
-    .filters-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 1rem;
-      align-items: end;
-
-      .filter-group {
-        display: flex;
-        flex-direction: column;
-
-        label {
-          font-weight: 500;
-          margin-bottom: 0.5rem;
-          color: #495057;
-          font-size: 0.9rem;
-        }
-      }
-    }
-  }
-
-  // Statistics Section
-  .statistics-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-
-    .stat-card {
-      @include card-style;
-      padding: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      position: relative;
-      overflow: hidden;
-
-      &:hover {
-        transform: translateY(-4px);
-        box-shadow: $box-shadow-hover;
-      }
-
-      &::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        @include gradient-background($primary-color, #ff8569);
-      }
-
-      .stat-icon {
-        width: 60px;
-        height: 60px;
-        @include gradient-background($primary-color, #ff8569);
-        border-radius: $border-radius-lg;
-        @include flex-center;
-        flex-shrink: 0;
-
-        i {
-          font-size: 1.5rem;
-          color: $white;
-        }
-      }
-
-      .stat-info {
-        h4 {
-          font-size: 2rem;
-          font-weight: 700;
-          color: $secondary-color;
-          margin: 0 0 0.25rem 0;
-          line-height: 1;
-        }
-
-        p {
           color: $dark-gray;
-          margin: 0;
           font-weight: 500;
-          font-size: 0.9rem;
-        }
-      }
-    }
-  }
-
-  // Department Statistics
-  .department-stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
-    padding: 1.5rem;
-
-    .dept-stat-card {
-      background: $light-gray;
-      border-radius: $border-radius;
-      overflow: hidden;
-      transition: $transition;
-      border: 1px solid $medium-gray;
-
-      &:hover {
-        transform: translateY(-2px);
-        box-shadow: $box-shadow-hover;
-        border-color: $primary-color;
-      }
-
-      .dept-header {
-        padding: 1rem 1.5rem;
-        border-left: 4px solid $primary-color;
-        background: $white;
-        position: relative;
-
-        h4 {
-          margin: 0;
-          color: $secondary-color;
-          font-size: 1.1rem;
-          font-weight: 600;
-        }
-      }
-
-      .dept-metrics {
-        display: flex;
-        padding: 1rem 1.5rem;
-        gap: 2rem;
-        justify-content: space-around;
-
-        .metric {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          text-align: center;
-
-          .metric-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: $primary-color;
-            line-height: 1;
-          }
-
-          .metric-label {
-            font-size: 0.85rem;
-            color: $dark-gray;
-            margin-top: 0.25rem;
-            font-weight: 500;
-          }
-        }
-      }
-    }
-  }
-
-  // Project Statistics Table
-  .project-stats-table {
-    padding: 1.5rem;
-
-    .table-header {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr;
-      gap: 1rem;
-      padding: 1rem;
-      @include gradient-background(#2c3e50, #34495e);
-      color: $white;
-      font-weight: 600;
-      border-radius: $border-radius $border-radius 0 0;
-
-      .col {
-        text-align: center;
-        font-size: 0.9rem;
-
-        &:first-child {
-          text-align: left;
-        }
-      }
-    }
-
-    .table-row {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr;
-      gap: 1rem;
-      padding: 1rem;
-      border-bottom: 1px solid $medium-gray;
-      background: $white;
-      transition: $transition;
-
-      &:hover {
-        background: $light-gray;
-      }
-
-      &:last-child {
-        border-bottom: none;
-        border-radius: 0 0 $border-radius $border-radius;
-      }
-
-      .col {
-        text-align: center;
-        font-size: 0.9rem;
-        @include flex-center;
-
-        &:first-child {
-          text-align: left;
-          justify-content: flex-start;
-          font-weight: 500;
-          color: $secondary-color;
-        }
-      }
-    }
-  }
-
-  // Members Section
-  .departments-container {
-    .department-section {
-      @include card-style;
-      margin-bottom: 2rem;
-      overflow: hidden;
-
-      .department-header {
-        @include flex-between;
-        padding: 1.5rem;
-        @include gradient-background($light-gray, $medium-gray);
-        border-left: 4px solid $primary-color;
-        position: relative;
-
-        &::after {
-          content: '';
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          height: 1px;
-          background: $medium-gray;
         }
 
-        h4 {
-          margin: 0;
-          color: $secondary-color;
-          font-size: 1.3rem;
-          font-weight: 600;
-        }
-
-        .member-count {
-          background: $primary-color;
-          color: $white;
-          padding: 0.5rem 1rem;
-          border-radius: 20px;
-          font-size: 0.85rem;
-          font-weight: 600;
-          box-shadow: 0 2px 4px rgba(255, 109, 72, 0.3);
-        }
-      }
-
-      .members-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-        gap: 1.5rem;
-        padding: 1.5rem;
-
-        .member-card {
-          background: $light-gray;
+        select, input {
+          width: 100%;
+          padding: 0.75rem;
+          border: 1px solid $border-color;
           border-radius: $border-radius;
-          padding: 1.5rem;
+          font-size: 1rem;
           transition: $transition;
-          border: 2px solid transparent;
-          position: relative;
-          overflow: hidden;
 
-          &::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: $primary-color;
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
-          }
-
-          &:hover {
-            transform: translateY(-4px);
+          &:focus {
+            outline: none;
             border-color: $primary-color;
-            background: $white;
-            box-shadow: $box-shadow-hover;
-
-            &::before {
-              transform: scaleX(1);
-            }
-          }
-
-          .member-avatar {
-            text-align: center;
-            margin-bottom: 1rem;
-
-            img {
-              width: 60px;
-              height: 60px;
-              border-radius: 50%;
-              object-fit: cover;
-              border: 3px solid $primary-color;
-              transition: $transition;
-            }
-          }
-
-          .member-info {
-            text-align: center;
-
-            h5 {
-              margin: 0 0 0.5rem 0;
-              color: $secondary-color;
-              font-size: 1.1rem;
-              font-weight: 600;
-            }
-
-            .member-role {
-              color: $primary-color;
-              font-weight: 500;
-              margin: 0 0 0.25rem 0;
-              font-size: 0.9rem;
-            }
-
-            .member-email {
-              color: $dark-gray;
-              font-size: 0.85rem;
-              margin: 0 0 1rem 0;
-            }
-
-            .member-stats {
-              display: flex;
-              justify-content: center;
-              gap: 1rem;
-              margin-bottom: 1rem;
-
-              .stat {
-                display: flex;
-                align-items: center;
-                gap: 0.25rem;
-                font-size: 0.85rem;
-                color: $dark-gray;
-                background: rgba(255, 109, 72, 0.1);
-                padding: 0.25rem 0.5rem;
-                border-radius: 15px;
-
-                i {
-                  color: $primary-color;
-                }
-              }
-            }
-
-            .member-actions {
-              .btn {
-                font-size: 0.85rem;
-                padding: 0.5rem 1rem;
-                width: 100%;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
-  // Projects Section
-  .projects-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    gap: 1.5rem;
-
-    .project-card {
-      @include card-style;
-      overflow: hidden;
-      position: relative;
-
-      &:hover {
-        transform: translateY(-4px);
-        box-shadow: $box-shadow-hover;
-      }
-
-      .project-header {
-        @include flex-between;
-        padding: 1.5rem;
-        @include gradient-background($light-gray, $medium-gray);
-        position: relative;
-
-        &::after {
-          content: '';
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          height: 1px;
-          background: $medium-gray;
-        }
-
-        h4 {
-          margin: 0;
-          color: $secondary-color;
-          font-size: 1.2rem;
-          font-weight: 600;
-        }
-
-        .project-status {
-          padding: 0.5rem 1rem;
-          border-radius: 20px;
-          color: $white;
-          font-size: 0.85rem;
-          font-weight: 600;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-      }
-
-      .project-content {
-        padding: 1.5rem;
-
-        .project-description {
-          color: $dark-gray;
-          margin-bottom: 1.5rem;
-          line-height: 1.5;
-        }
-
-        .project-details {
-          margin-bottom: 1.5rem;
-
-          .detail-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
-            padding: 0.5rem 0;
-            border-bottom: 1px solid $light-gray;
-
-            &:last-child {
-              border-bottom: none;
-            }
-
-            .label {
-              font-weight: 500;
-              color: #495057;
-            }
-
-            .value {
-              color: $dark-gray;
-              text-align: right;
-            }
-          }
-        }
-
-        .project-links {
-          display: flex;
-          gap: 1rem;
-          margin-bottom: 1.5rem;
-
-          .link {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: $primary-color;
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            border: 1px solid $primary-color;
-            border-radius: $border-radius;
-            transition: $transition;
-
-            &:hover {
-              background: $primary-color;
-              color: $white;
-              transform: translateY(-1px);
-            }
+            box-shadow: 0 0 0 3px rgba(255, 107, 71, 0.1);
           }
         }
       }
 
-      .project-actions {
+      .filter-actions {
         display: flex;
-        gap: 0.5rem;
-        padding: 1rem 1.5rem;
-        background: $light-gray;
-        border-top: 1px solid $medium-gray;
-
-        .btn {
-          flex: 1;
-          font-size: 0.85rem;
-          padding: 0.5rem;
-        }
+        align-items: end;
       }
     }
   }
@@ -768,129 +296,160 @@ $border-radius-lg: 12px;
     @include card-style;
     overflow: hidden;
 
-    .reports-table {
-      .table-header {
-        display: grid;
-        grid-template-columns: 1.5fr 1fr 1.5fr 1fr 0.5fr 1fr;
-        gap: 1rem;
-        padding: 1rem 1.5rem;
-        @include gradient-background($secondary-color, #34495e);
-        color: $white;
-        font-weight: 600;
+    .table-header {
+      display: grid;
+      grid-template-columns: 2fr 1.5fr 2fr 1.5fr 1fr 2fr;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+      background: $light-gray;
+      border-bottom: 1px solid $border-color;
+      font-weight: 600;
+      color: $secondary-color;
 
-        .col {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          cursor: pointer;
-          transition: $transition;
-          padding: 0.5rem;
-          border-radius: $border-radius;
-
-          &:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: $primary-color;
-          }
-
-          i {
-            opacity: 0.7;
-            transition: $transition;
-          }
-
-          &:hover i {
-            opacity: 1;
-          }
-        }
-      }
-
-      .table-row {
-        display: grid;
-        grid-template-columns: 1.5fr 1fr 1.5fr 1fr 0.5fr 1fr;
-        gap: 1rem;
-        padding: 1rem 1.5rem;
-        border-bottom: 1px solid $medium-gray;
+      .col {
+        cursor: pointer;
         transition: $transition;
-        background: $white;
+        @include flex-center;
+        justify-content: flex-start;
 
         &:hover {
-          background: $light-gray;
-          transform: translateX(4px);
+          color: $primary-color;
         }
 
-        &:last-child {
-          border-bottom: none;
-        }
-
-        .col {
-          display: flex;
-          align-items: center;
-
-          &.col-member {
-            .member-info {
-              strong {
-                color: $secondary-color;
-                font-weight: 600;
-              }
-            }
-          }
-
-          &.col-department {
-            .department-badge {
-              padding: 0.4rem 0.8rem;
-              border-radius: 20px;
-              color: $white;
-              font-size: 0.8rem;
-              font-weight: 600;
-              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            }
-          }
-
-          &.col-hours {
-            .hours-badge {
-              background: $medium-gray;
-              color: #495057;
-              padding: 0.4rem 0.8rem;
-              border-radius: 20px;
-              font-size: 0.85rem;
-              font-weight: 600;
-              border: 2px solid $primary-color;
-            }
-          }
-
-          &.col-actions {
-            display: flex;
-            gap: 0.5rem;
-
-            .btn {
-              padding: 0.25rem 0.5rem;
-              font-size: 0.8rem;
-              border-radius: $border-radius;
-            }
-          }
+        i {
+          margin-left: 0.5rem;
+          opacity: 0.5;
         }
       }
     }
 
-    .no-data {
-      text-align: center;
-      padding: 3rem;
-      color: $dark-gray;
+    .table-row {
+      display: grid;
+      grid-template-columns: 2fr 1.5fr 2fr 1.5fr 1fr 2fr;
+      gap: 1rem;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid $border-color;
+      transition: $transition;
 
-      i {
-        font-size: 3rem;
-        color: #ccc;
-        margin-bottom: 1rem;
-        display: block;
+      &:hover {
+        background: $light-gray;
       }
 
-      p {
-        font-size: 1.1rem;
-        margin: 0;
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .col {
+        @include flex-center;
+        justify-content: flex-start;
+
+        &.col-actions {
+          justify-content: center;
+          gap: 0.5rem;
+        }
+      }
+
+      .member-info {
+        strong {
+          color: $secondary-color;
+        }
+      }
+
+      .department-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        color: $white;
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
+
+      .hours-badge {
+        padding: 0.25rem 0.75rem;
+        background: $success-color;
+        color: $white;
+        border-radius: 20px;
+        font-weight: 500;
       }
     }
   }
 
-  // Modals
+  // No Data State
+  .no-data {
+    @include flex-center;
+    flex-direction: column;
+    padding: 4rem 2rem;
+    text-align: center;
+    color: $gray;
+
+    i {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    p {
+      font-size: 1.2rem;
+      margin: 0;
+    }
+  }
+
+  // Statistics Content
+  .statistics-content {
+    padding: 2rem;
+
+    h3 {
+      margin-top: 0;
+      margin-bottom: 2rem;
+      color: $secondary-color;
+      font-size: 1.8rem;
+      font-weight: 600;
+    }
+
+    h4 {
+      margin: 2rem 0 1rem 0;
+      color: $secondary-color;
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+
+    .stats-section {
+      margin-bottom: 3rem;
+
+      .department-stats,
+      .project-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+      }
+
+      .dept-stat-card,
+      .project-stat-card {
+        @include card-style;
+        padding: 1.5rem;
+
+        h5 {
+          margin: 0 0 1rem 0;
+          color: $secondary-color;
+          font-size: 1.2rem;
+          font-weight: 600;
+        }
+
+        .dept-stats,
+        .project-stats {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+
+          span {
+            color: $gray;
+            font-size: 0.95rem;
+          }
+        }
+      }
+    }
+  }
+
+  // Modal Styles
   .modal-overlay {
     position: fixed;
     top: 0;
@@ -898,64 +457,40 @@ $border-radius-lg: 12px;
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    @include flex-center;
     z-index: 1000;
-    padding: 2rem;
-    backdrop-filter: blur(4px);
 
     .modal-content {
       background: $white;
-      border-radius: $border-radius-lg;
-      width: 100%;
+      border-radius: $border-radius;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      width: 90%;
       max-width: 600px;
       max-height: 90vh;
       overflow-y: auto;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      animation: modalSlideIn 0.3s ease-out;
-
-      &.report-detail-modal {
-        max-width: 700px;
-      }
 
       .modal-header {
         @include flex-between;
         padding: 1.5rem;
-        border-bottom: 1px solid $medium-gray;
-        @include gradient-background($primary-color, #ff8569);
-        color: $white;
-        position: relative;
-
-        &::after {
-          content: '';
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          height: 2px;
-          background: rgba(255, 255, 255, 0.2);
-        }
+        border-bottom: 1px solid $border-color;
 
         h3 {
           margin: 0;
-          font-size: 1.3rem;
+          color: $secondary-color;
+          font-size: 1.5rem;
           font-weight: 600;
         }
 
         .close-btn {
           background: none;
           border: none;
-          color: $white;
           font-size: 1.5rem;
           cursor: pointer;
-          padding: 0.5rem;
-          border-radius: $border-radius;
+          color: $gray;
           transition: $transition;
 
           &:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: rotate(90deg);
+            color: $danger-color;
           }
         }
       }
@@ -963,474 +498,106 @@ $border-radius-lg: 12px;
       .modal-body {
         padding: 1.5rem;
 
-        .form-row {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-          gap: 1rem;
-          margin-bottom: 1rem;
-        }
-
         .form-group {
-          margin-bottom: 1rem;
+          margin-bottom: 1.5rem;
 
           label {
             display: block;
-            font-weight: 600;
             margin-bottom: 0.5rem;
-            color: #495057;
-            font-size: 0.9rem;
+            color: $dark-gray;
+            font-weight: 500;
           }
 
-          .form-control {
-            @include form-control-style;
+          input,
+          textarea,
+          select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid $border-color;
+            border-radius: $border-radius;
+            font-size: 1rem;
+            transition: $transition;
 
             &:focus {
+              outline: none;
               border-color: $primary-color;
-              box-shadow: 0 0 0 0.2rem rgba(255, 109, 72, 0.25);
+              box-shadow: 0 0 0 3px rgba(255, 107, 71, 0.1);
             }
           }
 
-          textarea.form-control {
+          textarea {
             resize: vertical;
             min-height: 100px;
           }
-
-          .invalid-feedback {
-            display: block;
-            color: $danger-color;
-            font-size: 0.8rem;
-            margin-top: 0.25rem;
-            font-weight: 500;
-          }
         }
 
-        // Report Detail Modal specific styles
-        .report-detail-header {
+        .form-actions {
           @include flex-between;
-          align-items: start;
-          margin-bottom: 2rem;
-          padding-bottom: 1rem;
-          border-bottom: 2px solid $medium-gray;
-
-          .report-info {
-            h4 {
-              margin: 0 0 0.5rem 0;
-              color: $secondary-color;
-              font-size: 1.4rem;
-              font-weight: 600;
-            }
-
-            p {
-              margin: 0 0 0.25rem 0;
-              color: $dark-gray;
-
-              &.period {
-                color: $primary-color;
-                font-weight: 600;
-                font-size: 1rem;
-              }
-            }
-          }
-
-          .report-hours {
-            .hours-badge {
-              &.large {
-                background: $primary-color;
-                color: $white;
-                padding: 1rem 1.25rem;
-                border-radius: $border-radius;
-                font-size: 1.2rem;
-                font-weight: 700;
-                box-shadow: 0 4px 8px rgba(255, 109, 72, 0.3);
-              }
-            }
-          }
+          margin-top: 2rem;
         }
-
-        .report-sections {
-          .report-section {
-            margin-bottom: 1.5rem;
-
-            h5 {
-              display: flex;
-              align-items: center;
-              gap: 0.5rem;
-              color: $secondary-color;
-              margin-bottom: 0.75rem;
-              font-size: 1rem;
-              font-weight: 600;
-
-              i {
-                color: $primary-color;
-                font-size: 1.1rem;
-              }
-            }
-
-            p {
-              color: $dark-gray;
-              line-height: 1.6;
-              margin: 0;
-              padding: 1rem;
-              background: $light-gray;
-              border-radius: $border-radius;
-              border-left: 4px solid $primary-color;
-              font-size: 0.95rem;
-            }
-          }
-        }
-
-        .report-meta {
-          padding-top: 1rem;
-          border-top: 1px solid $medium-gray;
-          margin-top: 1.5rem;
-
-          p {
-            margin: 0 0 0.25rem 0;
-            color: $dark-gray;
-            font-size: 0.85rem;
-
-            strong {
-              color: $secondary-color;
-            }
-          }
-        }
-      }
-
-      .modal-footer {
-        display: flex;
-        justify-content: flex-end;
-        gap: 1rem;
-        padding: 1rem 1.5rem;
-        border-top: 1px solid $medium-gray;
-        background: $light-gray;
       }
     }
   }
+}
 
-  // Form Controls
-  .form-control {
-    @include form-control-style;
-  }
+// Button Styles
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: $border-radius;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: $transition;
+  @include flex-center;
+  gap: 0.5rem;
+  text-decoration: none;
 
-  // Buttons
-  .btn {
-    @include button-style($dark-gray, #5a6268);
-    font-size: 0.9rem;
+  &.btn-primary {
+    background: $primary-color;
+    color: $white;
 
-    &.btn-primary {
-      @include button-style($primary-color, $primary-hover);
-    }
-
-    &.btn-secondary {
-      @include button-style($dark-gray, #5a6268);
-    }
-
-    &.btn-info {
-      @include button-style($info-color, #138496);
-    }
-
-    &.btn-danger {
-      @include button-style($danger-color, #c82333);
-    }
-
-    &.btn-success {
-      @include button-style($success-color, #218838);
-    }
-
-    &.btn-warning {
-      @include button-style($warning-color, #e0a800);
-      color: $secondary-color;
-    }
-
-    &.btn-sm {
-      padding: 0.5rem 1rem;
-      font-size: 0.85rem;
-    }
-
-    &.btn-lg {
-      padding: 1rem 2rem;
-      font-size: 1.1rem;
-    }
-
-    &:focus {
-      outline: none;
-      box-shadow: 0 0 0 0.2rem rgba(255, 109, 72, 0.25);
+    &:hover {
+      background: darken($primary-color, 10%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 107, 71, 0.3);
     }
   }
 
-  // Department Colors
-  .department-frontend { border-left-color: #61dafb !important; }
-  .department-backend { border-left-color: #68217a !important; }
-  .department-mobile { border-left-color: #44c0c7 !important; }
-  .department-design { border-left-color: #ff6b6b !important; }
-  .department-communication { border-left-color: #e74c3c !important; }
-  .department-networking { border-left-color: #2c3e50 !important; }
-  .department-fullstack { border-left-color: #9b59b6 !important; }
-  .department-management { border-left-color: #f39c12 !important; }
+  &.btn-secondary {
+    background: $gray;
+    color: $white;
 
-  // Status Colors
-  .status-planning { background-color: $dark-gray !important; }
-  .status-inprogress { background-color: #007bff !important; }
-  .status-testing { background-color: $warning-color !important; }
-  .status-completed { background-color: $success-color !important; }
-  .status-onhold { background-color: #fd7e14 !important; }
-  .status-cancelled { background-color: $danger-color !important; }
-
-  // Responsive Design
-  @media (max-width: 1200px) {
-    .reports-table {
-      .table-header,
-      .table-row {
-        grid-template-columns: 1fr 1fr 1fr 1fr 0.5fr 1fr;
-        font-size: 0.85rem;
-        padding: 0.75rem 1rem;
-      }
-    }
-
-    .projects-grid {
-      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    }
-
-    .statistics-grid {
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    &:hover {
+      background: darken($gray, 10%);
     }
   }
 
-  @media (max-width: 992px) {
-    .department-stats {
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    }
+  &.btn-info {
+    background: $info-color;
+    color: $white;
 
-    .members-grid {
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
-    }
-  }
-
-  @media (max-width: 768px) {
-    padding: 1rem;
-
-    .reports-header {
-      flex-direction: column;
-      gap: 1rem;
-      text-align: center;
-
-      .page-title {
-        font-size: 1.5rem;
-        justify-content: center;
-      }
-
-      .header-actions {
-        justify-content: center;
-      }
-    }
-
-    .nav-tabs {
-      .tab-button {
-        flex-direction: column;
-        gap: 0.25rem;
-        padding: 1rem 0.5rem;
-        font-size: 0.85rem;
-
-        i {
-          font-size: 1.2rem;
-        }
-      }
-    }
-
-    .statistics-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .filters-grid,
-    .filters-row {
-      grid-template-columns: 1fr;
-    }
-
-    .department-stats {
-      grid-template-columns: 1fr;
-    }
-
-    .projects-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .project-stats-table {
-      .table-header,
-      .table-row {
-        grid-template-columns: 1fr;
-        text-align: left !important;
-
-        .col {
-          padding: 0.5rem 0;
-          border-bottom: 1px solid $light-gray;
-          text-align: left !important;
-          justify-content: flex-start !important;
-
-          &:last-child {
-            border-bottom: none;
-          }
-
-          &::before {
-            content: attr(data-label) ": ";
-            font-weight: 600;
-            margin-right: 0.5rem;
-            color: $primary-color;
-          }
-        }
-      }
-
-      .table-header .col::before {
-        display: none;
-      }
-    }
-
-    .reports-table {
-      .table-header {
-        display: none;
-      }
-
-      .table-row {
-        grid-template-columns: 1fr;
-        gap: 0.5rem;
-        padding: 1rem;
-        border: 1px solid $medium-gray;
-        border-radius: $border-radius;
-        margin-bottom: 1rem;
-
-        .col {
-          padding: 0.5rem 0;
-          border-bottom: 1px solid $light-gray;
-
-          &:last-child {
-            border-bottom: none;
-          }
-
-          &::before {
-            content: attr(data-label) ": ";
-            font-weight: 600;
-            margin-right: 0.5rem;
-            color: $primary-color;
-          }
-
-          &.col-actions::before {
-            content: "Acțiuni: ";
-          }
-
-          &.col-member::before {
-            content: "Membru: ";
-          }
-
-          &.col-department::before {
-            content: "Departament: ";
-          }
-
-          &.col-project::before {
-            content: "Proiect: ";
-          }
-
-          &.col-period::before {
-            content: "Perioadă: ";
-          }
-
-          &.col-hours::before {
-            content: "Ore: ";
-          }
-        }
-      }
-    }
-
-    .modal-overlay {
-      padding: 1rem;
-
-      .modal-content {
-        .modal-header {
-          padding: 1rem;
-
-          h3 {
-            font-size: 1.1rem;
-          }
-        }
-
-        .modal-body {
-          padding: 1rem;
-
-          .form-row {
-            grid-template-columns: 1fr;
-          }
-        }
-
-        .modal-footer {
-          padding: 1rem;
-          flex-direction: column;
-          gap: 0.5rem;
-
-          .btn {
-            width: 100%;
-          }
-        }
-      }
-    }
-
-    .department-header {
-      flex-direction: column;
-      gap: 0.5rem;
-      text-align: center;
-
-      h4 {
-        font-size: 1.1rem;
-      }
-    }
-
-    .members-grid {
-      grid-template-columns: 1fr !important;
-    }
-
-    .member-card {
-      .member-stats {
-        flex-direction: column;
-        gap: 0.5rem;
-      }
-    }
-
-    .project-actions {
-      flex-direction: column;
-
-      .btn {
-        width: 100%;
-      }
+    &:hover {
+      background: darken($info-color, 10%);
     }
   }
 
-  @media (max-width: 480px) {
-    .stat-card {
-      flex-direction: column;
-      text-align: center;
-      gap: 0.75rem;
+  &.btn-danger {
+    background: $danger-color;
+    color: $white;
 
-      .stat-icon {
-        width: 50px;
-        height: 50px;
-
-        i {
-          font-size: 1.2rem;
-        }
-      }
-
-      .stat-info {
-        h4 {
-          font-size: 1.5rem;
-        }
-      }
+    &:hover {
+      background: darken($danger-color, 10%);
     }
+  }
 
-    .dept-metrics {
-      flex-direction: column !important;
-      gap: 1rem !important;
-    }
+  &.btn-sm {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
 
-    .project-links {
-      flex-direction: column !important;
-    }
+  .btn-icon {
+    font-size: 1.1rem;
   }
 }
 
@@ -1440,7 +607,7 @@ $border-radius-lg: 12px;
   100% { transform: rotate(360deg); }
 }
 
-@keyframes fadeIn {
+@keyframes fadeInUp {
   from {
     opacity: 0;
     transform: translateY(20px);
@@ -1451,193 +618,59 @@ $border-radius-lg: 12px;
   }
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes modalSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-50px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-// Animation Classes
-.tab-content {
-  animation: fadeInUp 0.3s ease-in-out;
-}
-
-.member-card:hover .member-avatar img {
-  animation: pulse 0.6s ease-in-out;
-}
-
-.stat-card:hover .stat-icon {
-  animation: pulse 0.4s ease-in-out;
-}
-
-.btn:active {
-  transform: translateY(1px);
-}
-
-// Utility Classes
-.text-center {
-  text-align: center;
-}
-
-.text-left {
-  text-align: left;
-}
-
-.text-right {
-  text-align: right;
-}
-
-.mb-0 { margin-bottom: 0; }
-.mb-1 { margin-bottom: 0.25rem; }
-.mb-2 { margin-bottom: 0.5rem; }
-.mb-3 { margin-bottom: 1rem; }
-.mb-4 { margin-bottom: 1.5rem; }
-.mb-5 { margin-bottom: 3rem; }
-
-.mt-0 { margin-top: 0; }
-.mt-1 { margin-top: 0.25rem; }
-.mt-2 { margin-top: 0.5rem; }
-.mt-3 { margin-top: 1rem; }
-.mt-4 { margin-top: 1.5rem; }
-.mt-5 { margin-top: 3rem; }
-
-.p-0 { padding: 0; }
-.p-1 { padding: 0.25rem; }
-.p-2 { padding: 0.5rem; }
-.p-3 { padding: 1rem; }
-.p-4 { padding: 1.5rem; }
-.p-5 { padding: 3rem; }
-
-.d-none { display: none; }
-.d-block { display: block; }
-.d-flex { display: flex; }
-.d-grid { display: grid; }
-
-.w-100 { width: 100%; }
-.h-100 { height: 100%; }
-
-.position-relative { position: relative; }
-.position-absolute { position: absolute; }
-.position-fixed { position: fixed; }
-
-.overflow-hidden { overflow: hidden; }
-.overflow-auto { overflow: auto; }
-
-// Print Styles
-@media print {
+// Responsive Design
+@media (max-width: 768px) {
   .reports-container {
-    padding: 0;
-    background: white;
+    padding: 1rem;
 
-    .reports-header,
-    .nav-tabs,
-    .modal-overlay,
-    .btn {
-      display: none !important;
-    }
+    .reports-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
 
-    .tab-content {
-      display: block !important;
-    }
+      .header-actions {
+        width: 100%;
+        justify-content: stretch;
 
-    .statistics-grid,
-    .department-stats,
-    .projects-grid {
-      grid-template-columns: repeat(2, 1fr) !important;
-      gap: 1rem !important;
-    }
-
-    .reports-table {
-      .table-row:hover {
-        background: white !important;
-        transform: none !important;
+        .btn {
+          flex: 1;
+        }
       }
     }
 
-    * {
-      box-shadow: none !important;
-      transition: none !important;
-      animation: none !important;
-    }
-  }
-}
+    .nav-tabs {
+      flex-direction: column;
 
-// High Contrast Mode
-@media (prefers-contrast: high) {
-  .reports-container {
-    .btn {
-      border: 2px solid currentColor;
+      .tab-button {
+        padding: 0.75rem 1rem;
+      }
     }
 
-    .stat-card,
-    .project-card,
-    .member-card {
-      border: 2px solid $secondary-color;
+    .overview-cards {
+      grid-template-columns: 1fr;
+      padding: 1rem;
     }
 
-    .department-badge,
-    .hours-badge,
-    .project-status {
-      border: 1px solid currentColor;
+    .filters-grid {
+      grid-template-columns: 1fr;
     }
-  }
-}
 
-// Reduced Motion
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
+    .table-header,
+    .table-row {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
 
-  .reports-container {
-    .btn:hover,
-    .stat-card:hover,
-    .project-card:hover,
-    .member-card:hover,
-    .table-row:hover {
-      transform: none !important;
+    .reports-table-container {
+      .col {
+        justify-content: center !important;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid $border-color;
+
+        &:last-child {
+          border-bottom: none;
+        }
+      }
     }
   }
 }

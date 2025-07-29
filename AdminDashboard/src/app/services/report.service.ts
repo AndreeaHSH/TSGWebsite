@@ -178,50 +178,50 @@ export class ReportService {
     try {
       let params = new HttpParams();
 
-      if (year) {
-        params = params.set('year', year.toString());
-      }
+      if (year) params = params.set('year', year.toString());
+      if (month) params = params.set('month', month.toString());
 
-      if (month) {
-        params = params.set('month', month.toString());
-      }
-
-      return await firstValueFrom(
+      const statistics = await firstValueFrom(
         this.http.get<ReportStatistics>(`${this.apiUrl}/statistics`, { params }).pipe(
           catchError(this.handleError)
         )
       );
+
+      return statistics;
     } catch (error) {
       console.error('Error fetching statistics:', error);
       throw error;
     }
   }
 
-  private handleError = (error: HttpErrorResponse) => {
-    let errorMessage = 'An unknown error occurred';
+  private handleError = (error: HttpErrorResponse): Observable<never> => {
+    console.error('API Error:', error);
+
+    let errorMessage = 'A apărut o eroare neașteptată.';
 
     if (error.error instanceof ErrorEvent) {
-      errorMessage = `Client Error: ${error.error.message}`;
+      // Client-side error
+      errorMessage = error.error.message;
     } else {
+      // Server-side error
       switch (error.status) {
         case 400:
-          errorMessage = error.error?.message || 'Bad request. Please check your input.';
+          errorMessage = 'Cerere invalidă. Verifică datele introduse.';
           break;
         case 401:
-          errorMessage = 'Unauthorized. Please log in again.';
+          errorMessage = 'Nu ești autentificat. Te rugăm să te conectezi.';
           break;
         case 403:
-          errorMessage = 'Forbidden. You do not have permission to perform this action.';
+          errorMessage = 'Nu ai permisiuni pentru această acțiune.';
           break;
         case 404:
-          errorMessage = 'Resource not found.';
-          break;
-        case 409:
-          errorMessage = error.error?.message || 'Conflict. The resource already exists.';
+          errorMessage = 'Resursa solicitată nu a fost găsită.';
           break;
         case 500:
-          errorMessage = 'Internal server error. Please try again later.';
+          errorMessage = 'Eroare de server. Te rugăm să încerci mai târziu.';
           break;
+        default:
+          errorMessage = `Eroare ${error.status}: ${error.message}`;
       }
     }
 

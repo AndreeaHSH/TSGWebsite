@@ -318,61 +318,61 @@ namespace TSGwebsite.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8526),
+                            CreatedAt = new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3531),
                             Description = "Official website for Transilvania Star Group",
                             ExecutorMemberId = 4,
                             Name = "TSG Website",
                             ResponsibleMemberId = 3,
                             StartDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Status = "InProgress",
-                            UpdatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8523)
+                            UpdatedAt = new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3529)
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8529),
+                            CreatedAt = new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3534),
                             Description = "Portal for student management and services",
                             ExecutorMemberId = 5,
                             Name = "Student Portal",
                             ResponsibleMemberId = 7,
                             StartDate = new DateTime(2024, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Status = "Planning",
-                            UpdatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8527)
+                            UpdatedAt = new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3533)
                         },
                         new
                         {
                             Id = 3,
                             BeginnerMemberId = 10,
-                            CreatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8531),
+                            CreatedAt = new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3536),
                             Description = "TSG mobile application for students",
                             Name = "Mobile App",
                             ResponsibleMemberId = 5,
                             StartDate = new DateTime(2024, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Status = "InProgress",
-                            UpdatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8530)
+                            UpdatedAt = new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3535)
                         },
                         new
                         {
                             Id = 4,
-                            CreatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8533),
+                            CreatedAt = new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3538),
                             Description = "Document management system for university",
                             ExecutorMemberId = 4,
                             Name = "Registratură",
                             ResponsibleMemberId = 7,
                             StartDate = new DateTime(2023, 9, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Status = "Testing",
-                            UpdatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8532)
+                            UpdatedAt = new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3537)
                         },
                         new
                         {
                             Id = 5,
-                            CreatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8535),
+                            CreatedAt = new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3540),
                             Description = "Social media and communication strategy",
                             Name = "Marketing Campaign",
                             ResponsibleMemberId = 8,
                             StartDate = new DateTime(2024, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Status = "InProgress",
-                            UpdatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8534)
+                            UpdatedAt = new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3539)
                         });
                 });
 
@@ -436,12 +436,12 @@ namespace TSGwebsite.Migrations
                         {
                             Id = 1,
                             Achievements = "Completed responsive design implementation",
-                            CreatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8626),
+                            CreatedAt = new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3661),
                             HoursWorked = 40,
                             MemberId = 3,
                             Month = 7,
                             ProjectId = 1,
-                            UpdatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8624),
+                            UpdatedAt = new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3659),
                             WorkDescription = "Developed new frontend components and improved UI/UX",
                             Year = 2025
                         },
@@ -449,12 +449,12 @@ namespace TSGwebsite.Migrations
                         {
                             Id = 2,
                             Achievements = "Improved API performance by 30%",
-                            CreatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8628),
+                            CreatedAt = new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3664),
                             HoursWorked = 35,
                             MemberId = 4,
                             Month = 7,
                             ProjectId = 1,
-                            UpdatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8627),
+                            UpdatedAt = new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3662),
                             WorkDescription = "Backend API development and database optimization",
                             Year = 2025
                         },
@@ -462,12 +462,12 @@ namespace TSGwebsite.Migrations
                         {
                             Id = 3,
                             Achievements = "Completed authentication module",
-                            CreatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8630),
+                            CreatedAt = new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3665),
                             HoursWorked = 45,
                             MemberId = 5,
                             Month = 7,
                             ProjectId = 3,
-                            UpdatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8629),
+                            UpdatedAt = new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3664),
                             WorkDescription = "Mobile app development using React Native",
                             Year = 2025
                         },
@@ -475,12 +475,12 @@ namespace TSGwebsite.Migrations
                         {
                             Id = 4,
                             Achievements = "Completed project architecture documentation",
-                            CreatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8668),
+                            CreatedAt = new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3667),
                             HoursWorked = 30,
                             MemberId = 7,
                             Month = 7,
                             ProjectId = 2,
-                            UpdatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8667),
+                            UpdatedAt = new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3666),
                             WorkDescription = "Architecture planning and backend setup",
                             Year = 2025
                         },
@@ -488,12 +488,12 @@ namespace TSGwebsite.Migrations
                         {
                             Id = 5,
                             Achievements = "Increased social media engagement by 50%",
-                            CreatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8670),
+                            CreatedAt = new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3669),
                             HoursWorked = 25,
                             MemberId = 8,
                             Month = 7,
                             ProjectId = 5,
-                            UpdatedAt = new DateTime(2025, 7, 19, 1, 22, 32, 608, DateTimeKind.Utc).AddTicks(8669),
+                            UpdatedAt = new DateTime(2025, 7, 19, 2, 19, 57, 759, DateTimeKind.Utc).AddTicks(3668),
                             WorkDescription = "Content creation and social media management",
                             Year = 2025
                         });
@@ -709,17 +709,17 @@ namespace TSGwebsite.Migrations
                     b.HasOne("TSGwebsite.Models.Member", "BeginnerMember")
                         .WithMany("BeginnerProjects")
                         .HasForeignKey("BeginnerMemberId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("TSGwebsite.Models.Member", "ExecutorMember")
                         .WithMany("ExecutorProjects")
                         .HasForeignKey("ExecutorMemberId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("TSGwebsite.Models.Member", "ResponsibleMember")
                         .WithMany("ResponsibleProjects")
                         .HasForeignKey("ResponsibleMemberId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("BeginnerMember");
@@ -734,13 +734,13 @@ namespace TSGwebsite.Migrations
                     b.HasOne("TSGwebsite.Models.Member", "Member")
                         .WithMany("Reports")
                         .HasForeignKey("MemberId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("TSGwebsite.Models.Project", "Project")
                         .WithMany("Reports")
                         .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Member");

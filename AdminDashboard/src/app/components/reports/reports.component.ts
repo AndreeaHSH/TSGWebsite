@@ -1,231 +1,331 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams, HttpErrorResponse } from '@angular/common/http';
-import { Observable, firstValueFrom, catchError, throwError } from 'rxjs';
-import { environment } from '../../../environments/environment';
+// AdminDashboard/src/app/components/reports/reports.component.ts
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ReportService, Report, ReportStatistics, ReportFilters } from '../../services/report.service';
 
-export interface Report {
-  id: number;
-  memberId: number;
-  memberName: string;
-  memberDepartment: string;
-  projectId: number;
-  projectName: string;
-  month: number;
-  year: number;
-  workDescription: string;
-  hoursWorked: number;
-  achievements?: string;
-  challenges?: string;
-  nextMonthPlans?: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface CreateReportDto {
-  memberId: number;
-  projectId: number;
-  month: number;
-  year: number;
-  workDescription: string;
-  hoursWorked: number;
-  achievements?: string;
-  challenges?: string;
-  nextMonthPlans?: string;
-}
-
-export interface UpdateReportDto {
-  workDescription: string;
-  hoursWorked: number;
-  achievements?: string;
-  challenges?: string;
-  nextMonthPlans?: string;
-}
-
-export interface ReportFilters {
-  memberId?: number;
-  projectId?: number;
-  month?: number;
-  year?: number;
-  department?: string;
-}
-
-export interface ReportStatistics {
-  period: string;
-  summary: {
-    totalReports: number;
-    totalHours: number;
-    activeMembers: number;
-    activeProjects: number;
-  };
-  departmentStatistics: Array<{
-    department: string;
-    reportCount: number;
-    totalHours: number;
-    memberCount: number;
-  }>;
-  projectStatistics: Array<{
-    projectId: number;
-    projectName: string;
-    reportCount: number;
-    totalHours: number;
-    contributorCount: number;
-  }>;
-}
-
-@Injectable({
-  providedIn: 'root'
+@Component({
+  selector: 'app-reports',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  templateUrl: './reports.component.html',
+  styleUrls: ['./reports.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush // More efficient change detection
 })
-export class ReportService {
-  // ✅ FIX: Use environment instead of apiConfig
-  private apiUrl = `${environment.apiUrl}/api/reports`;
+export class ReportsComponent implements OnInit {
 
-  constructor(private http: HttpClient) {}
+  // Component properties
+  reports: Report[] = [];
+  filteredReports: Report[] = [];
+  statistics: ReportStatistics | null = null;
+  isLoading: boolean = true;
+  activeTab: string = 'overview';
 
-  async getReports(filters?: ReportFilters): Promise<Report[]> {
-    try {
-      let params = new HttpParams();
+  // Available data for dropdowns
+  members: any[] = [];
+  projects: any[] = [];
 
-      if (filters) {
-        Object.keys(filters).forEach(key => {
-          const value = (filters as any)[key];
-          if (value !== null && value !== undefined && value !== '' && value !== 0) {
-            params = params.set(key, value.toString());
-          }
-        });
-      }
-
-      const reports = await firstValueFrom(
-        this.http.get<Report[]>(this.apiUrl, { params }).pipe(
-          catchError(this.handleError)
-        )
-      );
-
-      return reports.map(report => ({
-        ...report,
-        createdAt: new Date(report.createdAt),
-        updatedAt: new Date(report.updatedAt)
-      }));
-    } catch (error) {
-      console.error('Error fetching reports:', error);
-      throw error;
-    }
-  }
-
-  async getReport(id: number): Promise<Report> {
-    try {
-      const report = await firstValueFrom(
-        this.http.get<Report>(`${this.apiUrl}/${id}`).pipe(
-          catchError(this.handleError)
-        )
-      );
-
-      return {
-        ...report,
-        createdAt: new Date(report.createdAt),
-        updatedAt: new Date(report.updatedAt)
-      };
-    } catch (error) {
-      console.error('Error fetching report:', error);
-      throw error;
-    }
-  }
-
-  async createReport(report: CreateReportDto): Promise<Report> {
-    try {
-      const newReport = await firstValueFrom(
-        this.http.post<Report>(this.apiUrl, report).pipe(
-          catchError(this.handleError)
-        )
-      );
-
-      return {
-        ...newReport,
-        createdAt: new Date(newReport.createdAt),
-        updatedAt: new Date(newReport.updatedAt)
-      };
-    } catch (error) {
-      console.error('Error creating report:', error);
-      throw error;
-    }
-  }
-
-  async updateReport(id: number, report: UpdateReportDto): Promise<void> {
-    try {
-      await firstValueFrom(
-        this.http.put<void>(`${this.apiUrl}/${id}`, report).pipe(
-          catchError(this.handleError)
-        )
-      );
-    } catch (error) {
-      console.error('Error updating report:', error);
-      throw error;
-    }
-  }
-
-  async deleteReport(id: number): Promise<void> {
-    try {
-      await firstValueFrom(
-        this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
-          catchError(this.handleError)
-        )
-      );
-    } catch (error) {
-      console.error('Error deleting report:', error);
-      throw error;
-    }
-  }
-
-  async getStatistics(year?: number, month?: number): Promise<ReportStatistics> {
-    try {
-      let params = new HttpParams();
-
-      if (year) {
-        params = params.set('year', year.toString());
-      }
-
-      if (month) {
-        params = params.set('month', month.toString());
-      }
-
-      return await firstValueFrom(
-        this.http.get<ReportStatistics>(`${this.apiUrl}/statistics`, { params }).pipe(
-          catchError(this.handleError)
-        )
-      );
-    } catch (error) {
-      console.error('Error fetching statistics:', error);
-      throw error;
-    }
-  }
-
-  private handleError = (error: HttpErrorResponse) => {
-    let errorMessage = 'An unknown error occurred';
-
-    if (error.error instanceof ErrorEvent) {
-      errorMessage = `Client Error: ${error.error.message}`;
-    } else {
-      switch (error.status) {
-        case 400:
-          errorMessage = error.error?.message || 'Bad request. Please check your input.';
-          break;
-        case 401:
-          errorMessage = 'Unauthorized. Please log in again.';
-          break;
-        case 403:
-          errorMessage = 'Forbidden. You do not have permission to perform this action.';
-          break;
-        case 404:
-          errorMessage = 'Resource not found.';
-          break;
-        case 409:
-          errorMessage = error.error?.message || 'Conflict. The resource already exists.';
-          break;
-        case 500:
-          errorMessage = 'Internal server error. Please try again later.';
-          break;
-      }
-    }
-
-    return throwError(() => new Error(errorMessage));
+  // Filters
+  filters: ReportFilters = {
+    year: new Date().getFullYear(),
+    month: undefined,
+    memberId: undefined,
+    projectId: undefined,
+    department: undefined
   };
+
+  // Modal properties
+  showReportModal: boolean = false;
+  editingReport: Report | null = null;
+
+  // Form data for new/edit report
+  reportForm = {
+    memberId: 1, // Default to first member
+    projectId: 1, // Default to first project
+    month: new Date().getMonth() + 1,
+    year: new Date().getFullYear(),
+    workDescription: '',
+    hoursWorked: 0,
+    achievements: '',
+    challenges: '',
+    nextMonthPlans: ''
+  };
+
+  // Available options
+  months = [
+    { value: 1, name: 'Ianuarie' },
+    { value: 2, name: 'Februarie' },
+    { value: 3, name: 'Martie' },
+    { value: 4, name: 'Aprilie' },
+    { value: 5, name: 'Mai' },
+    { value: 6, name: 'Iunie' },
+    { value: 7, name: 'Iulie' },
+    { value: 8, name: 'August' },
+    { value: 9, name: 'Septembrie' },
+    { value: 10, name: 'Octombrie' },
+    { value: 11, name: 'Noiembrie' },
+    { value: 12, name: 'Decembrie' }
+  ];
+
+  departments = ['Frontend', 'Backend', 'Mobile', 'Comunicare'];
+
+  constructor(private reportService: ReportService) {}
+
+  async ngOnInit(): Promise<void> {
+    await this.loadMembers();
+    await this.loadProjects();
+    await this.loadReports();
+    await this.loadStatistics();
+  }
+
+  // Tab management
+  setActiveTab(tab: string): void {
+    this.activeTab = tab;
+  }
+
+  // Data loading methods
+  async loadMembers(): Promise<void> {
+    try {
+      // You'll need to implement getMembersList in the service
+      // For now, create some dummy data
+      this.members = [
+        { id: 1, name: 'Test Member 1', department: 'Frontend' },
+        { id: 2, name: 'Test Member 2', department: 'Backend' },
+        { id: 3, name: 'Test Member 3', department: 'Mobile' }
+      ];
+    } catch (error) {
+      console.error('Error loading members:', error);
+    }
+  }
+
+  async loadProjects(): Promise<void> {
+    try {
+      // You'll need to implement getProjectsList in the service
+      // For now, create some dummy data
+      this.projects = [
+        { id: 1, name: 'Test Project 1' },
+        { id: 2, name: 'Test Project 2' },
+        { id: 3, name: 'Test Project 3' }
+      ];
+    } catch (error) {
+      console.error('Error loading projects:', error);
+    }
+  }
+
+  async loadReports(): Promise<void> {
+    try {
+      this.isLoading = true;
+      this.reports = await this.reportService.getReports(this.filters);
+      this.filteredReports = [...this.reports];
+    } catch (error) {
+      console.error('Error loading reports:', error);
+      // Show user-friendly error message
+      alert('Eroare la încărcarea rapoartelor. Verificați dacă serverul backend este pornit.');
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  async loadStatistics(): Promise<void> {
+    try {
+      this.statistics = await this.reportService.getStatistics(
+        this.filters.year,
+        this.filters.month
+      );
+    } catch (error) {
+      console.error('Error loading statistics:', error);
+      // Don't show error for statistics, just log it
+    }
+  }
+
+  // Filter methods
+  async applyFilters(): Promise<void> {
+    await this.loadReports();
+    await this.loadStatistics();
+  }
+
+  resetFilters(): void {
+    this.filters = {
+      year: new Date().getFullYear(),
+      month: undefined,
+      memberId: undefined,
+      projectId: undefined,
+      department: undefined
+    };
+    this.applyFilters();
+  }
+
+  // Modal methods
+  openReportModal(report?: Report): void {
+    this.showReportModal = true;
+    if (report) {
+      this.editingReport = report;
+      this.reportForm = {
+        memberId: report.memberId,
+        projectId: report.projectId,
+        month: report.month,
+        year: report.year,
+        workDescription: report.workDescription,
+        hoursWorked: report.hoursWorked,
+        achievements: report.achievements || '',
+        challenges: report.challenges || '',
+        nextMonthPlans: report.nextMonthPlans || ''
+      };
+    } else {
+      this.editingReport = null;
+      // Set valid default values
+      this.reportForm = {
+        memberId: 1, // Use valid member ID
+        projectId: 1, // Use valid project ID
+        month: new Date().getMonth() + 1,
+        year: new Date().getFullYear(),
+        workDescription: '',
+        hoursWorked: 1, // Set minimum valid hours
+        achievements: '',
+        challenges: '',
+        nextMonthPlans: ''
+      };
+    }
+  }
+
+  closeReportModal(): void {
+    this.showReportModal = false;
+    this.editingReport = null;
+  }
+
+  async saveReport(): Promise<void> {
+    try {
+      // Add validation before sending
+      if (!this.reportForm.workDescription.trim()) {
+        alert('Descrierea muncii este obligatorie!');
+        return;
+      }
+
+      if (this.reportForm.hoursWorked <= 0) {
+        alert('Numărul de ore trebuie să fie mai mare decât 0!');
+        return;
+      }
+
+      console.log('Saving report with data:', this.reportForm); // Debug log
+
+      if (this.editingReport) {
+        // Update existing report
+        await this.reportService.updateReport(this.editingReport.id, {
+          workDescription: this.reportForm.workDescription,
+          hoursWorked: this.reportForm.hoursWorked,
+          achievements: this.reportForm.achievements,
+          challenges: this.reportForm.challenges,
+          nextMonthPlans: this.reportForm.nextMonthPlans
+        });
+      } else {
+        // Create new report
+        console.log('Creating new report...'); // Debug log
+        await this.reportService.createReport(this.reportForm);
+      }
+
+      this.closeReportModal();
+      await this.loadReports();
+      await this.loadStatistics();
+
+      alert('Raportul a fost salvat cu succes!');
+    } catch (error) {
+      console.error('Error saving report:', error);
+      // Show more detailed error message
+      if (error instanceof Error) {
+        alert(`Eroare la salvarea raportului: ${error.message}`);
+      } else {
+        alert('Eroare necunoscută la salvarea raportului');
+      }
+    }
+  }
+
+  async deleteReport(reportId: number): Promise<void> {
+    if (confirm('Ești sigur că vrei să ștergi acest raport?')) {
+      try {
+        await this.reportService.deleteReport(reportId);
+        await this.loadReports();
+        await this.loadStatistics();
+      } catch (error) {
+        console.error('Error deleting report:', error);
+      }
+    }
+  }
+
+  // Utility methods
+  openReportDetail(report: Report): void {
+    // Show detailed view of report (you can implement a detail modal)
+    console.log('Opening report detail:', report);
+  }
+
+  sortReports(field: keyof Report): void {
+    this.filteredReports.sort((a, b) => {
+      const aValue = a[field];
+      const bValue = b[field];
+
+      // Handle null/undefined values
+      if (aValue == null && bValue == null) return 0;
+      if (aValue == null) return 1;
+      if (bValue == null) return -1;
+
+      if (aValue < bValue) return -1;
+      if (aValue > bValue) return 1;
+      return 0;
+    });
+  }
+
+  getMonthName(month: number): string {
+    const monthObj = this.months.find(m => m.value === month);
+    return monthObj ? monthObj.name : `Luna ${month}`;
+  }
+
+  getDepartmentDisplayName(department: string): string {
+    return department;
+  }
+
+  getDepartmentColor(department: string): string {
+    const colors: { [key: string]: string } = {
+      'Frontend': '#4CAF50',
+      'Backend': '#2196F3',
+      'Mobile': '#FF9800',
+      'Comunicare': '#9C27B0'
+    };
+    return colors[department] || '#757575';
+  }
+
+  // Export functionality
+  exportReports(): void {
+    // Implement CSV/Excel export
+    console.log('Exporting reports...');
+    alert('Funcționalitatea de export va fi implementată în curând');
+  }
+
+  // Getter properties for better performance and null safety
+  get departmentStats() {
+    return this.statistics?.departmentStatistics || [];
+  }
+
+  get projectStats() {
+    return this.statistics?.projectStatistics || [];
+  }
+
+  get hasDepartmentStats(): boolean {
+    return this.departmentStats.length > 0;
+  }
+
+  get hasProjectStats(): boolean {
+    return this.projectStats.length > 0;
+  }
+
+  // TrackBy functions for better *ngFor performance
+  trackByReportId(index: number, report: Report): number {
+    return report.id;
+  }
+
+  trackByDepartmentName(index: number, dept: any): string {
+    return dept.department;
+  }
+
+  trackByProjectId(index: number, proj: any): number {
+    return proj.projectId;
+  }
 }

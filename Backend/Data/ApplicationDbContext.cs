@@ -57,56 +57,57 @@ namespace TSGwebsite.Data
                 entity.Property(e => e.Description).IsRequired().HasMaxLength(1000);
                 entity.Property(e => e.RepositoryUrl).HasMaxLength(500);
                 entity.Property(e => e.LiveUrl).HasMaxLength(500);
-                
+
                 // Configure enum
                 entity.Property(e => e.Status)
                     .HasConversion<string>();
 
-                // Configure relationships
+                // Configure relationships with NO ACTION to avoid cascade conflicts
                 entity.HasOne(p => p.ResponsibleMember)
                     .WithMany(m => m.ResponsibleProjects)
                     .HasForeignKey(p => p.ResponsibleMemberId)
-                    .OnDelete(DeleteBehavior.Restrict);
+                    .OnDelete(DeleteBehavior.NoAction); // Changed from Restrict
 
                 entity.HasOne(p => p.ExecutorMember)
                     .WithMany(m => m.ExecutorProjects)
                     .HasForeignKey(p => p.ExecutorMemberId)
-                    .OnDelete(DeleteBehavior.SetNull);
+                    .OnDelete(DeleteBehavior.NoAction); // Changed from SetNull
 
                 entity.HasOne(p => p.BeginnerMember)
                     .WithMany(m => m.BeginnerProjects)
                     .HasForeignKey(p => p.BeginnerMemberId)
-                    .OnDelete(DeleteBehavior.SetNull);
+                    .OnDelete(DeleteBehavior.NoAction); // Changed from SetNull
             });
 
-            // Report configuration
             modelBuilder.Entity<Report>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.WorkDescription).IsRequired().HasMaxLength(2000);
-                entity.Property(e => e.Achievements).HasMaxLength(1000);
-                entity.Property(e => e.Challenges).HasMaxLength(1000);
-                entity.Property(e => e.NextMonthPlans).HasMaxLength(1000);
-                
-                // Configure relationships
-                entity.HasOne(r => r.Member)
-                    .WithMany(m => m.Reports)
-                    .HasForeignKey(r => r.MemberId)
-                    .OnDelete(DeleteBehavior.Cascade);
+{
+    entity.HasKey(e => e.Id);
+    entity.Property(e => e.WorkDescription).IsRequired().HasMaxLength(2000);
+    entity.Property(e => e.Achievements).HasMaxLength(1000);
+    entity.Property(e => e.Challenges).HasMaxLength(1000);
+    entity.Property(e => e.NextMonthPlans).HasMaxLength(1000);
 
-                entity.HasOne(r => r.Project)
-                    .WithMany(p => p.Reports)
-                    .HasForeignKey(r => r.ProjectId)
-                    .OnDelete(DeleteBehavior.Cascade);
+    // Configure relationships
+    entity.HasOne(r => r.Member)
+        .WithMany(m => m.Reports)
+        .HasForeignKey(r => r.MemberId)
+        .OnDelete(DeleteBehavior.NoAction); // Changed from Cascade
 
-                // Composite unique index to prevent duplicate reports
-                entity.HasIndex(r => new { r.MemberId, r.ProjectId, r.Month, r.Year })
-                    .IsUnique();
-            });
+    entity.HasOne(r => r.Project)
+        .WithMany(p => p.Reports)
+        .HasForeignKey(r => r.ProjectId)
+        .OnDelete(DeleteBehavior.NoAction); // Changed from Cascade
+
+    // Unique constraint for one report per member per project per month/year
+    entity.HasIndex(r => new { r.MemberId, r.ProjectId, r.Month, r.Year })
+        .IsUnique();
+     });
+
 
             // Seed data
             SeedReportingData(modelBuilder);
         }
+
 
         private void SeedReportingData(ModelBuilder modelBuilder)
         {

@@ -1,353 +1,166 @@
 <!-- AdminDashboard/src/app/components/reports/reports.component.html -->
 <div class="reports-container">
-  <!-- Header -->
+
+  <!-- Header Section -->
   <div class="reports-header">
-    <h1 class="page-title">
-      <i class="fas fa-chart-line"></i>
-      Sistem de raportare
-    </h1>
+    <div class="header-content">
+      <h1 class="page-title">
+        <span class="title-icon">📊</span>
+        Rapoarte și Statistici
+      </h1>
+      <p class="page-description">
+        Gestionează rapoartele de activitate și vizualizează statisticile echipei
+      </p>
+    </div>
+
     <div class="header-actions">
-      <button class="btn btn-primary" (click)="exportReports()">
-        <i class="fas fa-download"></i>
-        Export CSV
+      <button
+        class="btn btn-primary"
+        (click)="openReportModal()"
+        title="Adaugă raport nou">
+        <span class="btn-icon">➕</span>
+        Raport nou
+      </button>
+
+      <button
+        class="btn btn-secondary"
+        (click)="exportReports()"
+        title="Exportă rapoarte">
+        <span class="btn-icon">📥</span>
+        Export
       </button>
     </div>
   </div>
 
   <!-- Loading State -->
   <div *ngIf="isLoading" class="loading-container">
-    <div class="spinner"></div>
-    <p>Se încarcă datele...</p>
+    <div class="loading-spinner"></div>
+    <p>Se încarcă rapoartele...</p>
   </div>
 
-  <!-- Main Content -->
+  <!-- Main Content (when not loading) -->
   <div *ngIf="!isLoading" class="reports-content">
+
     <!-- Navigation Tabs -->
     <div class="nav-tabs">
       <button
         class="tab-button"
         [class.active]="activeTab === 'overview'"
         (click)="setActiveTab('overview')">
-        <i class="fas fa-tachometer-alt"></i>
+        <i class="fas fa-chart-line"></i>
         Prezentare generală
       </button>
-      <button
-        class="tab-button"
-        [class.active]="activeTab === 'members'"
-        (click)="setActiveTab('members')">
-        <i class="fas fa-users"></i>
-        Membri
-      </button>
-      <button
-        class="tab-button"
-        [class.active]="activeTab === 'projects'"
-        (click)="setActiveTab('projects')">
-        <i class="fas fa-project-diagram"></i>
-        Proiecte
-      </button>
+
       <button
         class="tab-button"
         [class.active]="activeTab === 'reports'"
         (click)="setActiveTab('reports')">
-        <i class="fas fa-file-alt"></i>
-        Rapoarte
+        <i class="fas fa-list"></i>
+        Rapoarte detaliate
+      </button>
+
+      <button
+        class="tab-button"
+        [class.active]="activeTab === 'statistics'"
+        (click)="setActiveTab('statistics')">
+        <i class="fas fa-chart-pie"></i>
+        Statistici
       </button>
     </div>
 
-    <!-- Overview Tab -->
-    <div *ngIf="activeTab === 'overview'" class="tab-content">
-      <!-- Filters -->
-      <div class="filters-section">
-        <h3>Filtre</h3>
-        <div class="filters-grid">
-          <div class="filter-group">
-            <label for="yearFilter">An:</label>
-            <select id="yearFilter" [(ngModel)]="selectedYear" (change)="onFilterChange()" class="form-control">
-              <option *ngFor="let year of years" [value]="year">{{ year }}</option>
-            </select>
-          </div>
-          <div class="filter-group">
-            <label for="monthFilter">Luna:</label>
-            <select id="monthFilter" [(ngModel)]="selectedMonth" (change)="onFilterChange()" class="form-control">
-              <option *ngFor="let month of months" [value]="month.value">{{ month.name }}</option>
-            </select>
-          </div>
-          <div class="filter-group">
-            <label for="departmentFilter">Departament:</label>
-            <select id="departmentFilter" [(ngModel)]="selectedDepartment" (change)="onFilterChange()" class="form-control">
-              <option *ngFor="let dept of departments" [value]="dept.key">{{ dept.value }}</option>
-            </select>
-          </div>
-          <div class="filter-group">
-            <button class="btn btn-secondary" (click)="clearFilters()">
-              <i class="fas fa-times"></i>
-              Resetează filtrele
-            </button>
-          </div>
-        </div>
-      </div>
+    <!-- Tab Content -->
+    <div class="tab-content">
 
-      <!-- Statistics Cards -->
-      <div *ngIf="statistics" class="statistics-grid">
-        <div class="stat-card">
-          <div class="stat-icon">
-            <i class="fas fa-file-alt"></i>
-          </div>
-          <div class="stat-info">
-            <h4>{{ statistics.summary.totalReports }}</h4>
-            <p>Rapoarte totale</p>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon">
-            <i class="fas fa-clock"></i>
-          </div>
-          <div class="stat-info">
-            <h4>{{ statistics.summary.totalHours }}</h4>
-            <p>Ore lucrate</p>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon">
-            <i class="fas fa-users"></i>
-          </div>
-          <div class="stat-info">
-            <h4>{{ statistics.summary.activeMembers }}</h4>
-            <p>Membri activi</p>
-          </div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon">
-            <i class="fas fa-project-diagram"></i>
-          </div>
-          <div class="stat-info">
-            <h4>{{ statistics.summary.activeProjects }}</h4>
-            <p>Proiecte active</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Department Statistics -->
-      <div *ngIf="statistics?.departmentStatistics" class="section">
-        <h3>Statistici pe departamente</h3>
-        <div class="department-stats">
-          <div *ngFor="let dept of statistics.departmentStatistics" class="dept-stat-card">
-            <div class="dept-header" [style.border-left-color]="getDepartmentColor(dept.department)">
-              <h4>{{ getDepartmentDisplayName(dept.department) }}</h4>
+      <!-- Overview Tab -->
+      <div *ngIf="activeTab === 'overview'" class="section">
+        <div class="overview-cards">
+          <div class="stat-card" *ngIf="statistics">
+            <div class="card-icon">📋</div>
+            <div class="card-content">
+              <h3>{{ statistics.summary.totalReports }}</h3>
+              <p>Rapoarte totale</p>
             </div>
-            <div class="dept-metrics">
-              <div class="metric">
-                <span class="metric-value">{{ dept.reportCount }}</span>
-                <span class="metric-label">Rapoarte</span>
-              </div>
-              <div class="metric">
-                <span class="metric-value">{{ dept.totalHours }}</span>
-                <span class="metric-label">Ore</span>
-              </div>
-              <div class="metric">
-                <span class="metric-value">{{ dept.memberCount }}</span>
-                <span class="metric-label">Membri</span>
-              </div>
+          </div>
+
+          <div class="stat-card" *ngIf="statistics">
+            <div class="card-icon">⏰</div>
+            <div class="card-content">
+              <h3>{{ statistics.summary.totalHours }}</h3>
+              <p>Ore lucrate</p>
+            </div>
+          </div>
+
+          <div class="stat-card" *ngIf="statistics">
+            <div class="card-icon">👥</div>
+            <div class="card-content">
+              <h3>{{ statistics.summary.activeMembers }}</h3>
+              <p>Membri activi</p>
+            </div>
+          </div>
+
+          <div class="stat-card" *ngIf="statistics">
+            <div class="card-icon">🚀</div>
+            <div class="card-content">
+              <h3>{{ statistics.summary.activeProjects }}</h3>
+              <p>Proiecte active</p>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Project Statistics -->
-      <div *ngIf="statistics?.projectStatistics" class="section">
-        <h3>Top proiecte</h3>
-        <div class="project-stats-table">
-          <div class="table-header">
-            <div class="col">Proiect</div>
-            <div class="col">Rapoarte</div>
-            <div class="col">Ore totale</div>
-            <div class="col">Contribuitori</div>
-          </div>
-          <div *ngFor="let proj of statistics.projectStatistics.slice(0, 10)" class="table-row">
-            <div class="col">{{ proj.projectName }}</div>
-            <div class="col">{{ proj.reportCount }}</div>
-            <div class="col">{{ proj.totalHours }}</div>
-            <div class="col">{{ proj.contributorCount }}</div>
-          </div>
-        </div>
-      </div>
-    </div>
+      <!-- Reports Tab -->
+      <div *ngIf="activeTab === 'reports'" class="section">
 
-    <!-- Members Tab -->
-    <div *ngIf="activeTab === 'members'" class="tab-content">
-      <div class="section-header">
-        <h3>Membri pe departamente</h3>
-      </div>
+        <!-- Filters Section -->
+        <div class="filters-section">
+          <h3>Filtre</h3>
+          <div class="filters-grid">
+            <div class="filter-group">
+              <label for="year-filter">An</label>
+              <select id="year-filter" [(ngModel)]="filters.year" (change)="applyFilters()">
+                <option [value]="2023">2023</option>
+                <option [value]="2024">2024</option>
+                <option [value]="2025">2025</option>
+              </select>
+            </div>
 
-      <div class="departments-container">
-        <div *ngFor="let department of membersByDepartment" class="department-section">
-          <div class="department-header" [style.border-left-color]="getDepartmentColor(department.department)">
-            <h4>{{ department.departmentDisplayName }}</h4>
-            <span class="member-count">{{ department.memberCount }} membri</span>
-          </div>
+            <div class="filter-group">
+              <label for="month-filter">Luna</label>
+              <select id="month-filter" [(ngModel)]="filters.month" (change)="applyFilters()">
+                <option [value]="undefined">Toate lunile</option>
+                <option *ngFor="let month of months" [value]="month.value">
+                  {{ month.name }}
+                </option>
+              </select>
+            </div>
 
-          <div class="members-grid">
-            <div *ngFor="let member of department.members" class="member-card">
-              <div class="member-avatar">
-                <img
-                  [src]="member.imageUrl || '/assets/images/default-avatar.png'"
-                  [alt]="member.fullName"
-                  (error)="$event.target.src='/assets/images/default-avatar.png'">
-              </div>
-              <div class="member-info">
-                <h5>{{ member.fullName }}</h5>
-                <p class="member-role">{{ member.role }}</p>
-                <p class="member-email">{{ member.email }}</p>
-                <div class="member-stats">
-                  <span class="stat">
-                    <i class="fas fa-file-alt"></i>
-                    {{ getReportsByMember(member.id).length }} rapoarte
-                  </span>
-                  <span class="stat">
-                    <i class="fas fa-clock"></i>
-                    {{ getTotalHoursByMember(member.id) }} ore
-                  </span>
-                </div>
-                <div class="member-actions">
-                  <button class="btn btn-sm btn-primary" (click)="openReportModal(); reportForm.patchValue({memberId: member.id})">
-                    <i class="fas fa-plus"></i>
-                    Adaugă raport
-                  </button>
-                </div>
-              </div>
+            <div class="filter-group">
+              <label for="department-filter">Departament</label>
+              <select id="department-filter" [(ngModel)]="filters.department" (change)="applyFilters()">
+                <option [value]="undefined">Toate departamentele</option>
+                <option *ngFor="let dept of departments" [value]="dept">
+                  {{ dept }}
+                </option>
+              </select>
+            </div>
+
+            <div class="filter-actions">
+              <button class="btn btn-secondary" (click)="resetFilters()">
+                Resetează filtrele
+              </button>
             </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Projects Tab -->
-    <div *ngIf="activeTab === 'projects'" class="tab-content">
-      <div class="section-header">
-        <h3>Gestionare proiecte</h3>
-        <button class="btn btn-primary" (click)="openProjectModal()">
-          <i class="fas fa-plus"></i>
-          Proiect nou
-        </button>
-      </div>
-
-      <div class="projects-grid">
-        <div *ngFor="let project of projects" class="project-card">
-          <div class="project-header">
-            <h4>{{ project.name }}</h4>
-            <div class="project-status" [style.background-color]="getStatusColor(project.status)">
-              {{ getStatusDisplayName(project.status) }}
-            </div>
-          </div>
-
-          <div class="project-content">
-            <p class="project-description">{{ project.description }}</p>
-
-            <div class="project-details">
-              <div class="detail-row">
-                <span class="label">Responsabil:</span>
-                <span class="value">{{ project.responsibleMemberName }}</span>
-              </div>
-              <div class="detail-row" *ngIf="project.executorMemberName">
-                <span class="label">Executor:</span>
-                <span class="value">{{ project.executorMemberName }}</span>
-              </div>
-              <div class="detail-row" *ngIf="project.beginnerMemberName">
-                <span class="label">Începător:</span>
-                <span class="value">{{ project.beginnerMemberName }}</span>
-              </div>
-              <div class="detail-row">
-                <span class="label">Data început:</span>
-                <span class="value">{{ formatDate(project.startDate) }}</span>
-              </div>
-              <div class="detail-row" *ngIf="project.endDate">
-                <span class="label">Data sfârșit:</span>
-                <span class="value">{{ formatDate(project.endDate) }}</span>
-              </div>
-            </div>
-
-            <div class="project-links" *ngIf="project.repositoryUrl || project.liveUrl">
-              <a *ngIf="project.repositoryUrl" [href]="project.repositoryUrl" target="_blank" class="link">
-                <i class="fab fa-github"></i>
-                Repository
-              </a>
-              <a *ngIf="project.liveUrl" [href]="project.liveUrl" target="_blank" class="link">
-                <i class="fas fa-external-link-alt"></i>
-                Live Demo
-              </a>
-            </div>
-          </div>
-
-          <div class="project-actions">
-            <button class="btn btn-sm btn-secondary" (click)="openProjectModal(project)">
-              <i class="fas fa-edit"></i>
-              Editează
-            </button>
-            <button class="btn btn-sm btn-danger" (click)="deleteProject(project.id)">
-              <i class="fas fa-trash"></i>
-              Șterge
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Reports Tab -->
-    <div *ngIf="activeTab === 'reports'" class="tab-content">
-      <div class="section-header">
-        <h3>Gestionare rapoarte</h3>
-        <button class="btn btn-primary" (click)="openReportModal()">
-          <i class="fas fa-plus"></i>
-          Raport nou
-        </button>
-      </div>
-
-      <!-- Reports Filters -->
-      <div class="reports-filters">
-        <div class="filters-row">
-          <div class="filter-group">
-            <label for="reportYearFilter">An:</label>
-            <select id="reportYearFilter" [(ngModel)]="selectedYear" (change)="onFilterChange()" class="form-control">
-              <option *ngFor="let year of years" [value]="year">{{ year }}</option>
-            </select>
-          </div>
-          <div class="filter-group">
-            <label for="reportMonthFilter">Luna:</label>
-            <select id="reportMonthFilter" [(ngModel)]="selectedMonth" (change)="onFilterChange()" class="form-control">
-              <option *ngFor="let month of months" [value]="month.value">{{ month.name }}</option>
-            </select>
-          </div>
-          <div class="filter-group">
-            <label for="reportDeptFilter">Departament:</label>
-            <select id="reportDeptFilter" [(ngModel)]="selectedDepartment" (change)="onFilterChange()" class="form-control">
-              <option *ngFor="let dept of departments" [value]="dept.key">{{ dept.value }}</option>
-            </select>
-          </div>
-          <div class="filter-group">
-            <label for="reportProjectFilter">Proiect:</label>
-            <select id="reportProjectFilter" [(ngModel)]="selectedProject" (change)="onFilterChange()" class="form-control">
-              <option value="0">Toate proiectele</option>
-              <option *ngFor="let project of projects" [value]="project.id">{{ project.name }}</option>
-            </select>
-          </div>
-          <div class="filter-group">
-            <label for="reportMemberFilter">Membru:</label>
-            <select id="reportMemberFilter" [(ngModel)]="selectedMember" (change)="onFilterChange()" class="form-control">
-              <option value="0">Toți membrii</option>
-              <option *ngFor="let member of allMembers" [value]="member.id">{{ member.fullName }}</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <!-- Reports Table -->
-      <div class="reports-table-container">
-        <div class="reports-table">
+        <!-- Reports Table -->
+        <div class="reports-table-container">
           <div class="table-header">
             <div class="col col-member" (click)="sortReports('memberName')">
               Membru <i class="fas fa-sort"></i>
             </div>
-            <div class="col col-department">Departament</div>
+            <div class="col col-department">
+              Departament
+            </div>
             <div class="col col-project" (click)="sortReports('projectName')">
               Proiect <i class="fas fa-sort"></i>
             </div>
@@ -360,7 +173,7 @@
             <div class="col col-actions">Acțiuni</div>
           </div>
 
-          <div *ngFor="let report of reports" class="table-row">
+          <div *ngFor="let report of filteredReports" class="table-row">
             <div class="col col-member">
               <div class="member-info">
                 <strong>{{ report.memberName }}</strong>
@@ -396,9 +209,46 @@
           </div>
         </div>
 
-        <div *ngIf="reports.length === 0" class="no-data">
+        <div *ngIf="filteredReports.length === 0" class="no-data">
           <i class="fas fa-inbox"></i>
           <p>Nu există rapoarte pentru criteriile selectate.</p>
+        </div>
+      </div>
+
+      <!-- Statistics Tab -->
+      <div *ngIf="activeTab === 'statistics'" class="section">
+        <div class="statistics-content">
+          <h3>Statistici detaliate</h3>
+
+          <!-- Department Statistics -->
+          <div *ngIf="hasDepartmentStats" class="stats-section">
+            <h4>Statistici pe departamente</h4>
+            <div class="department-stats">
+              <div *ngFor="let dept of departmentStats" class="dept-stat-card">
+                <h5>{{ dept.department }}</h5>
+                <div class="dept-stats">
+                  <span>{{ dept.reportCount }} rapoarte</span>
+                  <span>{{ dept.totalHours }} ore</span>
+                  <span>{{ dept.memberCount }} membri</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Project Statistics -->
+          <div *ngIf="hasProjectStats" class="stats-section">
+            <h4>Statistici pe proiecte</h4>
+            <div class="project-stats">
+              <div *ngFor="let proj of projectStats" class="project-stat-card">
+                <h5>{{ proj.projectName }}</h5>
+                <div class="project-stats">
+                  <span>{{ proj.reportCount }} rapoarte</span>
+                  <span>{{ proj.totalHours }} ore</span>
+                  <span>{{ proj.contributorCount }} contributori</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -409,296 +259,61 @@
     <div class="modal-content" (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h3>{{ editingReport ? 'Editează raport' : 'Raport nou' }}</h3>
-        <button class="close-btn" (click)="closeReportModal()">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-
-      <form [formGroup]="reportForm" (ngSubmit)="submitReport()">
-        <div class="modal-body">
-          <div class="form-row">
-            <div class="form-group">
-              <label for="reportMember">Membru *</label>
-              <select id="reportMember" formControlName="memberId" class="form-control"
-                      [class.is-invalid]="isFormFieldInvalid(reportForm, 'memberId')">
-                <option value="">Selectează membru</option>
-                <optgroup *ngFor="let dept of membersByDepartment" [label]="dept.departmentDisplayName">
-                  <option *ngFor="let member of dept.members" [value]="member.id">
-                    {{ member.fullName }}
-                  </option>
-                </optgroup>
-              </select>
-              <div class="invalid-feedback">{{ getFieldError(reportForm, 'memberId') }}</div>
-            </div>
-
-            <div class="form-group">
-              <label for="reportProject">Proiect *</label>
-              <select id="reportProject" formControlName="projectId" class="form-control"
-                      [class.is-invalid]="isFormFieldInvalid(reportForm, 'projectId')">
-                <option value="">Selectează proiect</option>
-                <option *ngFor="let project of projects" [value]="project.id">
-                  {{ project.name }}
-                </option>
-              </select>
-              <div class="invalid-feedback">{{ getFieldError(reportForm, 'projectId') }}</div>
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label for="reportMonth">Luna *</label>
-              <select id="reportMonth" formControlName="month" class="form-control"
-                      [class.is-invalid]="isFormFieldInvalid(reportForm, 'month')">
-                <option *ngFor="let month of months.slice(1)" [value]="month.value">
-                  {{ month.name }}
-                </option>
-              </select>
-              <div class="invalid-feedback">{{ getFieldError(reportForm, 'month') }}</div>
-            </div>
-
-            <div class="form-group">
-              <label for="reportYear">An *</label>
-              <select id="reportYear" formControlName="year" class="form-control"
-                      [class.is-invalid]="isFormFieldInvalid(reportForm, 'year')">
-                <option *ngFor="let year of years" [value]="year">{{ year }}</option>
-              </select>
-              <div class="invalid-feedback">{{ getFieldError(reportForm, 'year') }}</div>
-            </div>
-
-            <div class="form-group">
-              <label for="reportHours">Ore lucrate *</label>
-              <input type="number" id="reportHours" formControlName="hoursWorked"
-                     class="form-control" min="1" max="168"
-                     [class.is-invalid]="isFormFieldInvalid(reportForm, 'hoursWorked')">
-              <div class="invalid-feedback">{{ getFieldError(reportForm, 'hoursWorked') }}</div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="reportDescription">Descriere muncă *</label>
-            <textarea id="reportDescription" formControlName="workDescription"
-                      class="form-control" rows="4" maxlength="2000"
-                      [class.is-invalid]="isFormFieldInvalid(reportForm, 'workDescription')"
-                      placeholder="Descrieți activitățile și sarcinile îndeplinite..."></textarea>
-            <div class="invalid-feedback">{{ getFieldError(reportForm, 'workDescription') }}</div>
-          </div>
-
-          <div class="form-group">
-            <label for="reportAchievements">Realizări</label>
-            <textarea id="reportAchievements" formControlName="achievements"
-                      class="form-control" rows="3" maxlength="1000"
-                      placeholder="Enumerați principalele realizări și succese..."></textarea>
-          </div>
-
-          <div class="form-group">
-            <label for="reportChallenges">Provocări</label>
-            <textarea id="reportChallenges" formControlName="challenges"
-                      class="form-control" rows="3" maxlength="1000"
-                      placeholder="Descrieți provocările întâmpinate și cum au fost rezolvate..."></textarea>
-          </div>
-
-          <div class="form-group">
-            <label for="reportPlans">Planuri pentru luna următoare</label>
-            <textarea id="reportPlans" formControlName="nextMonthPlans"
-                      class="form-control" rows="3" maxlength="1000"
-                      placeholder="Planuri și obiective pentru perioada următoare..."></textarea>
-          </div>
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="closeReportModal()">
-            Anulează
-          </button>
-          <button type="submit" class="btn btn-primary" [disabled]="reportForm.invalid">
-            {{ editingReport ? 'Actualizează' : 'Salvează' }}
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Project Modal -->
-  <div *ngIf="showProjectModal" class="modal-overlay" (click)="closeProjectModal()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h3>{{ editingProject ? 'Editează proiect' : 'Proiect nou' }}</h3>
-        <button class="close-btn" (click)="closeProjectModal()">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-
-      <form [formGroup]="projectForm" (ngSubmit)="submitProject()">
-        <div class="modal-body">
-          <div class="form-group">
-            <label for="projectName">Nume proiect *</label>
-            <input type="text" id="projectName" formControlName="name"
-                   class="form-control" maxlength="200"
-                   [class.is-invalid]="isFormFieldInvalid(projectForm, 'name')">
-            <div class="invalid-feedback">{{ getFieldError(projectForm, 'name') }}</div>
-          </div>
-
-          <div class="form-group">
-            <label for="projectDescription">Descriere *</label>
-            <textarea id="projectDescription" formControlName="description"
-                      class="form-control" rows="3" maxlength="1000"
-                      [class.is-invalid]="isFormFieldInvalid(projectForm, 'description')"></textarea>
-            <div class="invalid-feedback">{{ getFieldError(projectForm, 'description') }}</div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label for="projectStatus">Status *</label>
-              <select id="projectStatus" formControlName="status" class="form-control"
-                      [class.is-invalid]="isFormFieldInvalid(projectForm, 'status')">
-                <option *ngFor="let status of projectStatuses" [value]="status.key">
-                  {{ status.value }}
-                </option>
-              </select>
-              <div class="invalid-feedback">{{ getFieldError(projectForm, 'status') }}</div>
-            </div>
-
-            <div class="form-group">
-              <label for="projectStartDate">Data început *</label>
-              <input type="date" id="projectStartDate" formControlName="startDate"
-                     class="form-control"
-                     [class.is-invalid]="isFormFieldInvalid(projectForm, 'startDate')">
-              <div class="invalid-feedback">{{ getFieldError(projectForm, 'startDate') }}</div>
-            </div>
-
-            <div class="form-group">
-              <label for="projectEndDate">Data sfârșit</label>
-              <input type="date" id="projectEndDate" formControlName="endDate"
-                     class="form-control">
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label for="projectRepository">Repository URL</label>
-              <input type="url" id="projectRepository" formControlName="repositoryUrl"
-                     class="form-control" maxlength="500">
-            </div>
-
-            <div class="form-group">
-              <label for="projectLive">Live URL</label>
-              <input type="url" id="projectLive" formControlName="liveUrl"
-                     class="form-control" maxlength="500">
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label for="projectResponsible">Responsabil *</label>
-              <select id="projectResponsible" formControlName="responsibleMemberId"
-                      class="form-control"
-                      [class.is-invalid]="isFormFieldInvalid(projectForm, 'responsibleMemberId')">
-                <option value="">Selectează responsabil</option>
-                <option *ngFor="let member of allMembers" [value]="member.id">
-                  {{ member.fullName }} ({{ getDepartmentDisplayName(member.department) }})
-                </option>
-              </select>
-              <div class="invalid-feedback">{{ getFieldError(projectForm, 'responsibleMemberId') }}</div>
-            </div>
-
-            <div class="form-group">
-              <label for="projectExecutor">Executor</label>
-              <select id="projectExecutor" formControlName="executorMemberId" class="form-control">
-                <option value="">Selectează executor</option>
-                <option *ngFor="let member of allMembers" [value]="member.id">
-                  {{ member.fullName }} ({{ getDepartmentDisplayName(member.department) }})
-                </option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label for="projectBeginner">Începător</label>
-              <select id="projectBeginner" formControlName="beginnerMemberId" class="form-control">
-                <option value="">Selectează începător</option>
-                <option *ngFor="let member of allMembers" [value]="member.id">
-                  {{ member.fullName }} ({{ getDepartmentDisplayName(member.department) }})
-                </option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="closeProjectModal()">
-            Anulează
-          </button>
-          <button type="submit" class="btn btn-primary" [disabled]="projectForm.invalid">
-            {{ editingProject ? 'Actualizează' : 'Salvează' }}
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Report Detail Modal -->
-  <div *ngIf="showReportDetailModal && selectedReportDetail" class="modal-overlay" (click)="closeReportDetail()">
-    <div class="modal-content report-detail-modal" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h3>Detalii raport</h3>
-        <button class="close-btn" (click)="closeReportDetail()">
-          <i class="fas fa-times"></i>
-        </button>
+        <button class="close-btn" (click)="closeReportModal()">×</button>
       </div>
 
       <div class="modal-body">
-        <div class="report-detail-header">
-          <div class="report-info">
-            <h4>{{ selectedReportDetail.memberName }}</h4>
-            <p>{{ getDepartmentDisplayName(selectedReportDetail.memberDepartment) }} •
-               {{ selectedReportDetail.projectName }}</p>
-            <p class="period">{{ getMonthName(selectedReportDetail.month) }} {{ selectedReportDetail.year }}</p>
-          </div>
-          <div class="report-hours">
-            <span class="hours-badge large">{{ selectedReportDetail.hoursWorked }}h</span>
-          </div>
-        </div>
-
-        <div class="report-sections">
-          <div class="report-section">
-            <h5><i class="fas fa-tasks"></i> Descriere muncă</h5>
-            <p>{{ selectedReportDetail.workDescription }}</p>
+        <form (ngSubmit)="saveReport()">
+          <div class="form-group">
+            <label for="workDescription">Descrierea muncii</label>
+            <textarea
+              id="workDescription"
+              [(ngModel)]="reportForm.workDescription"
+              name="workDescription"
+              rows="4"
+              required>
+            </textarea>
           </div>
 
-        <div class="report-sections">
-          <div class="report-section">
-            <h5><i class="fas fa-tasks"></i> Descriere muncă</h5>
-            <p>{{ selectedReportDetail.workDescription }}</p>
+          <div class="form-group">
+            <label for="hoursWorked">Ore lucrate</label>
+            <input
+              type="number"
+              id="hoursWorked"
+              [(ngModel)]="reportForm.hoursWorked"
+              name="hoursWorked"
+              required>
           </div>
 
-          <div class="report-section" *ngIf="selectedReportDetail.achievements">
-            <h5><i class="fas fa-trophy"></i> Realizări</h5>
-            <p>{{ selectedReportDetail.achievements }}</p>
+          <div class="form-group">
+            <label for="achievements">Realizări</label>
+            <textarea
+              id="achievements"
+              [(ngModel)]="reportForm.achievements"
+              name="achievements"
+              rows="3">
+            </textarea>
           </div>
 
-          <div class="report-section" *ngIf="selectedReportDetail.challenges">
-            <h5><i class="fas fa-exclamation-triangle"></i> Provocări</h5>
-            <p>{{ selectedReportDetail.challenges }}</p>
+          <div class="form-group">
+            <label for="challenges">Provocări</label>
+            <textarea
+              id="challenges"
+              [(ngModel)]="reportForm.challenges"
+              name="challenges"
+              rows="3">
+            </textarea>
           </div>
 
-          <div class="report-section" *ngIf="selectedReportDetail.nextMonthPlans">
-            <h5><i class="fas fa-calendar-alt"></i> Planuri pentru luna următoare</h5>
-            <p>{{ selectedReportDetail.nextMonthPlans }}</p>
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" (click)="closeReportModal()">
+              Anulează
+            </button>
+            <button type="submit" class="btn btn-primary">
+              {{ editingReport ? 'Actualizează' : 'Creează' }}
+            </button>
           </div>
-        </div>
-
-        <div class="report-meta">
-          <p><strong>Creat:</strong> {{ formatDateTime(selectedReportDetail.createdAt) }}</p>
-          <p><strong>Actualizat:</strong> {{ formatDateTime(selectedReportDetail.updatedAt) }}</p>
-        </div>
-      </div>
-
-      <div class="modal-footer">
-        <button class="btn btn-secondary" (click)="openReportModal(selectedReportDetail); closeReportDetail()">
-          <i class="fas fa-edit"></i>
-          Editează
-        </button>
-        <button class="btn btn-primary" (click)="closeReportDetail()">
-          Închide
-        </button>
+        </form>
       </div>
     </div>
   </div>
