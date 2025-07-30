@@ -3,7 +3,6 @@
   background: #f8fafc;
   min-height: 100vh;
 
-  // Header
   .header {
     background: white;
     padding: 24px;
@@ -52,7 +51,6 @@
     }
   }
 
-  // Loading State
   .loading-container {
     display: flex;
     flex-direction: column;
@@ -72,7 +70,6 @@
     }
   }
 
-  // Departments View
   .departments-view {
     .departments-header {
       display: flex;
@@ -241,7 +238,6 @@
     }
   }
 
-  // Projects View
   .projects-view {
     .projects-header {
       display: flex;
@@ -406,7 +402,6 @@
     }
   }
 
-  // Reports View
   .reports-view {
     .reports-header {
       background: white;
@@ -592,7 +587,6 @@
     }
   }
 
-  // Modal Styles
   .modal-overlay {
     position: fixed;
     top: 0;
@@ -734,7 +728,6 @@
         }
       }
 
-      // Report details specific styles
       .report-details {
         padding: 0 24px 24px 24px;
 
@@ -790,7 +783,6 @@
     }
   }
 
-  // Button Styles
   .btn {
     display: inline-flex;
     align-items: center;
@@ -863,7 +855,6 @@
     }
   }
 
-  // Animations
   @keyframes spin {
     to {
       transform: rotate(360deg);
@@ -881,7 +872,6 @@
     }
   }
 
-  // Responsive Design
   @media (max-width: 1024px) {
     .departments-grid {
       grid-template-columns: 1fr;

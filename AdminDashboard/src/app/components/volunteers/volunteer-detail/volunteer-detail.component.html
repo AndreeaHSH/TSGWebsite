@@ -1,6 +1,5 @@
 <div class="volunteer-detail-container">
 
-  <!-- Beautiful Notification Toast -->
   <div *ngIf="notification.show"
        class="notification-toast"
        [class]="'notification-' + notification.type"
@@ -20,7 +19,6 @@
     </div>
   </div>
 
-  <!-- Header -->
   <div class="detail-header">
     <button class="back-btn" (click)="goBack()">
       ← Înapoi la listă
@@ -29,7 +27,6 @@
     <div *ngIf="volunteer" class="header-info">
       <h1 class="volunteer-name">{{ volunteer.firstName }} {{ volunteer.lastName }}</h1>
       <div class="header-meta">
-        <!-- Status Badge/Editor -->
         <div class="status-section">
           <div *ngIf="!isEditingStatus" class="status-display">
             <span class="status-badge" [class]="getStatusClass(volunteer.status)">
@@ -67,7 +64,6 @@
           </div>
         </div>
 
-        <!-- Favorite Button -->
         <button
           class="favorite-btn"
           [class.active]="volunteer.isFavorite"
@@ -79,16 +75,13 @@
     </div>
   </div>
 
-  <!-- Loading State -->
   <div *ngIf="isLoading" class="loading-container">
     <div class="loading-spinner"></div>
     <p class="loading-text">Se încarcă detaliile aplicației...</p>
   </div>
 
-  <!-- Volunteer Details -->
   <div *ngIf="!isLoading && volunteer" class="details-content">
 
-    <!-- Admin Management Section (Only show if editing status) -->
     <div *ngIf="isEditingStatus" class="info-section admin-section">
       <h2 class="section-title">Management administrativ</h2>
       <div class="section-content">
@@ -137,7 +130,6 @@
       </div>
     </div>
 
-    <!-- Personal Information Section -->
     <div class="info-section personal-info">
       <h2 class="section-title">Informații personale</h2>
       <div class="section-content">
@@ -166,7 +158,6 @@
       </div>
     </div>
 
-    <!-- Academic Information Section -->
     <div class="info-section academic-info">
       <h2 class="section-title">Informații academice</h2>
       <div class="section-content">
@@ -191,7 +182,6 @@
       </div>
     </div>
 
-    <!-- Role Preferences Section -->
     <div class="info-section role-preferences">
       <h2 class="section-title">Preferințe rol</h2>
       <div class="section-content">
@@ -208,7 +198,6 @@
       </div>
     </div>
 
-    <!-- Technical Skills Section -->
     <div class="info-section technical-skills">
       <h2 class="section-title">Competențe tehnice</h2>
       <div class="section-content">
@@ -229,7 +218,6 @@
       </div>
     </div>
 
-    <!-- Experience and Motivation Section -->
     <div class="info-section experience-motivation">
       <h2 class="section-title">Experiență și motivație</h2>
       <div class="section-content">
@@ -250,7 +238,6 @@
       </div>
     </div>
 
-    <!-- Availability Section -->
     <div class="info-section availability">
       <h2 class="section-title">Disponibilitate</h2>
       <div class="section-content">
@@ -267,7 +254,6 @@
       </div>
     </div>
 
-    <!-- Documents and Portfolio Section -->
     <div class="info-section documents">
       <h2 class="section-title">Documente și portofoliu</h2>
       <div class="section-content">
@@ -300,7 +286,6 @@
       </div>
     </div>
 
-    <!-- Admin Activity Section (Only show if there's activity data) -->
     <div *ngIf="volunteer.reviewNotes || volunteer.currentRole || volunteer.achievements || volunteer.volunteerHours > 0"
          class="info-section admin-activity">
       <h2 class="section-title">Activitate administrativă</h2>
@@ -330,7 +315,6 @@
       </div>
     </div>
 
-    <!-- Application Metadata Section -->
     <div class="info-section metadata">
       <h2 class="section-title">Detalii aplicație</h2>
       <div class="section-content">
@@ -357,7 +341,6 @@
 
   </div>
 
-  <!-- Error State -->
   <div *ngIf="!isLoading && !volunteer" class="error-container">
     <h2>Aplicația nu a fost găsită</h2>
     <p>Nu am putut găsi aplicația cu ID-ul specificat.</p>

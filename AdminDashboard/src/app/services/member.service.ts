@@ -17,7 +17,6 @@ export interface Member {
   linkedInUrl?: string;
   gitHubUrl?: string;
   imageUrl?: string;
-  // Additional computed properties
   reportCount?: number;
   totalHours?: number;
   lastReportDate?: Date;
@@ -344,7 +343,6 @@ export class MemberService {
   }
 
   formatPhoneNumber(phone: string): string {
-    // Basic phone formatting for Romanian numbers
     const cleaned = phone.replace(/\D/g, '');
     if (cleaned.startsWith('40')) {
       return `+${cleaned.slice(0, 2)} ${cleaned.slice(2, 5)} ${cleaned.slice(5, 8)} ${cleaned.slice(8)}`;

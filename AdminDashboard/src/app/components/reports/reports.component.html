@@ -1,5 +1,4 @@
 <div class="reports-container">
-  <!-- Header -->
   <div class="header">
     <h1>Rapoarte și Proiecte</h1>
     <div class="view-tabs">
@@ -24,13 +23,12 @@
     </div>
   </div>
 
-  <!-- Loading State -->
   <div *ngIf="isLoading" class="loading-container">
     <div class="loading-spinner"></div>
     <p>Se încarcă datele...</p>
   </div>
 
-  <!-- Departments View -->
+
   <div *ngIf="activeView === 'departments' && !isLoading" class="departments-view">
     <div class="departments-header">
       <h2>Managementul Departamentelor</h2>
@@ -191,12 +189,10 @@
     </ng-template>
   </div>
 
-  <!-- Reports View -->
   <div *ngIf="activeView === 'reports' && !isLoading" class="reports-view">
     <div class="reports-header">
       <h2>Rapoarte Lunare</h2>
 
-      <!-- Filters -->
       <div class="filters">
         <div class="filter-group">
           <label>Anul:</label>
@@ -235,7 +231,6 @@
       </div>
     </div>
 
-    <!-- Reports Stats -->
     <div class="reports-stats" *ngIf="reports.length > 0">
       <div class="stat-card">
         <h4>Total Rapoarte</h4>
@@ -255,7 +250,6 @@
       </div>
     </div>
 
-    <!-- Reports Table -->
     <div class="reports-table-container">
       <table class="reports-table" *ngIf="reports.length > 0; else noReports">
         <thead>
@@ -327,7 +321,6 @@
     </div>
   </div>
 
-  <!-- Member Modal -->
   <div class="modal-overlay" *ngIf="showMemberModal" (click)="closeMemberModal()">
     <div class="modal-content" (click)="$event.stopPropagation()">
       <div class="modal-header">
@@ -610,7 +603,6 @@
     </div>
   </div>
 
-  <!-- Report Modal -->
   <div class="modal-overlay" *ngIf="showReportModal" (click)="closeReportModal()">
     <div class="modal-content" (click)="$event.stopPropagation()">
       <div class="modal-header">
@@ -738,7 +730,6 @@
     </div>
   </div>
 
-  <!-- Report Details Modal -->
   <div class="modal-overlay" *ngIf="showReportDetailsModal" (click)="closeReportDetailsModal()">
     <div class="modal-content large-modal" (click)="$event.stopPropagation()">
       <div class="modal-header">

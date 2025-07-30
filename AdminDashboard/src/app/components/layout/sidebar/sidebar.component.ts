@@ -56,11 +56,8 @@ export class SidebarComponent {
     return this.router.url === route || this.router.url.startsWith(route + '/');
   }
 
-  // Handle logout (placeholder for future implementation)
   logout(): void {
-    // TODO: Implement logout functionality
     console.log('Logout functionality will be implemented here');
-    // For now, just show an alert
     alert('Funcționalitatea de logout va fi implementată în curând');
   }
 }

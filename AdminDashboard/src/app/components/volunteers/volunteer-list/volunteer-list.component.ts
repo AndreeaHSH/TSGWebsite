@@ -1,4 +1,3 @@
-// volunteer-list.component.ts - Updated with display-only hearts
 
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -71,7 +70,6 @@ export class VolunteerListComponent implements OnInit {
   }
 
   private getStatusString(status: any): 'Pending' | 'Reviewed' | 'Approved' | 'Rejected' | 'Contacted' | 'Active' | 'Inactive' {
-    // Handle both string and number status values
     if (typeof status === 'number') {
       const statusMap: {[key: number]: 'Pending' | 'Reviewed' | 'Approved' | 'Rejected' | 'Contacted' | 'Active' | 'Inactive'} = {
         0: 'Pending',
@@ -107,7 +105,6 @@ export class VolunteerListComponent implements OnInit {
     this.filteredVolunteers = [...this.volunteers];
   }
 
-  // REMOVED: toggleFavorite method - favorites can only be modified from detail page
 
   viewVolunteerDetails(volunteerId: number): void {
     this.router.navigate(['/aplicari', volunteerId]);
@@ -152,7 +149,6 @@ export class VolunteerListComponent implements OnInit {
     return volunteer.id;
   }
 
-  // Method to refresh the list when returning from detail page
   refreshVolunteers(): void {
     this.loadVolunteers();
   }

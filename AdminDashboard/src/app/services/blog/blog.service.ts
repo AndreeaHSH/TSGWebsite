@@ -1,9 +1,7 @@
-// AdminDashboard/src/app/services/blog/blog.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, firstValueFrom } from 'rxjs';
 
-// Interfaces matching backend DTOs
 export interface BlogPost {
   id: number;
   title: string;
@@ -97,7 +95,6 @@ export class BlogService {
 
   constructor(private http: HttpClient) {}
 
-  // Get all blog posts with optional filtering
   async getAllPosts(filters?: BlogFilters): Promise<BlogPost[]> {
     try {
       let params = new HttpParams();
@@ -126,7 +123,6 @@ export class BlogService {
     }
   }
 
-  // Get specific blog post by ID
   async getPost(id: number): Promise<BlogPostDetail> {
     try {
       const response = await firstValueFrom(
@@ -140,7 +136,6 @@ export class BlogService {
     }
   }
 
-  // Create new blog post
   async createPost(postData: BlogPostCreate): Promise<BlogPostDetail> {
     try {
       const formData = this.buildFormData(postData);
@@ -156,7 +151,6 @@ export class BlogService {
     }
   }
 
-  // Update existing blog post
   async updatePost(id: number, postData: BlogPostUpdate): Promise<void> {
     try {
       const formData = this.buildFormData(postData);
@@ -170,7 +164,6 @@ export class BlogService {
     }
   }
 
-  // Delete blog post
   async deletePost(id: number): Promise<void> {
     try {
       await firstValueFrom(
@@ -182,7 +175,6 @@ export class BlogService {
     }
   }
 
-  // Toggle publish status
   async togglePublishStatus(id: number): Promise<{ isPublished: boolean; publishedAt?: string }> {
     try {
       const response = await firstValueFrom(
@@ -196,7 +188,6 @@ export class BlogService {
     }
   }
 
-  // Upload multiple images (for future multi-image support)
   async uploadImages(postId: number, files: File[], altTexts?: string[]): Promise<ImageUploadResponse[]> {
     try {
       const formData = new FormData();
@@ -219,7 +210,6 @@ export class BlogService {
     }
   }
 
-  // Delete specific image
   async deleteImage(postId: number, imageId: number): Promise<void> {
     try {
       await firstValueFrom(
@@ -231,7 +221,6 @@ export class BlogService {
     }
   }
 
-  // Get blog statistics (for reports)
   async getBlogStats(): Promise<BlogStats> {
     try {
       const response = await firstValueFrom(
@@ -245,11 +234,9 @@ export class BlogService {
     }
   }
 
-  // Helper method to build FormData from post data
   private buildFormData(postData: BlogPostCreate | BlogPostUpdate): FormData {
     const formData = new FormData();
 
-    // Add text fields
     Object.entries(postData).forEach(([key, value]) => {
       if (value !== undefined && value !== null && key !== 'featuredImageFile' &&
           key !== 'blogImageFiles' && key !== 'imageAltTexts' && key !== 'imageIdsToDelete') {
@@ -257,26 +244,22 @@ export class BlogService {
       }
     });
 
-    // Add featured image file
     if ('featuredImageFile' in postData && postData.featuredImageFile) {
       formData.append('featuredImageFile', postData.featuredImageFile);
     }
 
-    // Add multiple blog image files
     if ('blogImageFiles' in postData && postData.blogImageFiles) {
       postData.blogImageFiles.forEach((file, index) => {
         formData.append('blogImageFiles', file);
       });
     }
 
-    // Add image alt texts
     if ('imageAltTexts' in postData && postData.imageAltTexts) {
       postData.imageAltTexts.forEach((altText, index) => {
         formData.append('imageAltTexts', altText);
       });
     }
 
-    // Add image IDs to delete (for updates)
     if ('imageIdsToDelete' in postData && postData.imageIdsToDelete) {
       postData.imageIdsToDelete.forEach((id, index) => {
         formData.append('imageIdsToDelete', id.toString());
@@ -286,7 +269,6 @@ export class BlogService {
     return formData;
   }
 
-  // Utility method to generate slug from title
   generateSlug(title: string): string {
     return title
       .toLowerCase()
@@ -301,7 +283,6 @@ export class BlogService {
       .replace(/^-+|-+$/g, '');
   }
 
-  // Utility method to parse tags from string
   parseTags(tagsString: string): string[] {
     return tagsString
       .split(',')
@@ -309,19 +290,16 @@ export class BlogService {
       .filter(tag => tag.length > 0);
   }
 
-  // Utility method to format tags to string
   formatTags(tags: string[]): string {
     return tags.join(', ');
   }
 
-  // Utility method to calculate reading time
   calculateReadingTime(content: string): number {
     const wordsPerMinute = 200;
     const wordCount = content.split(/\s+/).filter(word => word.length > 0).length;
     return Math.max(1, Math.ceil(wordCount / wordsPerMinute));
   }
 
-  // Utility method to format date for display
   formatDate(dateString: string): string {
     const date = new Date(dateString);
     return date.toLocaleDateString('ro-RO', {
@@ -333,17 +311,14 @@ export class BlogService {
     });
   }
 
-  // Utility method to get status display text
   getStatusText(isPublished: boolean): string {
     return isPublished ? 'Publicat' : 'Ciornă';
   }
 
-  // Utility method to get status color
   getStatusColor(isPublished: boolean): string {
     return isPublished ? '#28a745' : '#ffc107';
   }
 
-  // Validate image file
   validateImageFile(file: File): { isValid: boolean; error?: string } {
     const maxSize = 5 * 1024 * 1024; // 5MB
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
@@ -365,7 +340,6 @@ export class BlogService {
     return { isValid: true };
   }
 
-  // Validate multiple images
   validateMultipleImages(files: File[]): { isValid: boolean; errors: string[] } {
     const errors: string[] = [];
     const maxImages = 5;

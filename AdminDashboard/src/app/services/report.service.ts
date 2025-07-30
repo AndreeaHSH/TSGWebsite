@@ -18,7 +18,6 @@ export interface Report {
   nextMonthPlans?: string;
   createdAt: Date;
   updatedAt: Date;
-  // Navigation properties
   member: Member;
   project: Project;
 }
@@ -264,7 +263,6 @@ export class ReportService {
     }
   }
 
-  // Helper methods
   getMonthName(month: number): string {
     const monthNames = [
       'Ianuarie', 'Februarie', 'Martie', 'Aprilie', 'Mai', 'Iunie',
@@ -343,7 +341,6 @@ export class ReportService {
     const lastReportMonth = lastReportDate.getMonth() + 1;
     const lastReportYear = lastReportDate.getFullYear();
 
-    // Check if report for current month is missing
     if (currentYear > lastReportYear) {
       return true;
     }
@@ -363,7 +360,6 @@ export class ReportService {
     const consistency = this.calculateConsistency(reports);
     const quality = this.calculateQualityScore(reports);
 
-    // Weighted score: 40% hours, 30% consistency, 30% quality
     return Math.round((averageHours * 0.4) + (consistency * 0.3) + (quality * 0.3));
   }
 
@@ -375,8 +371,7 @@ export class ReportService {
     const variance = hoursArray.reduce((sum, hours) => sum + Math.pow(hours - mean, 2), 0) / hoursArray.length;
     const standardDeviation = Math.sqrt(variance);
 
-    // Lower standard deviation = higher consistency
-    const maxStdDev = mean; // Assume max std dev equals mean
+    const maxStdDev = mean;
     const consistencyScore = Math.max(0, 100 - (standardDeviation / maxStdDev) * 100);
 
     return Math.round(consistencyScore);
@@ -390,19 +385,15 @@ export class ReportService {
     reports.forEach(report => {
       let score = 0;
 
-      // Work description quality (40% of quality score)
       if (report.workDescription && report.workDescription.length > 100) score += 40;
       else if (report.workDescription && report.workDescription.length > 50) score += 20;
 
-      // Achievements (20% of quality score)
       if (report.achievements && report.achievements.length > 50) score += 20;
       else if (report.achievements && report.achievements.length > 0) score += 10;
 
-      // Challenges (20% of quality score)
       if (report.challenges && report.challenges.length > 50) score += 20;
       else if (report.challenges && report.challenges.length > 0) score += 10;
 
-      // Next month plans (20% of quality score)
       if (report.nextMonthPlans && report.nextMonthPlans.length > 50) score += 20;
       else if (report.nextMonthPlans && report.nextMonthPlans.length > 0) score += 10;
 
@@ -415,11 +406,9 @@ export class ReportService {
   getReportCompleteness(report: Report): number {
     let completeness = 0;
 
-    // Required fields (60%)
     if (report.workDescription && report.workDescription.length > 0) completeness += 30;
     if (report.hoursWorked > 0) completeness += 30;
 
-    // Optional but important fields (40%)
     if (report.achievements && report.achievements.length > 0) completeness += 15;
     if (report.challenges && report.challenges.length > 0) completeness += 15;
     if (report.nextMonthPlans && report.nextMonthPlans.length > 0) completeness += 10;

@@ -1,6 +1,4 @@
-// AdminDashboard/src/app/app.scss
 
-// Global app layout
 .app-container {
   display: flex;
   height: 100vh;
@@ -17,30 +15,29 @@
   flex-shrink: 0;
 
   @media (max-width: 768px) {
-    order: 1; // Sidebar at top on mobile
+    order: 1;
   }
 }
 
 .app-main {
   flex: 1;
-  margin-left: 280px; // Match sidebar width
+  margin-left: 280px;
   overflow-y: auto;
   overflow-x: hidden;
   background: #f8f9fa;
   min-height: 100vh;
 
   @media (max-width: 1024px) {
-    margin-left: 250px; // Smaller sidebar on tablets
+    margin-left: 250px;
   }
 
   @media (max-width: 768px) {
     margin-left: 0;
-    order: 2; // Main content below sidebar on mobile
+    order: 2;
     min-height: auto;
   }
 }
 
-// Global styles for smooth transitions
 * {
   box-sizing: border-box;
 }
@@ -54,7 +51,6 @@ body {
   line-height: 1.6;
 }
 
-// Router outlet animations
 router-outlet + * {
   animation: routeAnimation 0.3s ease-in-out;
 }
@@ -70,7 +66,6 @@ router-outlet + * {
   }
 }
 
-// Global scrollbar styling
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -90,9 +85,8 @@ router-outlet + * {
   }
 }
 
-// Ensure proper spacing for page content
 .page-content {
-  padding: 0; // Remove default padding since components handle their own
+  padding: 0;
   width: 100%;
   min-height: 100vh;
 }
@@ -129,7 +123,6 @@ router-outlet + * {
   }
 }
 
-// Responsive utilities
 @media (max-width: 768px) {
   .hide-mobile {
     display: none !important;
@@ -142,13 +135,11 @@ router-outlet + * {
   }
 }
 
-// Focus styles for accessibility
 *:focus {
   outline: 2px solid #FF6D48;
   outline-offset: 2px;
 }
 
-// Skip to content link for accessibility
 .skip-link {
   position: absolute;
   top: -40px;

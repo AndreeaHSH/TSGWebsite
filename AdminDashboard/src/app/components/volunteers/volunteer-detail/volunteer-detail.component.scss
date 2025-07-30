@@ -1,4 +1,3 @@
-// volunteer-detail.component.scss - Enhanced with status management styles
 
 .volunteer-detail-container {
   padding: 2rem;
@@ -9,7 +8,6 @@
   position: relative;
 }
 
-// Beautiful Notification Toast - All Orange TSG Theme
 .notification-toast {
   position: fixed;
   top: 2rem;
@@ -25,21 +23,21 @@
   border-left: 4px solid #FF6D48;
   color: white;
 
-  // Icon colors for different types while keeping orange background
+
   &.notification-success .notification-icon {
-    color: #90EE90; // Light green icon on orange background
+    color: #90EE90;
   }
 
   &.notification-error .notification-icon {
-    color: #FFB6C1; // Light red icon on orange background
+    color: #FFB6C1;
   }
 
   &.notification-warning .notification-icon {
-    color: #FFFF99; // Light yellow icon on orange background
+    color: #FFFF99;
   }
 
   &.notification-info .notification-icon {
-    color: #ADD8E6; // Light blue icon on orange background
+    color: #ADD8E6;
   }
 }
 
@@ -368,7 +366,6 @@
   font-size: 1.1rem;
 }
 
-// Error State
 .error-container {
   display: flex;
   flex-direction: column;
@@ -388,7 +385,6 @@
   }
 }
 
-// Content Sections
 .details-content {
   display: flex;
   flex-direction: column;
@@ -421,7 +417,6 @@
   margin-top: 1rem;
 }
 
-// Grid Layouts
 .info-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -513,7 +508,6 @@
   }
 }
 
-// Agreement fields
 .agreement {
   font-weight: 600;
 
@@ -526,7 +520,6 @@
   }
 }
 
-// CV Section and Download Buttons
 .cv-section {
   display: flex;
   align-items: center;
@@ -566,7 +559,6 @@
   }
 }
 
-// Responsive Design
 @media (max-width: 768px) {
   .volunteer-detail-container {
     padding: 1rem;
@@ -600,7 +592,6 @@
     padding: 1rem;
   }
 
-  // Mobile notification adjustments
   .notification-toast {
     top: 1rem;
     right: 1rem;

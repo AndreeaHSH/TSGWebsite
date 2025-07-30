@@ -13,5 +13,4 @@ export class AppComponent {
   title = 'TSG Admin Dashboard';
 }
 
-// Also export as default for compatibility
 export default AppComponent;

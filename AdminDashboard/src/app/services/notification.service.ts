@@ -16,9 +16,7 @@ export class NotificationService {
   private notifications = new BehaviorSubject<Notification[]>([]);
   public notifications$ = this.notifications.asObservable();
 
-  /**
-   * Show a success notification
-   */
+
   success(message: string, duration: number = 5000): void {
     this.addNotification({
       type: 'success',
@@ -27,9 +25,7 @@ export class NotificationService {
     });
   }
 
-  /**
-   * Show an error notification
-   */
+
   error(message: string, persistent: boolean = false): void {
     this.addNotification({
       type: 'error',
@@ -39,9 +35,7 @@ export class NotificationService {
     });
   }
 
-  /**
-   * Show a warning notification
-   */
+
   warning(message: string, duration: number = 6000): void {
     this.addNotification({
       type: 'warning',
@@ -50,9 +44,7 @@ export class NotificationService {
     });
   }
 
-  /**
-   * Show an info notification
-   */
+
   info(message: string, duration: number = 5000): void {
     this.addNotification({
       type: 'info',
@@ -61,9 +53,7 @@ export class NotificationService {
     });
   }
 
-  /**
-   * Add a notification
-   */
+
   private addNotification(notification: Omit<Notification, 'id'>): void {
     const id = this.generateId();
     const newNotification: Notification = {
@@ -74,7 +64,6 @@ export class NotificationService {
     const currentNotifications = this.notifications.value;
     this.notifications.next([...currentNotifications, newNotification]);
 
-    // Auto remove notification after duration
     if (notification.duration && notification.duration > 0) {
       setTimeout(() => {
         this.removeNotification(id);
@@ -82,25 +71,19 @@ export class NotificationService {
     }
   }
 
-  /**
-   * Remove a notification
-   */
+
   removeNotification(id: string): void {
     const currentNotifications = this.notifications.value;
     const updatedNotifications = currentNotifications.filter(n => n.id !== id);
     this.notifications.next(updatedNotifications);
   }
 
-  /**
-   * Clear all notifications
-   */
+
   clearAll(): void {
     this.notifications.next([]);
   }
 
-  /**
-   * Generate unique ID for notifications
-   */
+ 
   private generateId(): string {
     return Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
   }

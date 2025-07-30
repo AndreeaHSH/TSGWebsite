@@ -10,7 +10,6 @@
     </div>
   </div>
 
-  <!-- Navigation Menu -->
   <nav class="sidebar-nav">
     <ul class="nav-list">
       <li
@@ -29,7 +28,7 @@
           <span class="nav-icon">{{ item.icon }}</span>
           <span class="nav-label">{{ item.label }}</span>
 
-          <!-- Coming Soon Badge for disabled items -->
+
           <span *ngIf="!item.isEnabled" class="coming-soon-badge">
             În curând
           </span>
@@ -38,9 +37,6 @@
     </ul>
   </nav>
 
-
-
-  <!-- Footer Section -->
   <div class="sidebar-footer">
     <div class="user-info">
       <div class="user-avatar">

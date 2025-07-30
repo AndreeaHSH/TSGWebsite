@@ -51,9 +51,7 @@ export class AuthService {
     this.loadUserFromStorage();
   }
 
-  /**
-   * Load user data from localStorage on service initialization
-   */
+
   private loadUserFromStorage(): void {
     const token = localStorage.getItem('token');
     const userStr = localStorage.getItem('user');
@@ -77,9 +75,7 @@ export class AuthService {
     }
   }
 
-  /**
-   * Set timer for automatic logout when token expires
-   */
+
   private setTokenExpirationTimer(expirationDate: Date): void {
     const timeout = expirationDate.getTime() - Date.now();
 
@@ -88,9 +84,7 @@ export class AuthService {
     }, timeout);
   }
 
-  /**
-   * Clear token expiration timer
-   */
+
   private clearTokenExpirationTimer(): void {
     if (this.tokenExpirationTimer) {
       clearTimeout(this.tokenExpirationTimer);
@@ -98,9 +92,7 @@ export class AuthService {
     }
   }
 
-  /**
-   * User login
-   */
+
   async login(credentials: LoginDto): Promise<LoginResponse> {
     try {
       const response = await firstValueFrom(
@@ -109,15 +101,12 @@ export class AuthService {
         )
       );
 
-      // Store authentication data
       localStorage.setItem('token', response.token);
       localStorage.setItem('user', JSON.stringify(response.user));
       localStorage.setItem('tokenExpiresAt', response.expiresAt);
 
-      // Update current user
       this.currentUserSubject.next(response.user);
 
-      // Set expiration timer
       this.setTokenExpirationTimer(new Date(response.expiresAt));
 
       return response;
@@ -127,9 +116,7 @@ export class AuthService {
     }
   }
 
-  /**
-   * User registration
-   */
+
   async register(userData: RegisterDto): Promise<User> {
     try {
       return await firstValueFrom(
@@ -143,28 +130,20 @@ export class AuthService {
     }
   }
 
-  /**
-   * User logout
-   */
+
   logout(): void {
-    // Clear stored data
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     localStorage.removeItem('tokenExpiresAt');
 
-    // Clear timer
     this.clearTokenExpirationTimer();
 
-    // Update current user
     this.currentUserSubject.next(null);
 
-    // Redirect to login
     this.router.navigate(['/login']);
   }
 
-  /**
-   * Check if user is authenticated
-   */
+
   isAuthenticated(): boolean {
     const token = localStorage.getItem('token');
     const expiresAt = localStorage.getItem('tokenExpiresAt');
@@ -176,23 +155,17 @@ export class AuthService {
     return new Date(expiresAt) > new Date();
   }
 
-  /**
-   * Get authentication token
-   */
+
   getToken(): string | null {
     return localStorage.getItem('token');
   }
 
-  /**
-   * Get current user
-   */
+
   getCurrentUser(): User | null {
     return this.currentUserSubject.value;
   }
 
-  /**
-   * Refresh user data from server
-   */
+
   async refreshUser(): Promise<User> {
     try {
       const user = await firstValueFrom(
@@ -211,9 +184,7 @@ export class AuthService {
     }
   }
 
-  /**
-   * Change password
-   */
+
   async changePassword(currentPassword: string, newPassword: string): Promise<void> {
     try {
       await firstValueFrom(
@@ -230,9 +201,7 @@ export class AuthService {
     }
   }
 
-  /**
-   * Request password reset
-   */
+
   async requestPasswordReset(email: string): Promise<void> {
     try {
       await firstValueFrom(
@@ -246,9 +215,7 @@ export class AuthService {
     }
   }
 
-  /**
-   * Reset password with token
-   */
+
   async resetPassword(token: string, newPassword: string): Promise<void> {
     try {
       await firstValueFrom(
@@ -265,32 +232,24 @@ export class AuthService {
     }
   }
 
-  /**
-   * Check if user has specific role
-   */
+
   hasRole(role: string): boolean {
     const user = this.getCurrentUser();
     return user ? user.role === role : false;
   }
 
-  /**
-   * Check if user is admin
-   */
+
   isAdmin(): boolean {
     return this.hasRole('Admin');
   }
 
-  /**
-   * Get token expiration time
-   */
+
   getTokenExpiration(): Date | null {
     const expiresAt = localStorage.getItem('tokenExpiresAt');
     return expiresAt ? new Date(expiresAt) : null;
   }
 
-  /**
-   * Check if token will expire soon (within 5 minutes)
-   */
+ 
   isTokenExpiringSoon(): boolean {
     const expiration = this.getTokenExpiration();
     if (!expiration) return false;

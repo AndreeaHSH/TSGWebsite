@@ -5,7 +5,6 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
-// Interfaces
 export interface Member {
   id: number;
   firstName: string;
@@ -96,7 +95,7 @@ export class ReportsComponent implements OnInit {
   selectedMember: Member | null = null;
   viewingReport: Report | null = null;
 
-  // Forms - Fixed initialization
+  // Forms
   memberForm!: FormGroup;
   projectForm!: FormGroup;
   reportForm!: FormGroup;
@@ -200,11 +199,9 @@ export class ReportsComponent implements OnInit {
         this.http.get<DepartmentData[]>(`${environment.apiUrl}/api/members/by-department`)
       );
 
-      // Debug log to see the actual response structure
       console.log('Department data response:', response);
 
       this.departmentData = response || [];
-      // Fix: Use 'Members' (capital M) as returned by backend
       this.allMembers = this.departmentData.flatMap(dept => dept.Members || dept.members || []);
     } catch (error) {
       console.error('Error loading department data:', error);
@@ -264,7 +261,6 @@ export class ReportsComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  // Member management - Fixed parameter types
   openMemberModal(member?: Member | undefined, department?: string) {
     this.editingMember = member || null;
 
@@ -345,7 +341,6 @@ export class ReportsComponent implements OnInit {
     }
   }
 
-  // Project management
   openProjectModal(project?: Project) {
     this.editingProject = project || null;
 
@@ -598,7 +593,6 @@ export class ReportsComponent implements OnInit {
     this.loadReports();
   }
 
-  // Helper methods
   getMemberProjects(member: Member | null): Project[] {
     if (!member) return [];
 
@@ -693,7 +687,6 @@ export class ReportsComponent implements OnInit {
     });
   }
 
-  // TrackBy functions
   trackByDepartment(index: number, item: DepartmentData): string {
     return item.department;
   }

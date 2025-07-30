@@ -1,8 +1,6 @@
-<!-- volunteer-list.component.html - Updated with display-only hearts -->
 
 <div class="volunteer-list-container">
 
-  <!-- Search Section -->
   <div class="search-section">
     <div class="search-bar">
       <div class="search-input-container">
@@ -23,16 +21,13 @@
     </div>
   </div>
 
-  <!-- Loading State -->
   <div *ngIf="isLoading" class="loading-container">
     <div class="loading-spinner"></div>
     <p class="loading-text">Se încarcă aplicațiile...</p>
   </div>
 
-  <!-- Volunteers List -->
   <div *ngIf="!isLoading" class="volunteers-grid">
 
-    <!-- No Results -->
     <div *ngIf="filteredVolunteers.length === 0" class="no-results">
       <div class="no-results-icon">🔍</div>
       <h3 class="no-results-title">Nu au fost găsite rezultate</h3>
@@ -42,13 +37,11 @@
       </p>
     </div>
 
-    <!-- Volunteer Cards -->
     <div
       *ngFor="let volunteer of filteredVolunteers; trackBy: trackByVolunteer"
       class="volunteer-card"
       (click)="viewVolunteerDetails(volunteer.id)">
 
-      <!-- Card Header -->
       <div class="card-header">
         <div class="volunteer-info">
           <h3 class="volunteer-name">
@@ -60,7 +53,6 @@
           </div>
         </div>
 
-        <!-- Display-Only Favorite Heart -->
         <div class="favorite-display" [class.active]="volunteer.isFavorite">
           <div class="heart-icon" [class.filled]="volunteer.isFavorite">
             ❤️
@@ -68,7 +60,6 @@
         </div>
       </div>
 
-      <!-- Card Body -->
       <div class="card-body">
         <div class="volunteer-details">
           <div class="detail-row">
@@ -90,7 +81,6 @@
         </div>
       </div>
 
-      <!-- Card Footer -->
       <div class="card-footer">
         <div class="status-section">
           <span
@@ -110,7 +100,7 @@
     </div>
   </div>
 
-  <!-- Results Count -->
+
   <div *ngIf="!isLoading && filteredVolunteers.length > 0" class="results-count">
     <p>
       <strong>{{ filteredVolunteers.length }}</strong>

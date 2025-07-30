@@ -1,14 +1,12 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
-  // Default route - redirect to applications
   {
     path: '',
     redirectTo: '/aplicari',
     pathMatch: 'full'
   },
 
-  // Volunteer Applications Routes
   {
     path: 'aplicari',
     loadComponent: () => import('./components/volunteers/volunteer-list/volunteer-list.component').then(m => m.VolunteerListComponent),
@@ -20,7 +18,6 @@ export const routes: Routes = [
     title: 'Detalii Aplicant - TSG Admin'
   },
 
-  // Blog Management Routes
   {
     path: 'blog',
     loadComponent: () => import('./components/blog/blog-management/blog-management.component').then(m => m.BlogManagementComponent),
