@@ -16,7 +16,6 @@ namespace TSGwebsite.Controllers
             _context = context;
         }
 
-        // GET: api/members
         [HttpGet]
         public async Task<ActionResult<IEnumerable<object>>> GetMembers(
             [FromQuery] Department? department = null,
@@ -32,26 +31,27 @@ namespace TSGwebsite.Controllers
                 if (isActive.HasValue)
                     query = query.Where(m => m.IsActive == isActive.Value);
 
-                var members = await query
-                    .Select(m => new
-                    {
-                        m.Id,
-                        m.FirstName,
-                        m.LastName,
-                        FullName = m.FirstName + " " + m.LastName,
-                        m.Email,
-                        m.Phone,
-                        Department = m.Department.ToString(),
-                        Role = m.Role.ToString(),
-                        m.IsActive,
-                        m.JoinedAt,
-                        m.LinkedInUrl,
-                        m.GitHubUrl,
-                        m.ImageUrl
-                    })
-                    .OrderBy(m => m.Department)
-                    .ThenBy(m => m.FirstName)
-                    .ToListAsync();
+                var rawMembers = await query.ToListAsync();
+
+                var members = rawMembers.Select(m => new
+                {
+                    m.Id,
+                    m.FirstName,
+                    m.LastName,
+                    FullName = m.FirstName + " " + m.LastName,
+                    m.Email,
+                    m.Phone,
+                    Department = m.Department.ToString(),
+                    Role = m.Role.ToString(),
+                    m.IsActive,
+                    m.JoinedAt,
+                    m.LinkedInUrl,
+                    m.GitHubUrl,
+                    m.ImageUrl
+                })
+                .OrderBy(m => m.Department)
+                .ThenBy(m => m.FirstName)
+                .ToList();
 
                 return Ok(members);
             }
@@ -62,7 +62,6 @@ namespace TSGwebsite.Controllers
             }
         }
 
-        // GET: api/members/by-department
         [HttpGet("by-department")]
         public async Task<ActionResult<object>> GetMembersByDepartment([FromQuery] bool activeOnly = true)
         {
@@ -75,7 +74,9 @@ namespace TSGwebsite.Controllers
                     query = query.Where(m => m.IsActive);
                 }
 
-                var membersByDepartment = await query
+                var rawMembers = await query.ToListAsync();
+
+                var membersByDepartment = rawMembers
                     .GroupBy(m => m.Department)
                     .Select(g => new
                     {
@@ -100,7 +101,7 @@ namespace TSGwebsite.Controllers
                         MemberCount = g.Count()
                     })
                     .OrderBy(g => GetDepartmentOrder(g.Department))
-                    .ToListAsync();
+                    .ToList();
 
                 return Ok(membersByDepartment);
             }
@@ -111,7 +112,6 @@ namespace TSGwebsite.Controllers
             }
         }
 
-        // GET: api/members/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<object>> GetMember(int id)
         {
@@ -149,13 +149,11 @@ namespace TSGwebsite.Controllers
             }
         }
 
-        // POST: api/members
         [HttpPost]
         public async Task<ActionResult<object>> CreateMember(CreateMemberDto memberDto)
         {
             try
             {
-                // Validate input
                 if (string.IsNullOrWhiteSpace(memberDto.FirstName))
                     return BadRequest("First name is required");
 
@@ -171,13 +169,11 @@ namespace TSGwebsite.Controllers
                 if (string.IsNullOrWhiteSpace(memberDto.Role))
                     return BadRequest("Role is required");
 
-                // Check if email already exists
                 if (await _context.Members.AnyAsync(m => m.Email == memberDto.Email))
                 {
                     return BadRequest("Email already exists");
                 }
 
-                // Parse enums - Fixed validation
                 if (!Enum.TryParse<Department>(memberDto.Department, true, out var department))
                 {
                     return BadRequest($"Invalid department: {memberDto.Department}. Valid values: Frontend, Backend, Mobile, Communication, Networking, GraphicDesign, FullStack, Management");
@@ -232,7 +228,6 @@ namespace TSGwebsite.Controllers
             }
         }
 
-        // PUT: api/members/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateMember(int id, UpdateMemberDto memberDto)
         {
@@ -244,7 +239,6 @@ namespace TSGwebsite.Controllers
                     return NotFound();
                 }
 
-                // Validate input
                 if (string.IsNullOrWhiteSpace(memberDto.FirstName))
                     return BadRequest("First name is required");
 
@@ -260,13 +254,11 @@ namespace TSGwebsite.Controllers
                 if (string.IsNullOrWhiteSpace(memberDto.Role))
                     return BadRequest("Role is required");
 
-                // Check if email already exists (excluding current member)
                 if (await _context.Members.AnyAsync(m => m.Email == memberDto.Email && m.Id != id))
                 {
                     return BadRequest("Email already exists");
                 }
 
-                // Parse enums
                 if (!Enum.TryParse<Department>(memberDto.Department, true, out var department))
                 {
                     return BadRequest($"Invalid department: {memberDto.Department}");
@@ -298,7 +290,6 @@ namespace TSGwebsite.Controllers
             }
         }
 
-        // PUT: api/members/{id}/deactivate
         [HttpPut("{id}/deactivate")]
         public async Task<IActionResult> DeactivateMember(int id)
         {
@@ -322,7 +313,6 @@ namespace TSGwebsite.Controllers
             }
         }
 
-        // PUT: api/members/{id}/activate
         [HttpPut("{id}/activate")]
         public async Task<IActionResult> ActivateMember(int id)
         {
@@ -346,7 +336,6 @@ namespace TSGwebsite.Controllers
             }
         }
 
-        // DELETE: api/members/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMember(int id)
         {
@@ -358,7 +347,6 @@ namespace TSGwebsite.Controllers
                     return NotFound();
                 }
 
-                // Check if member has reports or projects
                 var hasReports = await _context.Reports.AnyAsync(r => r.MemberId == id);
                 var hasProjects = await _context.Projects.AnyAsync(p =>
                     p.ResponsibleMemberId == id || p.ExecutorMemberId == id || p.BeginnerMemberId == id);
@@ -380,7 +368,6 @@ namespace TSGwebsite.Controllers
             }
         }
 
-        // Helper methods
         private static string GetDepartmentDisplayName(Department department)
         {
             return department switch
@@ -414,15 +401,14 @@ namespace TSGwebsite.Controllers
         }
     }
 
-    // DTOs - Corrected to expect strings
     public class CreateMemberDto
     {
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string? Phone { get; set; }
-        public string Department { get; set; } = string.Empty; // String, not enum
-        public string Role { get; set; } = string.Empty;       // String, not enum
+        public string Department { get; set; } = string.Empty;
+        public string Role { get; set; } = string.Empty;
         public string? LinkedInUrl { get; set; }
         public string? GitHubUrl { get; set; }
         public string? ImageUrl { get; set; }
@@ -434,8 +420,8 @@ namespace TSGwebsite.Controllers
         public string LastName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string? Phone { get; set; }
-        public string Department { get; set; } = string.Empty; // String, not enum
-        public string Role { get; set; } = string.Empty;       // String, not enum
+        public string Department { get; set; } = string.Empty;
+        public string Role { get; set; } = string.Empty;
         public bool IsActive { get; set; }
         public string? LinkedInUrl { get; set; }
         public string? GitHubUrl { get; set; }
