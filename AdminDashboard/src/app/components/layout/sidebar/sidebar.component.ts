@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
+import { AuthService } from '../../../services/auth.service';
 
 interface NavigationItem {
   label: string;
@@ -44,7 +45,7 @@ export class SidebarComponent {
     }
   ];
 
-  constructor(private router: Router) {}
+    constructor(private router: Router, private authService: AuthService) {}
 
   navigateTo(route: string, isEnabled: boolean): void {
     if (isEnabled) {
@@ -57,7 +58,6 @@ export class SidebarComponent {
   }
 
   logout(): void {
-    console.log('Logout functionality will be implemented here');
-    alert('Funcționalitatea de logout va fi implementată în curând');
+  this.authService.logout();
   }
 }

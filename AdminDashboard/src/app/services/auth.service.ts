@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { KeycloakService } from 'keycloak-angular';
 import { KeycloakProfile } from 'keycloak-js';
 import { BehaviorSubject, Observable } from 'rxjs';
-
+import { HttpClient } from '@angular/common/http';
 @Injectable({
   providedIn: 'root'
 })
@@ -10,7 +10,7 @@ export class AuthService {
   private userProfileSubject = new BehaviorSubject<KeycloakProfile | null>(null);
   public userProfile$ = this.userProfileSubject.asObservable();
 
-  constructor(private keycloakService: KeycloakService) {
+  constructor(private keycloakService: KeycloakService, private http: HttpClient) {
     this.loadUserProfile();
   }
 
@@ -63,9 +63,15 @@ export class AuthService {
     });
   }
 
-  public logout(): void {
-    this.keycloakService.logout(window.location.origin);
+  public async logout(): Promise<void> {
+  try {
+    await this.http.post('http://localhost:5193/api/auth/logout', {}).toPromise();
+  } catch (error) {
+    console.error('Backend logout failed:', error);
+  } finally {
+    this.keycloakService.logout('http://localhost:4201/');
   }
+}
 
   public async refreshToken(): Promise<boolean> {
     try {

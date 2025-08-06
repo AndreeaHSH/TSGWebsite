@@ -1,6 +1,4 @@
-<!-- This should go in src/app/pages/home/home.html -->
 <main class="site-main">
-  <!-- Hero Section -->
   <section class="hero-section">
     <div class="hero-container">
       <div class="hero-content">
@@ -9,7 +7,6 @@
           <p class="hero-subtitle">Transilvania Star Group caută Voluntari</p>
           <p class="hero-description">Completează formularul de mai jos!</p>
           <div class="hero-buttons">
-            <!-- FIXED: Properly closed the anchor tag -->
             <a routerLink="/tsg-application"
                class="btn btn-primary"
                (click)="onApplyClick()"
@@ -17,7 +14,6 @@
                aria-label="Completează formularul de aplicare">
               Completează Formularul
             </a>
-            <!-- ADDED: Missing "Află Mai Multe" button -->
             <a href="#despre"
                class="btn btn-secondary"
                (click)="onLearnMoreClick()"
