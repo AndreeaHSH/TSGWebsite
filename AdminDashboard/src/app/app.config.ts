@@ -1,24 +1,27 @@
-import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter, withEnabledBlockingInitialNavigation, withInMemoryScrolling } from '@angular/router';
-import { provideAnimations } from '@angular/platform-browser/animations';
-import { provideHttpClient, withInterceptors, withFetch } from '@angular/common/http';
-import { provideClientHydration } from '@angular/platform-browser';
+import { ApplicationConfig, APP_INITIALIZER, provideZoneChangeDetection } from '@angular/core';
+import { provideRouter } from '@angular/router';
+import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { provideHttpClient, withFetch, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { routes } from './app.routes';
+import { KeycloakService } from 'keycloak-angular';
+import { initializeKeycloak } from './config/keycloak.config';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(
-      routes,
-      withEnabledBlockingInitialNavigation(),
-      withInMemoryScrolling({ scrollPositionRestoration: 'top' })
-    ),
-    provideAnimations(),
-    provideHttpClient(
-      withFetch(),
-      withInterceptors([])
-    ),
-    provideClientHydration()
+    provideRouter(routes),
+    provideClientHydration(withEventReplay()),
+    provideAnimationsAsync(),
+    provideHttpClient(withFetch()),
+
+    KeycloakService,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeKeycloak,
+      multi: true,
+      deps: [KeycloakService]
+    }
   ]
 };
