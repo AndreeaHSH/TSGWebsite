@@ -319,6 +319,11 @@ export class BlogService {
     return isPublished ? '#28a745' : '#ffc107';
   }
 
+  getFullImageUrl(imageUrl: string): string {
+  if (!imageUrl) return '';
+  return imageUrl.startsWith('http') ? imageUrl : `http://localhost:5193${imageUrl}`;
+  }
+
   validateImageFile(file: File): { isValid: boolean; error?: string } {
     const maxSize = 5 * 1024 * 1024; // 5MB
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];

@@ -98,17 +98,17 @@ export class BlogEditorComponent implements OnInit {
         isPublished: post.isPublished
       });
 
-
       if (post.blogImages && post.blogImages.length > 0) {
-        const imageFiles: ImageFile[] = post.blogImages.map((url, index) => ({
-          file: new File([], ''),
-          preview: url,
-          altText: `Image ${index + 1}`,
-          id: index + 1,
-          isPrimary: index === 0
-        }));
-        this.images.set(imageFiles);
-      }
+      const imageFiles: ImageFile[] = post.blogImages.map((url, index) => ({
+      file: new File([], ''),
+      preview: url.startsWith('http') ? url : `http://localhost:5193${url}`,
+      altText: `Image ${index + 1}`,
+      id: index + 1,
+      isPrimary: index === 0
+     }));
+      this.images.set(imageFiles);
+    }
+
 
       this.hasUnsavedChanges.set(false);
     } catch (error) {
